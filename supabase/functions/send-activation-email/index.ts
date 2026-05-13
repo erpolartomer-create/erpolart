@@ -1,0 +1,57 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+
+// NOT: Güvenlik için API Key'i doğrudan koda yazmak yerine 
+// 'supabase secrets set' komutuyla sisteme tanımlayacağız.
+const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
+  try {
+    const { record, old_record } = await req.json()
+
+    // SADECE statü 'active' olduğunda ve eskiden 'active' değilse mail at
+    if (record.status !== 'active' || old_record?.status === 'active') {
+      return new Response(JSON.stringify({ message: 'Mail conditions not met' }), { headers: corsHeaders })
+    }
+
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: 'ErpolArt <hello@erpolart.com>',
+        to: [record.email],
+        subject: `ErpolArt: Siparişiniz Onaylandı (ID: #${record.id.slice(0, 8).toUpperCase()})`,
+        html: `
+          <div style="font-family: sans-serif; background: #000; color: #fff; padding: 60px 40px; border-radius: 30px; max-width: 600px; margin: auto; border: 1px solid #222;">
+            <h1 style="font-style: italic; letter-spacing: -2px; font-size: 32px; margin-bottom: 10px;">ERPOLART</h1>
+            <p style="color: #5c73ff; font-size: 12px; text-transform: uppercase; letter-spacing: 3px; font-weight: bold;">SİSTEMİNİZ AKTİF EDİLDİ</p>
+            <hr style="border: 0; border-top: 1px solid #222; margin: 30px 0;" />
+            <p style="font-size: 16px; line-height: 1.6; color: #ccc;">Sayın <strong>${record.full_name || 'Müşterimiz'}</strong>,</p>
+            <p style="font-size: 16px; line-height: 1.6; color: #ccc;">Ödemeniz başarıyla doğrulandı. Dijital mimari kurulum süreciniz başlatılmıştır.</p>
+            <a href="https://erpolart.com/order-success/${record.id}" style="display: inline-block; background: #5c73ff; color: #fff; padding: 18px 35px; text-decoration: none; border-radius: 15px; font-weight: 900; margin-top: 30px; text-transform: uppercase; font-size: 13px;">Kişiselleştirmeyi Başlat</a>
+            <div style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #111;">
+              <p style="color: #444; font-size: 10px; margin: 0;">ORDER_ID: ${record.id.toUpperCase()}</p>
+              <p style="color: #444; font-size: 10px; margin: 5px 0 0 0;">© 2026 ErpolArt Digital Atelier</p>
+            </div>
+          </div>
+        `,
+      }),
+    })
+
+    const data = await res.json()
+    return new Response(JSON.stringify(data), { status: 200, headers: corsHeaders })
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: corsHeaders })
+  }
+})  

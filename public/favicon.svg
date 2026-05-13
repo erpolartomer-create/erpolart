@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="dot-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5C73FF"/>
+      <stop offset="100%" stop-color="#00B3A6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="32" height="32" rx="7" fill="#080808"/>
+
+  <!-- Dot (.) in gradient -->
+  <circle cx="8" cy="22" r="2.4" fill="url(#dot-grad)"/>
+
+  <!-- e in white, bold italic -->
+  <text
+    x="13"
+    y="23"
+    font-family="'Helvetica Neue', Arial, sans-serif"
+    font-weight="900"
+    font-style="italic"
+    font-size="17"
+    fill="#ffffff"
+    letter-spacing="-0.5"
+  >e</text>
+</svg>
