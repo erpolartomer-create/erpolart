@@ -29,12 +29,14 @@ const io = new Server(httpServer, {
     origin: [
       'https://erpolart.com',
       'https://www.erpolart.com',
+      'https://erpolart-production.up.railway.app',
       'http://localhost:5173',
       'http://localhost:5174',
       'http://localhost:5175',
       'http://localhost:5176',
       'http://127.0.0.1:5173',
       'http://localhost:5252',
+      'http://localhost:5253',
     ],
     methods: ["GET", "POST"]
   }
@@ -116,6 +118,7 @@ app.use(cors({
   origin: [
     'https://erpolart.com',
     'https://www.erpolart.com',
+    'https://erpolart-production.up.railway.app',
     'http://localhost:5173',
     'http://localhost:5174',
     'http://localhost:5175',
@@ -123,6 +126,7 @@ app.use(cors({
     'http://127.0.0.1:5173',
     'http://127.0.0.1:5174',
     'http://localhost:5252',
+    'http://localhost:5253',
   ],
   credentials: true,
 }));
