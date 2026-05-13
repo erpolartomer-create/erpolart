@@ -40,7 +40,7 @@ const useChatStore = create(
         const today = new Date().toDateString();
         const { dailyCount, lastResetDate } = get();
         if (today !== lastResetDate) return true;
-        return dailyCount < 500;
+        return dailyCount < 25;
       }
     }),
     {
