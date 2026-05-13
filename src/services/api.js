@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { supabaseAdmin } from '../lib/supabaseAdmin';
 
 const API = axios.create({
-  baseURL: '/api',
+  baseURL: `${import.meta.env.VITE_API_URL}/api`,
 });
 
 // Intercept requests to add Auth Token if exists - Separate Admin & User support

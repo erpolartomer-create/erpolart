@@ -99,7 +99,7 @@ const ChatBot = () => {
 
     if (window.location.hostname === 'localhost') return;
 
-    socketRef.current = io(window.location.origin, { reconnectionAttempts: 1, timeout: 3000 });
+    socketRef.current = io(import.meta.env.VITE_API_URL, { reconnectionAttempts: 1, timeout: 3000 });
     socketRef.current.emit('join_session', sessionId);
 
     socketRef.current.on('connect_error', () => {
@@ -238,7 +238,7 @@ const ChatBot = () => {
 
       const statusLabel = user ? "Giriş yapmış müşteri" : "Misafir kullanıcı";
 
-      const response = await axios.post('/api/ai/chat', {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/ai/chat`, {
         message: userMessage,
         userContext: statusLabel,
         history: history,
