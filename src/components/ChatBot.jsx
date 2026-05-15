@@ -307,7 +307,7 @@ const ChatBot = () => {
                   <h3 className="text-sm font-bold text-white">ErpolArt Core System</h3>
                   <p className="text-[10px] text-gray-500 flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    Aktif | Kalan İşlem: {500 - dailyCount}
+                    Aktif | Kalan İşlem: {25 - dailyCount}
                   </p>
                 </div>
               </div>
@@ -387,13 +387,13 @@ const ChatBot = () => {
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder={dailyCount >= 500 ? "Günlük limit doldu" : "Komutunuzu girin..."}
-                  disabled={dailyCount >= 500 || isTyping}
+                  placeholder={dailyCount >= 25 ? "Günlük limit doldu" : "Komutunuzu girin..."}
+                  disabled={dailyCount >= 25 || isTyping}
                   className="flex-1 bg-white/[0.03] border border-white/[0.08] focus:border-indigo/50 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-all pr-12"
                 />
                 <button
                   type="submit"
-                  disabled={!input.trim() || isTyping || dailyCount >= 500}
+                  disabled={!input.trim() || isTyping || dailyCount >= 25}
                   className="absolute right-1.5 p-2 bg-indigo hover:bg-indigo-600 disabled:opacity-50 disabled:bg-white/5 text-white rounded-lg transition-all"
                 >
                   {isTyping ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
@@ -416,7 +416,7 @@ const ChatBot = () => {
           }`}
       >
         {isOpen ? <X size={28} /> : <MessageSquare size={28} />}
-        {!isOpen && dailyCount < 500 && (
+        {!isOpen && dailyCount < 25 && (
           <span className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 text-[10px] font-bold text-white rounded-full flex items-center justify-center border-2 border-[#0f0f18]">
             1
           </span>
