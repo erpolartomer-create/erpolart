@@ -283,8 +283,12 @@ const ChatBot = () => {
     return <Bot size={14} />;
   };
 
+  const isTemplateDetail = location.pathname.startsWith('/templates/') && location.pathname !== '/templates';
+  const isCheckout = location.pathname.startsWith('/checkout/');
+  const shouldLift = isTemplateDetail || isCheckout;
+
   return (
-    <div ref={containerRef} className="fixed bottom-6 right-6 z-[9999] font-sans">
+    <div ref={containerRef} className={`fixed ${shouldLift ? 'bottom-32 lg:bottom-6' : 'bottom-6'} right-6 z-[9999] font-sans`}>
       <AnimatePresence>
         {isOpen && (
           <motion.div
