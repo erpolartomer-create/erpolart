@@ -36,7 +36,7 @@ const HowItWorks = () => {
       titleAccent: t('howItWorks.path2TitleAccent'),
       desc: t('howItWorks.path2Desc'),
       explore: t('howItWorks.path2Explore'),
-      link: '/projects#contact-form',
+      link: '/projects',
       image: '/saas/architecture_premium.webp',
       color: 'white', // Diamond/Nexus (Swapped)
       reverse: true,

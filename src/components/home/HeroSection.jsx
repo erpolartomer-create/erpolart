@@ -11,7 +11,7 @@ const HeroSection = () => {
   const theme = useUIStore((state) => state.theme);
 
   return (
-    <section className="relative h-screen w-full flex items-center justify-center bg-deep-black transition-colors duration-500">
+    <section className="relative h-screen w-full flex items-center justify-center bg-deep-black transition-colors duration-500 select-none" style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}>
       {/* Three.js Background Component */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <Hyperspeed effectOptions={theme === 'dark' ? hyperspeedPresets.erpolart : hyperspeedPresets.erpolartLight} />
