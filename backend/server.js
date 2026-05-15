@@ -24,20 +24,26 @@ const mutedSessions = new Set();
 app.set('mutedSessions', mutedSessions);
 
 const httpServer = createServer(app);
+const ALLOWED_ORIGINS = [
+  'https://erpolart.com',
+  'https://www.erpolart.com',
+  'https://erpolart-production.up.railway.app',
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+  'http://localhost:5176',
+  'http://localhost:5252',
+  'http://localhost:5253',
+  'http://localhost:5254',
+  'http://localhost:5255',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
+  'http://127.0.0.1:5254',
+];
+
 const io = new Server(httpServer, {
   cors: {
-    origin: [
-      'https://erpolart.com',
-      'https://www.erpolart.com',
-      'https://erpolart-production.up.railway.app',
-      'http://localhost:5173',
-      'http://localhost:5174',
-      'http://localhost:5175',
-      'http://localhost:5176',
-      'http://127.0.0.1:5173',
-      'http://localhost:5252',
-      'http://localhost:5253',
-    ],
+    origin: ALLOWED_ORIGINS,
     methods: ["GET", "POST"]
   }
 });
@@ -115,19 +121,7 @@ io.on('connection', (socket) => {
 
 // Middleware
 app.use(cors({
-  origin: [
-    'https://erpolart.com',
-    'https://www.erpolart.com',
-    'https://erpolart-production.up.railway.app',
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'http://localhost:5175',
-    'http://localhost:5176',
-    'http://127.0.0.1:5173',
-    'http://127.0.0.1:5174',
-    'http://localhost:5252',
-    'http://localhost:5253',
-  ],
+  origin: ALLOWED_ORIGINS,
   credentials: true,
 }));
 app.use(express.json());
