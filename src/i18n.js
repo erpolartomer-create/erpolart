@@ -675,7 +675,7 @@ const resources = {
               ]
             }
           },
-          project2: { title: "FlowBoard Analytics", desc: "Real-time business intelligence dashboard with custom KPI tracking and team collaboration.", stack: "React · D3.js · Supabase" },
+          project2: { title: "Reseva AI", desc: "Real-time business intelligence dashboard with custom KPI tracking and team collaboration.", stack: "React · D3.js · Supabase" },
           project3: { title: "AutoScale Commerce", desc: "Full-stack e-commerce SaaS with inventory automation, multi-vendor support, and AI recommendations.", stack: "Node.js · Stripe · Redis" }
         },
         cta: {
@@ -1690,7 +1690,7 @@ const resources = {
               ]
             }
           },
-          project2: { title: "FlowBoard Analytics", desc: "Özel KPI takibi ve ekip işbirliği ile gerçek zamanlı iş zekası panosu.", stack: "React · D3.js · Supabase" },
+          project2: { title: "Reseva AI", desc: "Özel KPI takibi ve ekip işbirliği ile gerçek zamanlı iş zekası panosu.", stack: "React · D3.js · Supabase" },
           project3: { title: "AutoScale Commerce", desc: "Envanter otomasyonu, çoklu satıcı desteği ve AI önerileri ile tam kapsamlı e-ticaret SaaS.", stack: "Node.js · Stripe · Redis" }
         },
         cta: {
@@ -2273,7 +2273,7 @@ const resources = {
               ]
             }
           },
-          project2: { title: "FlowBoard Analytics", desc: "Echtzeit-Business-Intelligence-Dashboard mit benutzerdefiniertem KPI-Tracking und Teamzusammenarbeit.", stack: "React · D3.js · Supabase" },
+          project2: { title: "Reseva AI", desc: "Echtzeit-Business-Intelligence-Dashboard mit benutzerdefiniertem KPI-Tracking und Teamzusammenarbeit.", stack: "React · D3.js · Supabase" },
           project3: { title: "AutoScale Commerce", desc: "Full-Stack-E-Commerce-SaaS mit Bestandsautomatisierung, Multi-Vendor-Unterstützung und KI-Empfehlungen.", stack: "Node.js · Stripe · Redis" }
         },
         cta: {
