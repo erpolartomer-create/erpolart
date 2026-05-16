@@ -250,7 +250,13 @@ const ChatBot = () => {
       if (response.data?.muted) {
         // Bot susturulmuş, admin canlı devrede
       } else if (response.data?.text) {
-        addMessage({ role: 'assistant', content: response.data.text });
+        // Polling zaten bu mesajı DB'den çekip eklemiş olabilir — tekrar ekleme
+        const currentMessages = useChatStore.getState().messages;
+        const lastMsg = currentMessages[currentMessages.length - 1];
+        const alreadyAdded = lastMsg?.role === 'assistant' && lastMsg?.content === response.data.text;
+        if (!alreadyAdded) {
+          addMessage({ role: 'assistant', content: response.data.text });
+        }
       }
     } catch (err) {
       console.error("[ChatBot] Send error:", err);
