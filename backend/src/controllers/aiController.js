@@ -61,7 +61,7 @@ const fetchTemplatesForAI = async () => {
 
   if (!data || data.length === 0) return 'Henüz aktif şablon bulunmuyor.';
 
-  const tierNames = { 1: 'Pro', 2: 'Premium', 3: 'Platinum' };
+  const tierNames = { 1: 'Corporate', 2: 'Pro', 3: 'Premium', 4: 'Platinum' };
 
   const formatted = data.map((t) => {
     const sold = t.is_sold 
