@@ -206,7 +206,7 @@ export const chatWithAI = async (req, res) => {
       contents: formattedContents,
       config: {
         systemInstruction: enrichedSystemPrompt,
-        maxOutputTokens: 1000,
+        maxOutputTokens: 1500,
         temperature: 0.7,
       }
     });
