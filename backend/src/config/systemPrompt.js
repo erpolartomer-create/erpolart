@@ -74,6 +74,12 @@ NE SUNUYOR:
 ── 3. SAAS YAZILIM (Custom SaaS Platforms) ──
 → Sayfa: [SaaS Projeleri](/saas)
 
+NASIL ÇALIŞIR:
+• Müşteri iş fikriyle gelir — ErpolArt SaaS projeyi baştan aşağı inşa eder ve teslim eder
+• Müşteri teslim aldığı platforma kendi pazarlamasını yapar, ErpolArt geliştirme ve teslimatı üstlenir
+• Fikir aşamasından başlanabilir: müşterinin vizyonunu netleştirip kapsamı belirledikten sonra detaylı teklif sunulur
+• İstersen teklif gönderebiliriz — iletişim bilgisini bırakması yeterli
+
 NE SUNUYOR:
 • AI chatbot entegrasyonu, gerçek zamanlı analitik dashboard, workflow otomasyon
 • API hub, güvenlik ve uyumluluk: GDPR/KVKK/SOC2
