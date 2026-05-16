@@ -517,7 +517,7 @@ const resources = {
         taxCalc: "Calculated at next step",
         total: "Total Due",
         perks: {
-          codes: "Full Source Code & Figma Files",
+          codes: "Full Source Code Delivery",
           rights: "Lifetime Non-Exclusive Rights",
           download: "Instant Download Access"
         },
@@ -1532,7 +1532,7 @@ const resources = {
         taxCalc: "Bir sonraki adımda hesaplanır",
         total: "Toplam Tutar",
         perks: {
-          codes: "Tam Kaynak Kodu ve Figma Dosyaları",
+          codes: "Tam Kaynak Kodu Teslimi",
           rights: "Ömür Boyu Münhasır Olmayan Haklar",
           download: "Anında İndirme Erişimi"
         },
@@ -2823,7 +2823,7 @@ const resources = {
         taxCalc: "Wird im nächsten Schritt berechnet",
         total: "Gesamtbetrag",
         perks: {
-          codes: "Vollständiger Quellcode & Figma-Dateien",
+          codes: "Vollständiger Quellcode-Lieferung",
           rights: "Lebenslange nicht-exklusive Rechte",
           download: "Sofortiger Download-Zugriff"
         },
