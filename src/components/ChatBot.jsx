@@ -53,6 +53,7 @@ const ChatBot = () => {
   const [error, setError] = useState(null);
   const [sessionId, setSessionId] = useState('');
   const [historyLoaded, setHistoryLoaded] = useState(false);
+  const isBotMutedRef = useRef(false);
 
   // Admin panelinde chatbot'u gizle
   if (location.pathname.startsWith('/admin')) return null;
@@ -114,7 +115,7 @@ const ChatBot = () => {
     });
 
     socketRef.current.on('bot_status_update', ({ isMuted }) => {
-      // Gerekirse UI feedback gösterilebilir
+      isBotMutedRef.current = isMuted;
     });
 
     return () => {
@@ -218,7 +219,7 @@ const ChatBot = () => {
     setInput('');
     setError(null);
     addMessage({ role: 'user', content: userMessage });
-    setIsTyping(true);
+    if (!isBotMutedRef.current) setIsTyping(true);
 
     try {
       const history = [];
