@@ -26,7 +26,7 @@ const AdminChatDashboard = () => {
 
   // ── 1. Tek Seferlik Socket Bağlantısı ──
   useEffect(() => {
-    const socketUrl = window.location.hostname === 'localhost' ? 'http://localhost:5001' : window.location.origin;
+    const socketUrl = window.location.hostname === 'localhost' ? 'http://localhost:5001' : import.meta.env.VITE_API_URL;
     socketRef.current = io(socketUrl);
 
     supabaseAdmin.auth.getSession().then(({ data: { session } }) => {
