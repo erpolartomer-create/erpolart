@@ -62,12 +62,13 @@ const fetchTemplatesForAI = async () => {
   if (!data || data.length === 0) return 'Henüz aktif şablon bulunmuyor.';
 
   const tierNames = { 1: 'Corporate', 2: 'Pro', 3: 'Premium', 4: 'Platinum' };
+  const monthlyFees = { Corporate: 29, Pro: 49, Premium: 150, Platinum: 250 };
 
   const formatted = data.map((t) => {
-    const sold = t.is_sold 
-      ? 'SATILDI — Bu mimari artık satışta değil.' 
+    const sold = t.is_sold
+      ? 'SATILDI — Bu mimari artık satışta değil.'
       : 'MEVCUT — Tek seferlik satılır, satın alındığında katalogdan kalkar.';
-    
+
     let pitch = '';
     if (typeof t.short_pitch === 'object' && t.short_pitch !== null) {
       pitch = t.short_pitch.tr || t.short_pitch.en || '';
@@ -75,11 +76,15 @@ const fetchTemplatesForAI = async () => {
       pitch = t.short_pitch || '';
     }
 
+    const tierName = tierNames[t.tier] || t.tier;
+    const monthlyFee = monthlyFees[tierName] ?? 'N/A';
+
     return `
 --- ${t.name} ---
 Kategori: ${t.category}
-Fiyat: ${t.price}
-Seviye: ${tierNames[t.tier] || t.tier}
+Fiyat: $${t.price}
+Seviye: ${tierName}
+Aylık Sistem Yönetimi: $${monthlyFee}/ay
 Durum: ${sold}
 Tanıtım: ${pitch}
 Detay Sayfası: /templates/${t.id}
