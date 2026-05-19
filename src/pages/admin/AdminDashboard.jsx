@@ -14,7 +14,10 @@ import {
   Bell,
   Volume2,
   VolumeX,
-  X as CloseIcon
+  X as CloseIcon,
+  BarChart2,
+  Search,
+  Tag
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabaseAdmin } from '../../lib/supabaseAdmin';
@@ -264,6 +267,50 @@ const AdminDashboard = () => {
               </div>
               <ChevronRight size={16} className="text-gray-700 group-hover:text-violet" />
             </Link>
+
+            <div className="border-t border-white/5 pt-6">
+              <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-4">Google Tools</p>
+              <div className="space-y-3">
+                <a href="https://analytics.google.com" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-orange-500/50 transition-all group">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-400 group-hover:scale-110 transition-transform">
+                      <BarChart2 size={20} />
+                    </div>
+                    <div>
+                      <p className="text-xs font-black text-pure-white tracking-tight uppercase">Analytics</p>
+                      <p className="text-[9px] text-gray-500 font-bold uppercase">GA4 Dashboard</p>
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="text-gray-700 group-hover:text-orange-400" />
+                </a>
+
+                <a href="https://search.google.com/search-console" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-cyan/50 transition-all group">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-cyan/10 flex items-center justify-center text-cyan group-hover:scale-110 transition-transform">
+                      <Search size={20} />
+                    </div>
+                    <div>
+                      <p className="text-xs font-black text-pure-white tracking-tight uppercase">Search Console</p>
+                      <p className="text-[9px] text-gray-500 font-bold uppercase">SEO & Indexing</p>
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="text-gray-700 group-hover:text-cyan" />
+                </a>
+
+                <a href="https://tagmanager.google.com" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-green-500/50 transition-all group">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-400 group-hover:scale-110 transition-transform">
+                      <Tag size={20} />
+                    </div>
+                    <div>
+                      <p className="text-xs font-black text-pure-white tracking-tight uppercase">Tag Manager</p>
+                      <p className="text-[9px] text-gray-500 font-bold uppercase">GTM Container</p>
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="text-gray-700 group-hover:text-green-400" />
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
