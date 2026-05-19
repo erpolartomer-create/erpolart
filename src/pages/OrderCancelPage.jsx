@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import {
@@ -15,6 +16,10 @@ const OrderCancelPage = () => {
 
   return (
     <div className="min-h-screen bg-surface text-white dark:text-white pt-32 pb-20 px-6 relative overflow-hidden font-outfit transition-colors duration-500">
+      <Helmet>
+        <title>Sipariş İptal - ErpolArt</title>
+        <meta name="robots" content="noindex, follow" />
+      </Helmet>
       {/* Background Orbs */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-500/5 dark:bg-red-900/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-orange-500/5 dark:bg-orange-900/10 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2" />

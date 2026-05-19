@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   MessageSquare, User, Bot, Send, Shield, 
@@ -195,6 +196,10 @@ const AdminChatDashboard = () => {
 
   return (
     <div className="h-[calc(100vh-160px)] flex gap-6">
+      <Helmet>
+        <title>Admin Chat - ErpolArt</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       {/* Sidebar */}
       <div className="w-80 flex flex-col bg-[#0f0f18] border border-white/5 rounded-2xl overflow-hidden">
         <div className="p-4 border-b border-white/5">

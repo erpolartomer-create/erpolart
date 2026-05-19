@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, X, AlertCircle, Zap, Globe, Server, Loader2, Camera, FileText, Users, Hexagon } from 'lucide-react';
 import { supabaseAdmin } from '../../lib/supabaseAdmin';
@@ -146,6 +147,10 @@ const AdminOrders = () => {
 
   return (
     <div className="font-outfit min-h-screen bg-deep-black text-white p-4 md:p-8">
+      <Helmet>
+        <title>Admin Siparişler - ErpolArt</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="mb-12">
         <h1 className="text-4xl md:text-5xl font-black text-pure-white tracking-tighter mb-2 italic uppercase">
           Global <span className="text-indigo">Transactions</span>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Mail, Clock, User, FileText, Check, Copy, Loader2, ArrowLeft, Send } from 'lucide-react';
 import { supabaseAdmin } from '../../lib/supabaseAdmin';
 import { toast } from '../../components/Toast';
@@ -128,6 +129,10 @@ const AdminMessages = () => {
 
   return (
     <div className="flex gap-6 h-[calc(100vh-164px)] min-h-0">
+      <Helmet>
+        <title>Admin Mesajlar - ErpolArt</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
 
       {/* ── Left: Message List ── */}
       <div className={`flex flex-col min-w-0 transition-all duration-300 ${selectedMessage ? 'w-80 shrink-0' : 'flex-1'}`}>

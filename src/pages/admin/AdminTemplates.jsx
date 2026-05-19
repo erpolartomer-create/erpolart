@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Pencil, Trash2, X, Upload, Trash, Check, Sparkles } from 'lucide-react';
 import API from '../../services/api';
@@ -378,6 +379,10 @@ const AdminTemplates = () => {
 
   return (
     <div className="pb-10">
+      <Helmet>
+        <title>Admin Şablonlar - ErpolArt</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="flex items-center justify-between mb-8">
         <div className="space-y-1">
           <h1 className="text-4xl font-black text-pure-white italic tracking-tighter">Digital Atelier</h1>

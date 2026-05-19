@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { ShoppingBag, Edit3, Settings, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -79,6 +80,10 @@ const MyPurchases = () => {
 
   return (
     <div className="min-h-screen bg-deep-black pt-32 pb-20">
+      <Helmet>
+        <title>Satın Almalarım - ErpolArt</title>
+        <meta name="robots" content="noindex, follow" />
+      </Helmet>
       <div className="container mx-auto px-6 md:px-12 max-w-6xl">
         <ScrollReveal direction="up">
           <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">

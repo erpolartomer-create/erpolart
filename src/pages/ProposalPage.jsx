@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
@@ -120,6 +121,10 @@ const ProposalPage = () => {
 
   return (
     <div className="min-h-screen bg-[#0b0c10] text-white pb-24 selection:bg-indigo selection:text-white">
+      <Helmet>
+        <title>Teklif - ErpolArt</title>
+        <meta name="robots" content="noindex, follow" />
+      </Helmet>
 
       {/* Ambient glows */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">

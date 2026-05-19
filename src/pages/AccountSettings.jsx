@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { User, Mail, Lock, Save, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -79,6 +80,10 @@ const AccountSettings = () => {
 
   return (
     <div className="min-h-screen bg-deep-black pt-32 pb-20">
+      <Helmet>
+        <title>Hesap Ayarları - ErpolArt</title>
+        <meta name="robots" content="noindex, follow" />
+      </Helmet>
       <div className="container mx-auto px-6 md:px-12 max-w-2xl">
         <ScrollReveal direction="up">
           <div className="mb-12">

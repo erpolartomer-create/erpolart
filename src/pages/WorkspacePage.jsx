@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -113,6 +114,10 @@ const WorkspacePage = () => {
 
   return (
     <div className="min-h-screen bg-[#060609] text-white flex flex-col lg:flex-row overflow-hidden">
+      <Helmet>
+        <title>Workspace - ErpolArt</title>
+        <meta name="robots" content="noindex, follow" />
+      </Helmet>
 
       {/* 1. Side Panel - Editor Controls */}
       <div className="w-full lg:w-[400px] border-r border-white/5 bg-[#0a0a12]/50 backdrop-blur-3xl flex flex-col h-screen relative z-30">

@@ -1,8 +1,13 @@
+import { Helmet } from 'react-helmet-async';
 import { Shield } from 'lucide-react';
 
 const AdminSettings = () => {
   return (
     <div>
+      <Helmet>
+        <title>Admin Ayarlar - ErpolArt</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="mb-10">
         <h1 className="text-3xl font-black text-pure-white tracking-tight mb-2">Settings</h1>
         <p className="text-gray-500 text-sm font-medium">Sistem ayarlarını buradan yönetebilirsiniz.</p>

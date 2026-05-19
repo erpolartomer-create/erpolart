@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Settings, Layers, ArrowRight, Clock, User, Hexagon } from 'lucide-react';
@@ -66,6 +67,10 @@ const CustomerDashboard = () => {
 
   return (
     <div className="min-h-screen bg-deep-black pt-32 pb-20 relative overflow-hidden font-outfit dark">
+      <Helmet>
+        <title>Dashboard - ErpolArt</title>
+        <meta name="robots" content="noindex, follow" />
+      </Helmet>
 
 
       <div className="fixed inset-0 pointer-events-none">

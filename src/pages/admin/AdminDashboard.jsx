@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { io } from 'socket.io-client';
 import {
@@ -100,6 +101,10 @@ const AdminDashboard = () => {
 
   return (
     <div className="font-outfit">
+      <Helmet>
+        <title>Admin Panel - ErpolArt</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="mb-10 relative">
         <h1 className="text-4xl font-black text-pure-white tracking-tight mb-2">Command <span className="text-indigo italic">Center</span></h1>
         <p className="text-gray-500 text-sm font-medium">Digital Atelier operational status and high-level summaries.</p>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { ShieldCheck, ArrowRight, Bot, Lock } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
@@ -38,6 +39,10 @@ const AdminLoginPage = () => {
 
   return (
     <section className="min-h-screen bg-deep-black flex items-center justify-center relative overflow-hidden px-6 transition-colors duration-500 font-sans">
+      <Helmet>
+        <title>Admin Giriş - ErpolArt</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       {/* Background Decor */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-indigo/10 blur-[150px] rounded-full" />

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, ArrowRight, AlertCircle, CheckCircle2, Sparkles, Mail } from 'lucide-react';
@@ -114,6 +115,10 @@ const AuthPage = () => {
 
   return (
     <div className="min-h-screen bg-deep-black text-white flex relative overflow-hidden transition-colors duration-500">
+      <Helmet>
+        <title>Giriş - ErpolArt</title>
+        <meta name="robots" content="noindex, follow" />
+      </Helmet>
 
       {/* Left - Branding Panel */}
       <div className="hidden lg:flex lg:w-[45%] relative bg-surface flex-col justify-between p-12 overflow-hidden border-r border-border-adaptive transition-colors duration-500 font-sans">

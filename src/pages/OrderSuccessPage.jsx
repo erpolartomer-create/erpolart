@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from '../components/Toast';
@@ -232,6 +233,10 @@ const OrderSuccessPage = () => {
 
   return (
     <div className="bg-deep-black min-h-screen pt-40 pb-24 relative overflow-hidden selection:bg-indigo selection:text-white transition-colors duration-500">
+      <Helmet>
+        <title>Sipariş Başarılı - ErpolArt</title>
+        <meta name="robots" content="noindex, follow" />
+      </Helmet>
       {/* SaaS-Style Background System */}
       <div className="absolute inset-0 bg-[linear-gradient(var(--grid-color)_1px,transparent_1px),linear-gradient(90deg,var(--grid-color)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none opacity-50" />
 

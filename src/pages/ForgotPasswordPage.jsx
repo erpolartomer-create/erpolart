@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, ArrowRight, AlertCircle, CheckCircle2, ShieldCheck, Sparkles } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
@@ -32,6 +33,10 @@ const ForgotPasswordPage = () => {
 
   return (
     <div className="min-h-screen bg-deep-black flex items-center justify-center p-6 relative overflow-hidden transition-colors duration-500 font-sans">
+      <Helmet>
+        <title>Şifremi Unuttum - ErpolArt</title>
+        <meta name="robots" content="noindex, follow" />
+      </Helmet>
       {/* Background Decor */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo/5 blur-[150px] rounded-full" />
