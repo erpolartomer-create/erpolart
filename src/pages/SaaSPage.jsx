@@ -2,14 +2,13 @@ import { Helmet } from 'react-helmet-async';
 import SaaSHero from '../components/saas/SaaSHero';
 import SaaSFeatures from '../components/saas/SaaSFeatures';
 import SaaSShowcase from '../components/saas/SaaSShowcase';
-import SaaSContactSection from '../components/saas/SaaSContactSection';
 import SaaSTechStack from '../components/saas/SaaSTechStack';
-import SaaSScope from '../components/saas/SaaSScope';
+import SaaSPricing from '../components/saas/SaaSPricing';
 import SaaSFAQ from '../components/saas/SaaSFAQ';
 
 const SaaSPage = () => {
   return (
-    <div className="pt-24 pb-24 min-h-screen bg-deep-black relative overflow-hidden">
+    <div className="pt-24 pb-24 min-h-screen bg-deep-black relative" style={{ overflowX: 'clip' }}>
       <Helmet>
         <title>SaaS Çözümleri - ErpolArt</title>
         <meta name="description" content="İşletmeniz için ölçeklenebilir, güvenli ve modern SaaS çözümleri." />
@@ -48,37 +47,30 @@ const SaaSPage = () => {
         })}</script>
       </Helmet>
       
-      {/* SaaS-Style Background System (Full Page) */}
-      <div className="absolute inset-0 bg-[linear-gradient(var(--grid-color)_1px,transparent_1px),linear-gradient(90deg,var(--grid-color)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
-      
-      {/* Premium Background Ambient Glows */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        {/* Top Right - Cyan Glow */}
+      {/* Decorative backgrounds — isolated overflow so sticky children work */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 bg-[linear-gradient(var(--grid-color)_1px,transparent_1px),linear-gradient(90deg,var(--grid-color)_1px,transparent_1px)] bg-[size:40px_40px]" />
         <div className="absolute -top-[10%] -right-[10%] w-[50%] h-[50%] bg-cyan/10 blur-[120px] rounded-full animate-pulse-slow" />
-        
-        {/* Middle Left - Violet Glow */}
         <div className="absolute top-[30%] -left-[10%] w-[40%] h-[40%] bg-violet/10 blur-[100px] rounded-full animate-float-slow" />
-        
-        {/* Bottom Right - Amber Glow */}
         <div className="absolute bottom-[10%] -right-[5%] w-[35%] h-[35%] bg-amber-500/5 blur-[120px] rounded-full" />
-        
-        {/* Subtle Center Mesh */}
         <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.03] mix-blend-overlay" />
       </div>
 
       <SaaSHero />
+
       <SaaSTechStack />
+
+      <div className="container mx-auto px-6 lg:px-12 relative z-10">
+        <SaaSPricing />
+        <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      </div>
 
       <div className="container mx-auto px-6 lg:px-12 relative z-10">
         <SaaSFeatures id="saas-features" />
         <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         <SaaSShowcase />
         <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-        <SaaSScope />
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         <SaaSFAQ />
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-        <SaaSContactSection />
       </div>
     </div>
   );

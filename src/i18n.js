@@ -421,6 +421,108 @@ const resources = {
           title: "Let's Build Something.",
           subtitle: "Tell us about your project. We'll get back to you with a tailored proposal within 24 hours."
         },
+        pricing: {
+          badge: "TRANSPARENT PRICING",
+          title: "Build Your",
+          titleAccent: "Perfect Website.",
+          subtitle: "Select your page count and add only what you need. Price updates instantly.",
+          pageLabel: "Number of Pages",
+          pageHint: "Tier upgrades automatically as you add pages",
+          pages: "pages",
+          includedLabel: "Included in this tier",
+          extrasSection: "Add-on Services",
+          corporateDisabledNote: "3 services are disabled for One-Page sites",
+          maintTitle: "Monthly Care Plan",
+          maintSub: "Hosting, support & revisions included",
+          maintExpand: "What's included?",
+          maintInclude1: "Technical support",
+          maintInclude2: "1 revision per month",
+          maintInclude3: "Server & hosting included",
+          maintOff: "Not selected",
+          totalLabel: "One-time cost",
+          oneTime: "one-time payment",
+          perPage: "page",
+          baseLabel: "Base website",
+          extrasBreakdown: "Add-ons",
+          cta: "Buy Now",
+          ctaNote: "Secure checkout · 24h response guarantee",
+          enterpriseNote: "The best for your brand.",
+          langLabel: "lang",
+          perLang: "/lang",
+          corporate: {
+            tierName: "Corporate",
+            tagline: "One-page, powerful impact.",
+            features: [
+              "Custom one-page design",
+              "Mobile-first responsive",
+              "Basic SEO setup",
+              "Contact form integration",
+              "2–3 business day delivery",
+              "1 month post-launch support"
+            ]
+          },
+          pro: {
+            tierName: "Pro",
+            tagline: "For growing brands.",
+            features: [
+              "3–8 custom pages",
+              "Premium animated UI",
+              "CMS / content management",
+              "2 design revision rounds",
+              "Advanced SEO optimisation",
+              "3–7 business day delivery",
+              "3 months post-launch support"
+            ]
+          },
+          premium: {
+            tierName: "Premium",
+            tagline: "Full digital experience.",
+            features: [
+              "9–14 custom pages",
+              "Custom design system",
+              "3 design revision rounds",
+              "Full-stack integrations",
+              "Advanced analytics setup",
+              "7–14 business day delivery",
+              "6 months post-launch support"
+            ]
+          },
+          platinum: {
+            tierName: "Platinum",
+            tagline: "Full custom architecture.",
+            features: [
+              "15–20 custom pages",
+              "Fully bespoke design system",
+              "Dedicated project manager",
+              "Unlimited revision rounds",
+              "Multi-platform integrations",
+              "14–29 business day delivery",
+              "12 months post-launch support"
+            ]
+          },
+          extras: {
+            ecommerce:   "E-commerce / Online Store",
+            blog:        "Blog / CMS System",
+            multilang:   "Multi-language Support",
+            admin:       "Custom Admin Panel",
+            reservation: "Reservation & Booking Module",
+            reviews:     "Customer Reviews Module",
+            livechat:    "Live Chat Integration",
+            seo:         "SEO Package",
+            branding:    "Logo & Brand Identity"
+          },
+          extrasDesc: {
+            ecommerce:   "Full online store with product catalogue, cart, payment gateway, and order management.",
+            blog:        "Content management system — write, schedule, and publish articles with SEO-friendly URLs.",
+            multilang:   "Full site translation infrastructure with language switcher. Price is per extra language.",
+            admin:       "Secure admin panel to manage your site content, contacts, and data without any coding.",
+            reservation: "Online appointment booking system with calendar, availability management, and email notifications.",
+            reviews:     "Customer review section with star ratings and moderation panel to build social proof.",
+            livechat:    "Real-time visitor chat widget connected to your preferred platform (Tawk.to, Crisp, etc.).",
+            seo:         "Technical SEO audit, meta optimisation, sitemap, schema markup, and Core Web Vitals tuning.",
+            branding:    "Custom logo design, colour palette, typography system, and brand guidelines document."
+          }
+        },
         manifesto: {
           badge: "DESIGN PHILOSOPHY",
           title: "Our Principles.",
@@ -758,6 +860,56 @@ const resources = {
             { q: "Is post-launch support included?", a: "Launch support is always included. For ongoing maintenance, we offer monthly retainer plans with priority response times." },
             { q: "How do we communicate during the project?", a: "Via WhatsApp or our website contact form for instant messaging, weekly progress reports, and video calls when needed. Full transparency throughout." }
           ]
+        },
+        pricing: {
+          badge: "PRICING",
+          title: "Build Your",
+          titleAccent: "SaaS Product.",
+          subtitle: "Choose your project tier and add the features you need. Transparent, fixed pricing — no surprises.",
+          extrasSection: "Add-on Features",
+          totalLabel: "Project Total",
+          oneTime: "One-time project fee",
+          baseLabel: "Base package",
+          extrasBreakdown: "Add-ons",
+          cta: "Buy Now",
+          ctaNote: "Secure checkout · 24h response guarantee",
+          enterpriseNote: "The best for your brand.",
+          tiers: {
+            starter: { tierName: "Starter", tagline: "SaaS MVP", features: ["Auth & user management", "3 core feature modules", "Basic admin panel", "Mobile responsive"] },
+            pro: { tierName: "Pro", tagline: "Full-Featured SaaS", features: ["Everything in Starter", "Stripe payment integration", "REST API & webhooks", "6 core modules", "Role-based access", "AI/LLM ready"] },
+            scale: { tierName: "Scale", tagline: "Advanced SaaS", features: ["Everything in Pro", "Multi-tenant architecture", "Advanced analytics", "10+ modules", "Custom integrations", "Dedicated CI/CD"] },
+            enterprise: { tierName: "Enterprise", tagline: "Custom Platform", features: ["Custom architecture", "White-label option", "SSO & compliance", "Unlimited modules", "On-premise option", "Priority support"] }
+          },
+          extras: {
+            payments: "Payment Integration",
+            ai: "AI / LLM Features",
+            mobile: "Mobile PWA",
+            multilang: "Multi-language",
+            whitelabel: "White-label Branding",
+            crm: "CRM Integration",
+            api: "API & Webhooks",
+            email: "Email System",
+            analytics: "Advanced Analytics"
+          },
+          extrasDesc: {
+            payments: "Stripe, PayPal, or custom gateway with billing management and invoices.",
+            ai: "GPT-4, Claude, or custom LLM integration with context and memory management.",
+            mobile: "Progressive Web App with offline support and native-feel mobile UI.",
+            multilang: "Full multi-language support with dynamic content and locale management.",
+            whitelabel: "Fully branded interface with custom domain and white-label packaging.",
+            crm: "HubSpot, Salesforce, or custom CRM with two-way data sync.",
+            api: "RESTful API with auto-generated docs, webhooks, and rate limiting.",
+            email: "Transactional email system with templates, queuing, and open tracking.",
+            analytics: "Custom analytics dashboard with real-time metrics and event tracking."
+          },
+          includedSection: "INCLUDED IN THIS TIER",
+          perMonth: "/mo",
+          showLess: "− show less",
+          maintenance: {
+            title: "Monthly Maintenance Package",
+            desc: "Updates, monitoring, and priority support — at a fixed monthly rate",
+            rowLabel: "Monthly Maintenance"
+          }
         }
       },
       automationsPage: {
@@ -850,7 +1002,95 @@ const resources = {
           ]
         },
         cta: { badge: "QUICK QUOTE", title: "Ready to automate your operations?", subtitle: "Let's build the intelligent systems that handle the repetitive work while you focus on growth.", button: "START YOUR PROJECT" },
-        techStack: { badge: "AI & AUTOMATION STACK" }
+        techStack: { badge: "AI & AUTOMATION STACK" },
+        pricing: {
+          badge: "PRICING",
+          title: "Build Your",
+          titleAccent: "Automation Stack.",
+          subtitle: "Select your automation tier and add the integrations you need. Transparent, fixed pricing.",
+          extrasSection: "Add-on Integrations",
+          totalLabel: "Project Total",
+          oneTime: "One-time project fee",
+          baseLabel: "Base package",
+          extrasBreakdown: "Add-ons",
+          cta: "Buy Now",
+          ctaNote: "Secure checkout · 24h response guarantee",
+          enterpriseNote: "The best for your brand.",
+          tiers: {
+            starter: { tierName: "Starter", tagline: "2–3 Automations", features: ["2–3 workflow automations", "Basic integrations (2–3 tools)", "Email & form triggers", "1-month post-launch support"] },
+            growth: { tierName: "Growth", tagline: "5–8 Automations", features: ["Everything in Starter", "5–8 workflow automations", "AI/LLM integration", "Monitoring dashboard", "Priority support & SLA"] },
+            scale: { tierName: "Scale", tagline: "10–15 Automations", features: ["Everything in Growth", "10–15 workflows & agents", "Custom n8n nodes", "Data pipeline setup", "Advanced analytics"] },
+            enterprise: { tierName: "Enterprise", tagline: "Unlimited Automations", features: ["Unlimited workflows", "Custom LLM deployment", "On-premise option", "SOC2 & GDPR compliant", "Dedicated engineer", "24/7 monitoring"] }
+          },
+          extras: {
+            ai: "AI / LLM Integration",
+            monitoring: "Monitoring Dashboard",
+            crm: "CRM Integration",
+            pipeline: "Data Pipeline",
+            reports: "Scheduled Reports",
+            slack: "Slack / Teams Alerts",
+            webhooks: "Webhook Management",
+            nlp: "NLP & Doc Processing",
+            training: "Training & Docs"
+          },
+          extrasDesc: {
+            ai: "OpenAI, Anthropic Claude, or custom LLM APIs with context and memory management.",
+            monitoring: "Real-time monitoring with uptime alerts and workflow health metrics.",
+            crm: "HubSpot, Salesforce, or custom CRM integration with bidirectional sync.",
+            pipeline: "Custom ETL pipeline for transforming and routing data between systems.",
+            reports: "Automated reports delivered via email, Slack, or your dashboard on schedule.",
+            slack: "Real-time Slack or Microsoft Teams notifications for workflow events.",
+            webhooks: "Advanced webhook management with retry logic, logging, and payload transformation.",
+            nlp: "Natural language processing for document parsing, classification, and extraction.",
+            training: "Full documentation, team training sessions, and handover materials."
+          },
+          includedSection: "INCLUDED IN THIS TIER",
+          perMonth: "/mo",
+          showLess: "− show less",
+          management: {
+            title: "Monthly Management Package",
+            desc: "Fixed monthly support for uninterrupted operation of your automation systems",
+            rowLabel: "Monthly Management",
+            services: [
+              "Monthly audit of automation flows",
+              "Error detection & automatic fixes",
+              "API connection updates",
+              "New data source integrations",
+              "Monthly performance & savings report",
+              "Priority support (24h response)"
+            ]
+          }
+        }
+      },
+      orderPage: {
+        title: "Complete Your",
+        titleAccent: "Order.",
+        subtitle: "Fill in your details and we'll confirm your order within 24 hours.",
+        form: {
+          name: "Full Name", namePlaceholder: "John Doe",
+          email: "Email Address", emailPlaceholder: "john@company.com",
+          phone: "Phone Number", phonePlaceholder: "+1 555 000 0000",
+          company: "Company (optional)", companyPlaceholder: "Acme Corp",
+          notes: "Project Notes", notesPlaceholder: "Tell us about your project, goals, and any special requirements...",
+          submit: "Confirm Order", submitting: "Processing...",
+          nameRequired: "Full name is required", emailRequired: "Valid email is required", phoneRequired: "Phone number is required"
+        },
+        summary: {
+          title: "Order Summary",
+          source: { projects: "Custom Website", saas: "SaaS Project", automations: "AI Automations" },
+          tier: "Selected Tier", extras: "Add-ons", basePrice: "Base Price",
+          extrasTotal: "Add-ons Total", maintenance: "Monthly Maintenance",
+          total: "Total", oneTime: "One-time fee", noExtras: "No add-ons selected"
+        },
+        success: {
+          badge: "ORDER CONFIRMED",
+          title: "We'll Be",
+          titleAccent: "In Touch.",
+          subtitle: "Your order is received. We'll send a payment link to your email within 24 hours.",
+          cta: "Back to Home"
+        },
+        noData: "No order data. Redirecting...",
+        ctaNote: "Secure checkout · 24h response guarantee"
       },
       contact: {
         title: "Let's Architect Your Vision",
@@ -1436,6 +1676,108 @@ const resources = {
           title: "Birlikte İnşa Edelim.",
           subtitle: "Projenizi bize anlatın. Size özel bir teklif hazırlayıp 24 saat içinde geri döneceğiz."
         },
+        pricing: {
+          badge: "ŞEFFAF FİYATLANDIRMA",
+          title: "Sitenizi",
+          titleAccent: "Tasarlayın.",
+          subtitle: "Sayfa sayısını seç, ihtiyacın olanı ekle. Fiyat anında güncellenir.",
+          pageLabel: "Sayfa Sayısı",
+          pageHint: "Sayfa sayısı arttıkça tier otomatik yükseltilir",
+          pages: "sayfa",
+          includedLabel: "Bu tier'a dahil olanlar",
+          extrasSection: "Ekstra Hizmetler",
+          corporateDisabledNote: "3 hizmet One-Page sitelerle uyumsuz",
+          maintTitle: "Aylık Bakım Planı",
+          maintSub: "Hosting, teknik destek ve revizyon dahil",
+          maintExpand: "Neler kapsanıyor?",
+          maintInclude1: "Teknik destek",
+          maintInclude2: "Aylık 1 revizyon hakkı",
+          maintInclude3: "Sunucu / hosting dahil",
+          maintOff: "Seçilmedi",
+          totalLabel: "Tek seferlik ücret",
+          oneTime: "tek seferlik ödeme",
+          perPage: "sayfa",
+          baseLabel: "Temel web sitesi",
+          extrasBreakdown: "Ekstralar",
+          cta: "Satın Al",
+          ctaNote: "Güvenli ödeme · 24 saat yanıt garantisi",
+          enterpriseNote: "Markanız için en iyisi.",
+          langLabel: "dil",
+          perLang: "/dil",
+          corporate: {
+            tierName: "Corporate",
+            tagline: "Tek sayfa, güçlü etki.",
+            features: [
+              "Özel one-page tasarım",
+              "Mobil öncelikli responsive",
+              "Temel SEO kurulumu",
+              "İletişim formu entegrasyonu",
+              "2–3 iş günü teslim",
+              "1 ay yayın sonrası destek"
+            ]
+          },
+          pro: {
+            tierName: "Pro",
+            tagline: "Büyüyen markalar için.",
+            features: [
+              "3–8 özel sayfa",
+              "Premium animasyonlu arayüz",
+              "CMS / içerik yönetim sistemi",
+              "2 tasarım revizyon turu",
+              "Gelişmiş SEO optimizasyonu",
+              "3–7 iş günü teslim",
+              "3 ay yayın sonrası destek"
+            ]
+          },
+          premium: {
+            tierName: "Premium",
+            tagline: "Kapsamlı dijital deneyim.",
+            features: [
+              "9–14 özel sayfa",
+              "Özel tasarım sistemi",
+              "3 tasarım revizyon turu",
+              "Full-stack entegrasyonlar",
+              "Gelişmiş analitik kurulumu",
+              "7–14 iş günü teslim",
+              "6 ay yayın sonrası destek"
+            ]
+          },
+          platinum: {
+            tierName: "Platinum",
+            tagline: "Tam özel mimari.",
+            features: [
+              "15–20 özel sayfa",
+              "Tam özel tasarım sistemi",
+              "Özel proje yöneticisi",
+              "Sınırsız revizyon turu",
+              "Çok platformlu entegrasyonlar",
+              "14–29 iş günü teslim",
+              "12 ay yayın sonrası destek"
+            ]
+          },
+          extras: {
+            ecommerce:   "E-ticaret / Online Mağaza",
+            blog:        "Blog / CMS Sistemi",
+            multilang:   "Çoklu Dil Desteği",
+            admin:       "Özel Admin Paneli",
+            reservation: "Rezervasyon & Randevu Modülü",
+            reviews:     "Müşteri Yorumları Modülü",
+            livechat:    "Canlı Destek Entegrasyonu",
+            seo:         "SEO Paketi",
+            branding:    "Logo & Marka Kimliği"
+          },
+          extrasDesc: {
+            ecommerce:   "Ürün kataloğu, sepet, ödeme altyapısı ve sipariş yönetimi olan tam bir online mağaza.",
+            blog:        "İçerik yönetim sistemi — SEO dostu URL'lerle makale yaz, zamanla ve yayınla.",
+            multilang:   "Dil değiştirici ve tam site çeviri altyapısı. Fiyat, her ek dil için geçerlidir.",
+            admin:       "Kodlama gerektirmeden site içeriğini, müşterileri ve verileri yönetebileceğiniz güvenli admin paneli.",
+            reservation: "Takvim, müsaitlik yönetimi ve e-posta bildirimleriyle online randevu alma sistemi.",
+            reviews:     "Yıldız puanlamalı müşteri yorum bölümü ve sosyal kanıt oluşturmak için moderasyon paneli.",
+            livechat:    "Tercih ettiğiniz platforma bağlı gerçek zamanlı ziyaretçi sohbet widget'ı (Tawk.to, Crisp vb.).",
+            seo:         "Teknik SEO denetimi, meta optimizasyonu, site haritası, şema işaretlemesi ve Core Web Vitals ayarı.",
+            branding:    "Özel logo tasarımı, renk paleti, tipografi sistemi ve marka rehberi belgesi."
+          }
+        },
         manifesto: {
           badge: "TASARIM FELSEFESİ",
           title: "İlkelerimiz.",
@@ -1773,6 +2115,56 @@ const resources = {
             { q: "Lansman sonrası destek var mı?", a: "Lansman desteği her zaman dahildir. Süregelen bakım için aylık retainer planları sunuyoruz; öncelikli yanıt süreleriyle." },
             { q: "Proje sürecinde nasıl iletişim kuruyoruz?", a: "WhatsApp veya web sitemizdeki iletişim formu üzerinden anlık mesajlaşma, haftalık ilerleme raporları ve gerektiğinde video görüşmeleri ile tam şeffaflık sağlıyoruz." }
           ]
+        },
+        pricing: {
+          badge: "FİYATLANDIRMA",
+          title: "SaaS Ürününüzü",
+          titleAccent: "İnşa Edin.",
+          subtitle: "Proje tierınızı seçin ve ihtiyacınız olan özellikleri ekleyin. Şeffaf, sabit fiyatlandırma.",
+          extrasSection: "Ek Özellikler",
+          totalLabel: "Proje Toplamı",
+          oneTime: "Tek seferlik proje ücreti",
+          baseLabel: "Temel paket",
+          extrasBreakdown: "Ekstralar",
+          cta: "Satın Al",
+          ctaNote: "Güvenli ödeme · 24 saat cevap garantisi",
+          enterpriseNote: "Markanız için en iyisi.",
+          tiers: {
+            starter: { tierName: "Starter", tagline: "SaaS MVP", features: ["Auth ve kullanıcı yönetimi", "3 temel modül", "Basit admin paneli", "Mobil uyumlu"] },
+            pro: { tierName: "Pro", tagline: "Tam Özellikli SaaS", features: ["Starter'ın her şeyi", "Stripe ödeme entegrasyonu", "REST API ve webhook'lar", "6 temel modül", "Rol tabanlı erişim", "AI/LLM hazır"] },
+            scale: { tierName: "Scale", tagline: "İleri Seviye SaaS", features: ["Pro'nun her şeyi", "Multi-tenant mimari", "Gelişmiş analitik", "10+ modül", "Özel entegrasyonlar", "Özel CI/CD"] },
+            enterprise: { tierName: "Enterprise", tagline: "Özel Platform", features: ["Özel mimari", "White-label seçeneği", "SSO ve uyumluluk", "Sınırsız modül", "On-premise seçeneği", "Öncelikli destek"] }
+          },
+          extras: {
+            payments: "Ödeme Entegrasyonu",
+            ai: "AI / LLM Özellikleri",
+            mobile: "Mobil PWA",
+            multilang: "Çoklu Dil",
+            whitelabel: "White-label Marka",
+            crm: "CRM Entegrasyonu",
+            api: "API ve Webhook'lar",
+            email: "E-posta Sistemi",
+            analytics: "Gelişmiş Analitik"
+          },
+          extrasDesc: {
+            payments: "Stripe, PayPal veya özel ödeme altyapısı; faturalama yönetimi dahil.",
+            ai: "GPT-4, Claude veya özel LLM entegrasyonu; bağlam ve bellek yönetimi ile.",
+            mobile: "Çevrimdışı destek ve yerel hissiyatlı mobil UI ile Progressive Web App.",
+            multilang: "Dinamik içerik ve yerel ayar yönetimi ile tam çoklu dil desteği.",
+            whitelabel: "Özel alan adı ve white-label paketleme ile tam markalı arayüz.",
+            crm: "HubSpot, Salesforce veya özel CRM; çift yönlü veri senkronizasyonu ile.",
+            api: "Otomatik dokümantasyon, webhook'lar ve hız sınırlama ile RESTful API.",
+            email: "Şablonlar, kuyruk yönetimi ve açılma takibi ile işlemsel e-posta sistemi.",
+            analytics: "Gerçek zamanlı metrikler ve olay takibi ile özel analitik panosu."
+          },
+          includedSection: "BU TİERE DAHİL OLANLAR",
+          perMonth: "/ay",
+          showLess: "− daha az",
+          maintenance: {
+            title: "Aylık Bakım Paketi",
+            desc: "Güncelleme, izleme, öncelikli destek — aylık sabit ücretle",
+            rowLabel: "Aylık Bakım"
+          }
         }
       },
       automationsPage: {
@@ -1865,7 +2257,95 @@ const resources = {
           ]
         },
         cta: { badge: "HIZLI TEKLİF", title: "Operasyonlarınızı otomatikleştirmeye hazır mısınız?", subtitle: "Tekrarlayan işleri halleden ve sizi büyümeye odaklanmaya bırakan akıllı sistemleri birlikte inşa edelim.", button: "PROJEYİ BAŞLAT" },
-        techStack: { badge: "AI & OTOMASYON YIĞINI" }
+        techStack: { badge: "AI & OTOMASYON YIĞINI" },
+        pricing: {
+          badge: "FİYATLANDIRMA",
+          title: "Otomasyon",
+          titleAccent: "Altyapınızı Kurun.",
+          subtitle: "Otomasyon tierınızı seçin ve ihtiyacınız olan entegrasyonları ekleyin. Şeffaf, sabit fiyatlandırma.",
+          extrasSection: "Ek Entegrasyonlar",
+          totalLabel: "Proje Toplamı",
+          oneTime: "Tek seferlik proje ücreti",
+          baseLabel: "Temel paket",
+          extrasBreakdown: "Ekstralar",
+          cta: "Satın Al",
+          ctaNote: "Güvenli ödeme · 24 saat cevap garantisi",
+          enterpriseNote: "Markanız için en iyisi.",
+          tiers: {
+            starter: { tierName: "Starter", tagline: "2–3 Otomasyon", features: ["2–3 iş akışı otomasyonu", "Temel entegrasyonlar (2–3 araç)", "E-posta ve form tetikleyicileri", "1 aylık lansman sonrası destek"] },
+            growth: { tierName: "Growth", tagline: "5–8 Otomasyon", features: ["Starter'ın her şeyi", "5–8 iş akışı otomasyonu", "AI/LLM entegrasyonu", "İzleme panosu", "Öncelikli destek ve SLA"] },
+            scale: { tierName: "Scale", tagline: "10–15 Otomasyon", features: ["Growth'un her şeyi", "10–15 iş akışı ve ajan", "Özel n8n node'ları", "Veri pipeline kurulumu", "Gelişmiş analitik"] },
+            enterprise: { tierName: "Enterprise", tagline: "Sınırsız Otomasyon", features: ["Sınırsız iş akışı", "Özel LLM kurulumu", "On-premise seçeneği", "SOC2 ve GDPR uyumlu", "Özel mühendis", "7/24 izleme"] }
+          },
+          extras: {
+            ai: "AI / LLM Entegrasyonu",
+            monitoring: "İzleme Panosu",
+            crm: "CRM Entegrasyonu",
+            pipeline: "Veri Pipeline'ı",
+            reports: "Zamanlanmış Raporlar",
+            slack: "Slack / Teams Bildirimleri",
+            webhooks: "Webhook Yönetimi",
+            nlp: "NLP ve Belge İşleme",
+            training: "Eğitim ve Dokümantasyon"
+          },
+          extrasDesc: {
+            ai: "OpenAI, Anthropic Claude veya özel LLM API'leri; bağlam ve bellek yönetimi ile.",
+            monitoring: "İş akışı sağlık metrikleri ve uptime uyarıları ile gerçek zamanlı izleme.",
+            crm: "HubSpot, Salesforce veya özel CRM; çift yönlü senkronizasyon ile.",
+            pipeline: "Sistemler arası veri dönüştürme ve yönlendirme için özel ETL pipeline.",
+            reports: "Zamanlamaya göre e-posta, Slack veya pano üzerinden otomatik raporlar.",
+            slack: "İş akışı olayları için gerçek zamanlı Slack veya Microsoft Teams bildirimleri.",
+            webhooks: "Yeniden deneme mantığı, kayıt ve yük dönüşümü ile gelişmiş webhook yönetimi.",
+            nlp: "Belge ayrıştırma, sınıflandırma ve çıkarım için doğal dil işleme.",
+            training: "Tam dokümantasyon, ekip eğitim oturumları ve devir teslim materyalleri."
+          },
+          includedSection: "BU TİERE DAHİL OLANLAR",
+          perMonth: "/ay",
+          showLess: "− daha az",
+          management: {
+            title: "Aylık Yönetim Paketi",
+            desc: "Otomasyon sistemlerinizin kesintisiz çalışması için aylık sabit destek",
+            rowLabel: "Aylık Yönetim",
+            services: [
+              "Otomasyon akışlarının aylık denetimi",
+              "Hata tespiti ve otomatik düzeltme",
+              "API bağlantı güncellemeleri",
+              "Yeni veri kaynaklarının entegrasyonu",
+              "Aylık performans ve tasarruf raporu",
+              "Öncelikli destek (24 saat yanıt)"
+            ]
+          }
+        }
+      },
+      orderPage: {
+        title: "Siparişinizi",
+        titleAccent: "Tamamlayın.",
+        subtitle: "Bilgilerinizi doldurun, siparişinizi 24 saat içinde onaylıyoruz.",
+        form: {
+          name: "Ad Soyad", namePlaceholder: "Ahmet Yılmaz",
+          email: "E-posta Adresi", emailPlaceholder: "ahmet@sirket.com",
+          phone: "Telefon Numarası", phonePlaceholder: "+90 555 000 0000",
+          company: "Şirket (opsiyonel)", companyPlaceholder: "Şirket Adı",
+          notes: "Proje Notları", notesPlaceholder: "Projeniz, hedefleriniz ve özel gereksinimleriniz hakkında bilgi verin...",
+          submit: "Siparişi Onayla", submitting: "İşleniyor...",
+          nameRequired: "Ad soyad zorunludur", emailRequired: "Geçerli e-posta zorunludur", phoneRequired: "Telefon numarası zorunludur"
+        },
+        summary: {
+          title: "Sipariş Özeti",
+          source: { projects: "Özel Web Sitesi", saas: "SaaS Projesi", automations: "AI Otomasyonları" },
+          tier: "Seçilen Tier", extras: "Ekstralar", basePrice: "Temel Fiyat",
+          extrasTotal: "Ekstra Toplamı", maintenance: "Aylık Bakım",
+          total: "Toplam", oneTime: "Tek seferlik ücret", noExtras: "Ekstra seçilmedi"
+        },
+        success: {
+          badge: "SİPARİŞ ALINDI",
+          title: "Yakında",
+          titleAccent: "Dönüyoruz.",
+          subtitle: "Siparişiniz alındı. 24 saat içinde e-postanıza ödeme linki gönderiyoruz.",
+          cta: "Ana Sayfaya Dön"
+        },
+        noData: "Sipariş verisi bulunamadı. Yönlendiriliyor...",
+        ctaNote: "Güvenli ödeme · 24 saat cevap garantisi"
       },
       contact: {
         title: "Vizyonunuzu İnşa Edelim",
@@ -2356,6 +2836,56 @@ const resources = {
             { q: "Ist der Support nach dem Launch inbegriffen?", a: "Launch-Support ist immer inbegriffen. Für laufende Wartung bieten wir monatliche Retainer-Pläne mit Prioritätsreaktionszeiten an." },
             { q: "Wie kommunizieren wir während des Projekts?", a: "Über WhatsApp oder unser Website-Kontaktformular für sofortige Nachrichten, wöchentliche Fortschrittsberichte und Videoanrufe nach Bedarf. Volle Transparenz von Anfang bis Ende." }
           ]
+        },
+        pricing: {
+          badge: "PREISE",
+          title: "Ihr SaaS-Produkt",
+          titleAccent: "Gestalten.",
+          subtitle: "Wählen Sie Ihr Projekttier und fügen Sie die benötigten Funktionen hinzu. Transparente Festpreise.",
+          extrasSection: "Zusatzfunktionen",
+          totalLabel: "Projektgesamtkosten",
+          oneTime: "Einmalige Projektgebühr",
+          baseLabel: "Basispaket",
+          extrasBreakdown: "Extras",
+          cta: "Jetzt kaufen",
+          ctaNote: "Sicherer Checkout · 24h Antwortgarantie",
+          enterpriseNote: "Das Beste für Ihre Marke.",
+          tiers: {
+            starter: { tierName: "Starter", tagline: "SaaS MVP", features: ["Auth & Nutzerverwaltung", "3 Kernfunktionsmodule", "Einfaches Admin-Panel", "Mobil responsiv"] },
+            pro: { tierName: "Pro", tagline: "Vollständiges SaaS", features: ["Alles aus Starter", "Stripe-Zahlungsintegration", "REST API & Webhooks", "6 Kernmodule", "Rollenbasierter Zugriff", "AI/LLM-bereit"] },
+            scale: { tierName: "Scale", tagline: "Erweitertes SaaS", features: ["Alles aus Pro", "Multi-Tenant-Architektur", "Erweiterte Analysen", "10+ Module", "Individuelle Integrationen", "Dediziertes CI/CD"] },
+            enterprise: { tierName: "Enterprise", tagline: "Individuelle Plattform", features: ["Individuelle Architektur", "White-Label-Option", "SSO & Compliance", "Unbegrenzte Module", "On-Premise-Option", "Prioritätssupport"] }
+          },
+          extras: {
+            payments: "Zahlungsintegration",
+            ai: "AI / LLM-Funktionen",
+            mobile: "Mobile PWA",
+            multilang: "Mehrsprachigkeit",
+            whitelabel: "White-Label-Branding",
+            crm: "CRM-Integration",
+            api: "API & Webhooks",
+            email: "E-Mail-System",
+            analytics: "Erweiterte Analytics"
+          },
+          extrasDesc: {
+            payments: "Stripe, PayPal oder individuelle Gateway mit Rechnungsverwaltung.",
+            ai: "GPT-4, Claude oder individuelles LLM mit Kontext- und Speicherverwaltung.",
+            mobile: "Progressive Web App mit Offline-Support und nativer mobiler UI.",
+            multilang: "Vollständige Mehrsprachigkeit mit dynamischen Inhalten und Locale-Management.",
+            whitelabel: "Vollständig gebrandetes Interface mit individueller Domain und White-Label-Paket.",
+            crm: "HubSpot, Salesforce oder individuelles CRM mit bidirektionaler Synchronisation.",
+            api: "RESTful API mit automatisch generierter Doku, Webhooks und Rate Limiting.",
+            email: "Transaktionales E-Mail-System mit Vorlagen, Queuing und Öffnungsverfolgung.",
+            analytics: "Individuelles Analytics-Dashboard mit Echtzeit-Metriken und Event-Tracking."
+          },
+          includedSection: "IM PAKET ENTHALTEN",
+          perMonth: "/Mon.",
+          showLess: "− weniger",
+          maintenance: {
+            title: "Monatliches Wartungspaket",
+            desc: "Updates, Monitoring und Prioritätssupport — zum monatlichen Festpreis",
+            rowLabel: "Monatliche Wartung"
+          }
         }
       },
       automationsPage: {
@@ -2448,7 +2978,95 @@ const resources = {
           ]
         },
         cta: { badge: "DIREKTANFRAGE", title: "Bereit, Ihre Abläufe zu automatisieren?", subtitle: "Lassen Sie uns die intelligenten Systeme bauen, die repetitive Arbeit erledigen, während Sie sich auf Wachstum konzentrieren.", button: "PROJEKT STARTEN" },
-        techStack: { badge: "KI & AUTOMATISIERUNGS-STACK" }
+        techStack: { badge: "KI & AUTOMATISIERUNGS-STACK" },
+        pricing: {
+          badge: "PREISE",
+          title: "Ihren Automatisierungs-",
+          titleAccent: "Stack aufbauen.",
+          subtitle: "Wählen Sie Ihr Automatisierungstier und fügen Sie benötigte Integrationen hinzu. Transparente Festpreise.",
+          extrasSection: "Zusatzintegrationen",
+          totalLabel: "Projektgesamtkosten",
+          oneTime: "Einmalige Projektgebühr",
+          baseLabel: "Basispaket",
+          extrasBreakdown: "Extras",
+          cta: "Jetzt kaufen",
+          ctaNote: "Sicherer Checkout · 24h Antwortgarantie",
+          enterpriseNote: "Das Beste für Ihre Marke.",
+          tiers: {
+            starter: { tierName: "Starter", tagline: "2–3 Automatisierungen", features: ["2–3 Workflow-Automatisierungen", "Basis-Integrationen (2–3 Tools)", "E-Mail- & Formular-Trigger", "1 Monat Support nach Launch"] },
+            growth: { tierName: "Growth", tagline: "5–8 Automatisierungen", features: ["Alles aus Starter", "5–8 Workflow-Automatisierungen", "AI/LLM-Integration", "Monitoring-Dashboard", "Prioritätssupport & SLA"] },
+            scale: { tierName: "Scale", tagline: "10–15 Automatisierungen", features: ["Alles aus Growth", "10–15 Workflows & Agenten", "Individuelle n8n-Nodes", "Datenpipeline-Einrichtung", "Erweiterte Analysen"] },
+            enterprise: { tierName: "Enterprise", tagline: "Unbegrenzte Automatisierungen", features: ["Unbegrenzte Workflows", "Individuelles LLM-Deployment", "On-Premise-Option", "SOC2 & DSGVO-konform", "Dedizierter Ingenieur", "24/7 Monitoring"] }
+          },
+          extras: {
+            ai: "AI / LLM-Integration",
+            monitoring: "Monitoring-Dashboard",
+            crm: "CRM-Integration",
+            pipeline: "Datenpipeline",
+            reports: "Geplante Berichte",
+            slack: "Slack / Teams-Benachrichtigungen",
+            webhooks: "Webhook-Management",
+            nlp: "NLP & Dokumentenverarbeitung",
+            training: "Training & Dokumentation"
+          },
+          extrasDesc: {
+            ai: "OpenAI, Anthropic Claude oder individuelle LLM-APIs mit Kontext- und Speicherverwaltung.",
+            monitoring: "Echtzeit-Monitoring mit Uptime-Benachrichtigungen und Workflow-Gesundheitsmetriken.",
+            crm: "HubSpot, Salesforce oder individuelles CRM mit bidirektionaler Synchronisation.",
+            pipeline: "Individuelle ETL-Pipeline für Datentransformation und -routing zwischen Systemen.",
+            reports: "Automatisierte Berichte per E-Mail, Slack oder Dashboard nach Zeitplan.",
+            slack: "Echtzeit-Slack- oder Microsoft Teams-Benachrichtigungen für Workflow-Ereignisse.",
+            webhooks: "Erweitertes Webhook-Management mit Retry-Logik, Logging und Payload-Transformation.",
+            nlp: "Verarbeitung natürlicher Sprache für Dokument-Parsing, Klassifizierung und Extraktion.",
+            training: "Vollständige Dokumentation, Team-Trainings und Übergabematerialien."
+          },
+          includedSection: "IM PAKET ENTHALTEN",
+          perMonth: "/Mon.",
+          showLess: "− weniger",
+          management: {
+            title: "Monatliches Management-Paket",
+            desc: "Fester monatlicher Support für den reibungslosen Betrieb Ihrer Automatisierungssysteme",
+            rowLabel: "Monatliche Verwaltung",
+            services: [
+              "Monatliche Prüfung der Automatisierungsabläufe",
+              "Fehlererkennung & automatische Korrekturen",
+              "API-Verbindungsaktualisierungen",
+              "Integration neuer Datenquellen",
+              "Monatlicher Leistungs- & Einsparungsbericht",
+              "Prioritätssupport (24h Reaktionszeit)"
+            ]
+          }
+        }
+      },
+      orderPage: {
+        title: "Ihre Bestellung",
+        titleAccent: "Abschließen.",
+        subtitle: "Füllen Sie Ihre Daten aus und wir bestätigen Ihre Bestellung innerhalb von 24 Stunden.",
+        form: {
+          name: "Vollständiger Name", namePlaceholder: "Max Mustermann",
+          email: "E-Mail-Adresse", emailPlaceholder: "max@unternehmen.de",
+          phone: "Telefonnummer", phonePlaceholder: "+49 555 000 0000",
+          company: "Unternehmen (optional)", companyPlaceholder: "Muster GmbH",
+          notes: "Projektnotizen", notesPlaceholder: "Erzählen Sie uns von Ihrem Projekt, Zielen und besonderen Anforderungen...",
+          submit: "Bestellung bestätigen", submitting: "Wird verarbeitet...",
+          nameRequired: "Vollständiger Name erforderlich", emailRequired: "Gültige E-Mail erforderlich", phoneRequired: "Telefonnummer erforderlich"
+        },
+        summary: {
+          title: "Bestellübersicht",
+          source: { projects: "Individuelle Website", saas: "SaaS-Projekt", automations: "KI-Automatisierungen" },
+          tier: "Ausgewähltes Tier", extras: "Extras", basePrice: "Basispreis",
+          extrasTotal: "Extras gesamt", maintenance: "Monatliche Wartung",
+          total: "Gesamt", oneTime: "Einmalige Gebühr", noExtras: "Keine Extras ausgewählt"
+        },
+        success: {
+          badge: "BESTELLUNG EINGEGANGEN",
+          title: "Wir melden",
+          titleAccent: "uns bald.",
+          subtitle: "Ihre Bestellung wurde erfasst. Wir senden Ihnen innerhalb von 24 Stunden einen Zahlungslink per E-Mail.",
+          cta: "Zur Startseite"
+        },
+        noData: "Keine Bestelldaten. Weiterleitung...",
+        ctaNote: "Sicherer Checkout · 24h Antwortgarantie"
       },
       latest: {
         title: "Frisch aus dem Labor",
@@ -2715,6 +3333,108 @@ const resources = {
           badge: "ANGEBOT ANFORDERN",
           title: "Lass uns etwas aufbauen.",
           subtitle: "Erzählen Sie uns von Ihrem Projekt. Wir melden uns innerhalb von 24 Stunden mit einem maßgeschneiderten Angebot."
+        },
+        pricing: {
+          badge: "TRANSPARENTE PREISE",
+          title: "Ihre Website",
+          titleAccent: "Konfigurieren.",
+          subtitle: "Seitenanzahl wählen, nur hinzufügen was benötigt wird. Preis aktualisiert sich sofort.",
+          pageLabel: "Seitenanzahl",
+          pageHint: "Tier wird automatisch erhöht wenn Seiten zunehmen",
+          pages: "Seiten",
+          includedLabel: "In diesem Tier enthalten",
+          extrasSection: "Zusatzleistungen",
+          corporateDisabledNote: "3 Dienste sind für One-Page-Websites nicht verfügbar",
+          maintTitle: "Monatlicher Wartungsplan",
+          maintSub: "Hosting, Support & Revisionen inklusive",
+          maintExpand: "Was ist enthalten?",
+          maintInclude1: "Technischer Support",
+          maintInclude2: "1 Revision pro Monat",
+          maintInclude3: "Server & Hosting inklusive",
+          maintOff: "Nicht ausgewählt",
+          totalLabel: "Einmalige Kosten",
+          oneTime: "einmalige Zahlung",
+          perPage: "Seite",
+          baseLabel: "Basis-Website",
+          extrasBreakdown: "Add-ons",
+          cta: "Jetzt kaufen",
+          ctaNote: "Sicherer Checkout · 24h Antwortgarantie",
+          enterpriseNote: "Das Beste für Ihre Marke.",
+          langLabel: "Spr.",
+          perLang: "/Spr.",
+          corporate: {
+            tierName: "Corporate",
+            tagline: "Eine Seite, starke Wirkung.",
+            features: [
+              "Individuelles One-Page-Design",
+              "Mobile-First responsiv",
+              "Basis-SEO-Einrichtung",
+              "Kontaktformular-Integration",
+              "Lieferung in 2–3 Werktagen",
+              "1 Monat Support nach Launch"
+            ]
+          },
+          pro: {
+            tierName: "Pro",
+            tagline: "Für wachsende Marken.",
+            features: [
+              "3–8 individuelle Seiten",
+              "Premium animierte Benutzeroberfläche",
+              "CMS / Content-Management",
+              "2 Design-Revisionsrunden",
+              "Erweiterte SEO-Optimierung",
+              "Lieferung in 3–7 Werktagen",
+              "3 Monate Support nach Launch"
+            ]
+          },
+          premium: {
+            tierName: "Premium",
+            tagline: "Vollständiges digitales Erlebnis.",
+            features: [
+              "9–14 individuelle Seiten",
+              "Individuelles Designsystem",
+              "3 Design-Revisionsrunden",
+              "Full-Stack-Integrationen",
+              "Erweitertes Analytics-Setup",
+              "Lieferung in 7–14 Werktagen",
+              "6 Monate Support nach Launch"
+            ]
+          },
+          platinum: {
+            tierName: "Platinum",
+            tagline: "Vollständig individuelle Architektur.",
+            features: [
+              "15–20 individuelle Seiten",
+              "Vollständig individuelles Designsystem",
+              "Dedizierter Projektmanager",
+              "Unbegrenzte Revisionsrunden",
+              "Multi-Plattform-Integrationen",
+              "Lieferung in 14–29 Werktagen",
+              "12 Monate Support nach Launch"
+            ]
+          },
+          extras: {
+            ecommerce:   "E-Commerce / Online-Shop",
+            blog:        "Blog / CMS-System",
+            multilang:   "Mehrsprachige Unterstützung",
+            admin:       "Individuelles Admin-Panel",
+            reservation: "Reservierungs- & Buchungsmodul",
+            reviews:     "Kundenbewertungsmodul",
+            livechat:    "Live-Chat-Integration",
+            seo:         "SEO-Paket",
+            branding:    "Logo & Markenidentität"
+          },
+          extrasDesc: {
+            ecommerce:   "Vollständiger Online-Shop mit Produktkatalog, Warenkorb, Zahlungs-Gateway und Bestellverwaltung.",
+            blog:        "Content-Management-System — Artikel schreiben, planen und mit SEO-freundlichen URLs veröffentlichen.",
+            multilang:   "Vollständige Website-Übersetzungsinfrastruktur mit Sprachumschalter. Preis gilt pro zusätzliche Sprache.",
+            admin:       "Sicheres Admin-Panel zur Verwaltung von Inhalten, Kontakten und Daten ohne Programmierung.",
+            reservation: "Online-Terminbuchungssystem mit Kalender, Verfügbarkeitsverwaltung und E-Mail-Benachrichtigungen.",
+            reviews:     "Kundenbewertungsbereich mit Sternbewertungen und Moderationspanel für Social Proof.",
+            livechat:    "Echtzeit-Chat-Widget für Besucher, verbunden mit Ihrer bevorzugten Plattform (Tawk.to, Crisp usw.).",
+            seo:         "Technisches SEO-Audit, Meta-Optimierung, Sitemap, Schema-Markup und Core Web Vitals-Optimierung.",
+            branding:    "Individuelles Logo-Design, Farbpalette, Typografiesystem und Markenrichtlinien-Dokument."
+          }
         },
         manifesto: {
           badge: "DESIGN-PHILOSOPHIE",

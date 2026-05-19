@@ -292,7 +292,11 @@ const ChatBot = () => {
 
   const isTemplateDetail = location.pathname.startsWith('/templates/') && location.pathname !== '/templates';
   const isCheckout = location.pathname.startsWith('/checkout/');
-  const shouldLift = isTemplateDetail || isCheckout;
+  const isProjects = location.pathname === '/projects';
+  const isSaaS = location.pathname === '/saas';
+  const isAutomations = location.pathname === '/ai-automations';
+  const isOrder = location.pathname === '/order';
+  const shouldLift = isTemplateDetail || isCheckout || isProjects || isSaaS || isAutomations || isOrder;
 
   return (
     <div ref={containerRef} className={`fixed ${shouldLift ? 'bottom-32 lg:bottom-6' : 'bottom-6'} right-6 z-[9999] font-sans`}>

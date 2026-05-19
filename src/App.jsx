@@ -9,7 +9,6 @@ import ProjectsPage from './pages/ProjectsPage';
 import TemplatesPage from './pages/TemplatesPage';
 import AboutPage from './pages/AboutPage';
 import TemplateDetailPage from './pages/TemplateDetailPage';
-import CheckoutPage from './pages/CheckoutPage';
 import ContactPage from './pages/ContactPage';
 import SaaSPage from './pages/SaaSPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
@@ -19,6 +18,7 @@ import ProjectDetailPage from './pages/ProjectDetailPage';
 import CaseStudyPage from './pages/CaseStudyPage';
 import AutomationsPage from './pages/AutomationsPage';
 import ProposalPage from './pages/ProposalPage';
+import OrderPage from './pages/OrderPage';
 
 // Legal Pages
 import DistanceSellingPage from './pages/legal/DistanceSellingPage';
@@ -121,14 +121,13 @@ function App() {
           <Route path="ai-automations" element={<AutomationsPage />} />
           <Route path="templates" element={<TemplatesPage />} />
           <Route path="templates/:id" element={<TemplateDetailPage />} />
-          <Route path="checkout/:id" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
           <Route path="about" element={<AboutPage />} />
           <Route path="contact" element={<ContactPage />} />
           <Route path="order-success/:id" element={<ProtectedRoute><OrderSuccessPage /></ProtectedRoute>} />
           <Route path="workspace/:id" element={<ProtectedRoute><WorkspacePage /></ProtectedRoute>} />
           <Route path="order-cancel" element={<OrderCancelPage />} />
           <Route path="proposal/:id" element={<ProposalPage />} />
-          <Route path="checkout/proposal/:id" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+          <Route path="order" element={<OrderPage />} />
           
           {/* Legal Pages */}
           <Route path="mesafeli-satis-sozlesmesi" element={<DistanceSellingPage />} />

@@ -1,3 +1,4 @@
+import React from 'react';
 import { Bot, Cpu, Workflow, Database, FileText, BarChart3 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ScrollReveal from '../ScrollReveal';
@@ -142,8 +143,8 @@ const AutomationsFeatures = () => {
       {/* Desktop: 3 stage columns with arrows */}
       <div className="hidden lg:grid grid-cols-[1fr_48px_1fr_48px_1fr] gap-0 items-start relative z-10">
         {stages.map((stage, sIdx) => (
-          <>
-            <div key={stage.id} className="flex flex-col gap-4">
+          <React.Fragment key={stage.id}>
+            <div className="flex flex-col gap-4">
               {/* Stage header */}
               <ScrollReveal delay={sIdx * 0.1}>
                 <div className={`inline-flex items-center gap-2.5 px-4 py-2 rounded-xl ${stage.stageBg} border ${stage.stageBorder} mb-2`}>
@@ -178,11 +179,11 @@ const AutomationsFeatures = () => {
             </div>
 
             {sIdx < stages.length - 1 && (
-              <div key={`arrow-${sIdx}`}>
+              <div>
                 <Arrow vertical={false} />
               </div>
             )}
-          </>
+          </React.Fragment>
         ))}
       </div>
 

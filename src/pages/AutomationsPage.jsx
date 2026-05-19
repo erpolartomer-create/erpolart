@@ -2,13 +2,12 @@ import { Helmet } from 'react-helmet-async';
 import AutomationsHero from '../components/automations/AutomationsHero';
 import AutomationsFeatures from '../components/automations/AutomationsFeatures';
 import AutomationsShowcase from '../components/automations/AutomationsShowcase';
-import AutomationsScope from '../components/automations/AutomationsScope';
+import AutomationsPricing from '../components/automations/AutomationsPricing';
 import AutomationsFAQ from '../components/automations/AutomationsFAQ';
-import AutomationsContactSection from '../components/automations/AutomationsContactSection';
 
 const AutomationsPage = () => {
   return (
-    <div className="pt-24 pb-24 min-h-screen bg-deep-black relative overflow-hidden">
+    <div className="pt-24 pb-24 min-h-screen bg-deep-black relative" style={{ overflowX: 'clip' }}>
       <Helmet>
         <title>AI Otomasyonları - ErpolArt</title>
         <meta name="description" content="Otonom AI ajanları ve akıllı iş akışı otomasyonları ile işletmenizi 7/24 güçlendirin." />
@@ -47,11 +46,9 @@ const AutomationsPage = () => {
         })}</script>
       </Helmet>
 
-      {/* SaaS-Style Background System (Full Page) */}
-      <div className="absolute inset-0 bg-[linear-gradient(var(--grid-color)_1px,transparent_1px),linear-gradient(90deg,var(--grid-color)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
-
-      {/* Ambient glows */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+      {/* Decorative backgrounds — isolated overflow so sticky children work */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 bg-[linear-gradient(var(--grid-color)_1px,transparent_1px),linear-gradient(90deg,var(--grid-color)_1px,transparent_1px)] bg-[size:40px_40px]" />
         <div className="absolute -top-[10%] -right-[10%] w-[50%] h-[50%] bg-emerald-500/10 blur-[120px] rounded-full animate-pulse-slow" />
         <div className="absolute top-[30%] -left-[10%] w-[40%] h-[40%] bg-teal-500/8 blur-[100px] rounded-full animate-float-slow" />
         <div className="absolute bottom-[10%] -right-[5%] w-[35%] h-[35%] bg-cyan/5 blur-[120px] rounded-full" />
@@ -61,15 +58,13 @@ const AutomationsPage = () => {
       <AutomationsHero />
 
       <div className="container mx-auto px-6 lg:px-12 relative z-10">
+        <AutomationsPricing />
+        <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         <AutomationsFeatures />
         <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         <AutomationsShowcase />
         <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-        <AutomationsScope />
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         <AutomationsFAQ />
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-        <AutomationsContactSection />
       </div>
     </div>
   );

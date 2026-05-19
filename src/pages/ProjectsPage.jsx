@@ -4,17 +4,17 @@ import CustomServicesOverview from '../components/projects/CustomServicesOvervie
 import BespokeComparison from '../components/projects/BespokeComparison';
 import ProcessTimeline from '../components/projects/ProcessTimeline';
 import DesignManifesto from '../components/projects/DesignManifesto';
-import ContactForm from '../components/ContactForm';
+import ProjectsPricing from '../components/projects/ProjectsPricing';
 import ScrollReveal from '../components/ScrollReveal';
 
 import { motion } from 'framer-motion';
-import { Code2, MessageCircle, Rocket, Sparkles, ArrowRight } from 'lucide-react';
+import { Code2, MessageCircle, Rocket } from 'lucide-react';
 
 const ProjectsPage = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="pt-24 pb-24 min-h-screen bg-deep-black relative overflow-hidden transition-colors duration-500">
+    <div className="pt-24 pb-24 min-h-screen bg-deep-black relative transition-colors duration-500" style={{ overflowX: 'clip' }}>
       <Helmet>
         <title>Projelerimiz - ErpolArt</title>
         <meta name="description" content="ErpolArt tarafından hayata geçirilen yaratıcı projeler ve dijital başarı hikayeleri." />
@@ -40,20 +40,21 @@ const ProjectsPage = () => {
           serviceType: 'Custom Web Application Development',
         })}</script>
       </Helmet>
-      {/* SaaS-Style Background System - Restored */}
-      <div className="absolute inset-0 bg-[linear-gradient(var(--grid-color)_1px,transparent_1px),linear-gradient(90deg,var(--grid-color)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
 
-      {/* Desktop-only Ambient Decorative Lighting - Large, cinematic flows */}
-      <div className="hidden md:block absolute top-0 left-0 w-[80vw] h-[80vw] max-w-[1200px] max-h-[1200px] bg-violet/10 dark:bg-violet/15 rounded-full blur-[180px] -translate-y-1/2 -translate-x-1/4 pointer-events-none transition-colors duration-1000" />
-      <div className="hidden md:block absolute top-1/4 right-0 w-[70vw] h-[70vw] max-w-[1000px] max-h-[1000px] bg-indigo/10 dark:bg-indigo/15 rounded-full blur-[150px] translate-x-1/4 pointer-events-none transition-colors duration-1000" />
-      <div className="hidden md:block absolute bottom-1/3 left-0 w-[90vw] h-[90vw] max-w-[1400px] max-h-[1400px] bg-cyan/10 dark:bg-cyan/12 rounded-full blur-[200px] -translate-x-1/4 pointer-events-none transition-colors duration-1000 shadow-[0_0_100px_rgba(0,179,166,0.1)]" />
-
-      {/* Mobile-optimized Ambient Lighting - Soft, centered, non-linear */}
-      <div className="md:hidden absolute top-[-5%] left-1/2 -translate-x-1/2 w-screen h-screen bg-violet/5 dark:bg-violet/8 rounded-full blur-[120px] pointer-events-none" />
-      <div className="md:hidden absolute top-[40%] left-1/2 -translate-x-1/2 w-screen h-screen bg-indigo/5 dark:bg-indigo/8 rounded-full blur-[140px] pointer-events-none opacity-60" />
-      <div className="md:hidden absolute bottom-0 left-1/2 -translate-x-1/2 w-screen h-[120vw] bg-cyan/5 dark:bg-cyan/8 rounded-full blur-[120px] pointer-events-none" />
-
-      <div className="absolute bottom-0 right-1/4 hidden md:block w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] bg-violet/5 dark:bg-violet/10 rounded-full blur-[150px] translate-y-1/4 pointer-events-none transition-colors duration-1000" />
+      {/* Decorative background — own overflow-hidden so sticky children aren't affected */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Grid */}
+        <div className="absolute inset-0 bg-[linear-gradient(var(--grid-color)_1px,transparent_1px),linear-gradient(90deg,var(--grid-color)_1px,transparent_1px)] bg-[size:40px_40px]" />
+        {/* Desktop ambient lighting */}
+        <div className="hidden md:block absolute top-0 left-0 w-[80vw] h-[80vw] max-w-[1200px] max-h-[1200px] bg-violet/10 dark:bg-violet/15 rounded-full blur-[180px] -translate-y-1/2 -translate-x-1/4 transition-colors duration-1000" />
+        <div className="hidden md:block absolute top-1/4 right-0 w-[70vw] h-[70vw] max-w-[1000px] max-h-[1000px] bg-indigo/10 dark:bg-indigo/15 rounded-full blur-[150px] translate-x-1/4 transition-colors duration-1000" />
+        <div className="hidden md:block absolute bottom-1/3 left-0 w-[90vw] h-[90vw] max-w-[1400px] max-h-[1400px] bg-cyan/10 dark:bg-cyan/12 rounded-full blur-[200px] -translate-x-1/4 transition-colors duration-1000 shadow-[0_0_100px_rgba(0,179,166,0.1)]" />
+        <div className="hidden md:block absolute bottom-0 right-1/4 w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] bg-violet/5 dark:bg-violet/10 rounded-full blur-[150px] translate-y-1/4 transition-colors duration-1000" />
+        {/* Mobile ambient lighting */}
+        <div className="md:hidden absolute top-[-5%] left-1/2 -translate-x-1/2 w-screen h-screen bg-violet/5 dark:bg-violet/8 rounded-full blur-[120px]" />
+        <div className="md:hidden absolute top-[40%] left-1/2 -translate-x-1/2 w-screen h-screen bg-indigo/5 dark:bg-indigo/8 rounded-full blur-[140px] opacity-60" />
+        <div className="md:hidden absolute bottom-0 left-1/2 -translate-x-1/2 w-screen h-[120vw] bg-cyan/5 dark:bg-cyan/8 rounded-full blur-[120px]" />
+      </div>
 
       {/* Page-wide Floating Icons */}
       <div className="hidden xl:block absolute inset-0 pointer-events-none z-50">
@@ -82,27 +83,10 @@ const ProjectsPage = () => {
 
       <div className="container mx-auto px-6 lg:px-12 relative z-10 pt-0">
         <CustomServicesOverview />
+        <ProjectsPricing />
         <DesignManifesto />
         <BespokeComparison />
         <ProcessTimeline />
-
-        {/* Teklif Formu */}
-        <section className="py-16 md:py-24 relative">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-indigo/8 blur-[160px] rounded-full pointer-events-none" />
-          <ScrollReveal className="text-center mb-12 max-w-2xl mx-auto px-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo/10 border border-indigo/20 text-indigo text-[10px] font-black uppercase tracking-[0.3em] mb-6">
-              <Sparkles size={12} />
-              {t('projectsPage.quoteSection.badge')}
-            </div>
-            <h2 className="text-5xl md:text-[88px] font-display font-black italic text-white tracking-tighter leading-[0.9] mb-4">
-              {t('projectsPage.quoteSection.title')}
-            </h2>
-            <p className="text-gray-500 text-base md:text-lg leading-relaxed">
-              {t('projectsPage.quoteSection.subtitle')}
-            </p>
-          </ScrollReveal>
-          <ContactForm />
-        </section>
 
         {/* Narrative Block 3: The Promise - Final Closing Statement */}
         <ScrollReveal>
