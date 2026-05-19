@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://erpolart.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://erpolart.com/projects</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://erpolart.com/saas</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://erpolart.com/ai-automations</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://erpolart.com/templates</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://erpolart.com/about</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://erpolart.com/contact</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://erpolart.com/gizlilik-politikasi</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://erpolart.com/kvkk-metni</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://erpolart.com/mesafeli-satis-sozlesmesi</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://erpolart.com/iptal-ve-iade-kosullari</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+</urlset>

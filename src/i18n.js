@@ -1256,6 +1256,12 @@ const resources = {
         revisionSent: "Your request has been received. We'll update the proposal shortly."
       },
 
+      notFound: {
+        title: "Page Not Found",
+        desc: "The page you're looking for doesn't exist or has been moved.",
+        cta: "Go Home",
+      },
+
     }
   },
   tr: {
@@ -2511,6 +2517,12 @@ const resources = {
         revisionSent: "Talebiniz alındı. Teklifi en kısa sürede güncelleyeceğiz."
       },
 
+      notFound: {
+        title: "Sayfa Bulunamadı",
+        desc: "Aradığınız sayfa mevcut değil ya da taşındı.",
+        cta: "Ana Sayfaya Dön",
+      },
+
     }
   },
   de: {
@@ -3709,6 +3721,12 @@ const resources = {
         revisionPlaceholder: "Beschreiben Sie die gewünschte Änderung oder Ergänzung...",
         revisionCta: "Anfrage senden",
         revisionSent: "Ihre Anfrage wurde erhalten. Wir werden das Angebot in Kürze aktualisieren."
+      },
+
+      notFound: {
+        title: "Seite nicht gefunden",
+        desc: "Die gesuchte Seite existiert nicht oder wurde verschoben.",
+        cta: "Zur Startseite",
       },
 
     }

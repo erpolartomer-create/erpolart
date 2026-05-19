@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ShieldCheck } from 'lucide-react';
 import ScrollReveal from '../../components/ScrollReveal';
@@ -13,6 +14,12 @@ const DistanceSellingPage = () => {
 
   return (
     <div className="bg-surface min-h-screen pt-32 pb-24 relative overflow-hidden">
+      <Helmet>
+        <title>Mesafeli Satış Sözleşmesi - ErpolArt</title>
+        <meta name="description" content="ErpolArt mesafeli satış sözleşmesi — hizmet satın alımlarına ilişkin yasal koşullar ve şartlar." />
+        <link rel="canonical" href="https://erpolart.com/mesafeli-satis-sozlesmesi" />
+        <meta name="robots" content="noindex, follow" />
+      </Helmet>
       {/* Background System */}
       <div className="absolute inset-0 bg-[linear-gradient(var(--grid-color)_1px,transparent_1px),linear-gradient(90deg,var(--grid-color)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none opacity-20" />
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo/5 blur-[150px] rounded-full pointer-events-none" />

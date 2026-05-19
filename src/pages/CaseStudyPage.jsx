@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -34,8 +35,34 @@ const CaseStudyPage = () => {
   const stack = stackString ? stackString.split(' · ') : ['React', 'Node.js', 'Supabase'];
   const previewUrl = id === 'contractoros' ? 'https://contractor-os.erpolart.com/' : (id === 'project2' ? 'https://reseva-ai.erpolart-ai.workers.dev/en/dashboard' : '#');
 
+  const csTitle = t(`saasPage.showcase.${id}.title`);
+  const csDesc = (hasData && caseStudyData.challenge ? caseStudyData.challenge : desc).slice(0, 160);
+
   return (
     <div className="bg-surface min-h-screen pt-32 pb-32 relative overflow-hidden">
+      <Helmet>
+        <title>{csTitle} — Case Study | ErpolArt</title>
+        <meta name="description" content={csDesc} />
+        <link rel="canonical" href={`https://erpolart.com/saas/case-study/${id}`} />
+        <meta property="og:title" content={`${csTitle} — Case Study | ErpolArt`} />
+        <meta property="og:description" content={csDesc} />
+        <meta property="og:url" content={`https://erpolart.com/saas/case-study/${id}`} />
+        <meta property="og:image" content="https://erpolart.com/og-image.webp" />
+        <meta property="og:type" content="article" />
+        <meta property="og:site_name" content="ErpolArt" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${csTitle} — Case Study | ErpolArt`} />
+        <meta name="twitter:description" content={csDesc} />
+        <meta name="twitter:image" content="https://erpolart.com/og-image.webp" />
+        <script type="application/ld+json">{JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'Article',
+          headline: csTitle,
+          description: csDesc,
+          author: { '@type': 'Organization', name: 'ErpolArt', url: 'https://erpolart.com' },
+          url: `https://erpolart.com/saas/case-study/${id}`,
+        })}</script>
+      </Helmet>
       {/* Background System */}
       <div className="absolute inset-0 bg-[linear-gradient(var(--grid-color)_1px,transparent_1px),linear-gradient(90deg,var(--grid-color)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none opacity-20" />
       <div className="absolute top-0 -left-1/4 w-1/2 h-full bg-indigo/5 blur-[160px] rounded-full pointer-events-none" />

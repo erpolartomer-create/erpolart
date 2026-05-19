@@ -19,6 +19,7 @@ import CaseStudyPage from './pages/CaseStudyPage';
 import AutomationsPage from './pages/AutomationsPage';
 import ProposalPage from './pages/ProposalPage';
 import OrderPage from './pages/OrderPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 // Legal Pages
 import DistanceSellingPage from './pages/legal/DistanceSellingPage';
@@ -163,6 +164,8 @@ function App() {
           <Route path="chat" element={<AdminChatDashboard />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>
+
+        <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Router>
     </ErrorBoundary>
