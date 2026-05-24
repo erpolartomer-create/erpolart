@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
-import { Sparkles, Mail, MessageSquare, ArrowRight } from 'lucide-react';
+import { Sparkles, Mail, MessageSquare, Building2, MapPin, Phone, FileText } from 'lucide-react';
 import ScrollReveal from '../components/ScrollReveal';
 import ContactForm from '../components/ContactForm';
 import { motion } from 'framer-motion';
@@ -54,22 +54,63 @@ const ContactPage = () => {
                         {t('contact.subtitle')}
                      </p>
 
-                     {/* Direct Contact Card */}
+                     {/* Company Information Card */}
                      <div className="group relative">
                         <div className="absolute inset-0 bg-indigo/20 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-                        <div className="relative bg-surface/40 backdrop-blur-2xl border border-white/5 p-8 rounded-[2.5rem] overflow-hidden">
+                        <div className="relative bg-surface/40 backdrop-blur-2xl border border-white/5 p-6 md:p-8 rounded-[2.5rem] overflow-hidden">
                            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo/5 rounded-full blur-[40px] -translate-y-1/2 translate-x-1/2" />
 
-                           <div className="flex flex-col gap-6">
-                              <div className="w-12 h-12 rounded-2xl bg-indigo/10 flex items-center justify-center text-indigo">
-                                 <Mail size={24} />
+                           <div className="flex flex-col gap-5 text-sm text-gray-400">
+                              <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{t('contact.companyLabel')}</div>
+                              
+                              <div className="flex gap-4 items-start">
+                                 <div className="w-8 h-8 rounded-lg bg-indigo/10 flex items-center justify-center text-indigo shrink-0">
+                                    <Building2 size={16} />
+                                 </div>
+                                 <div>
+                                    <div className="font-bold text-gray-500 text-[10px] uppercase tracking-wider">{t('contact.companyTitle')}</div>
+                                    <div className="text-white font-medium mt-1 text-xs md:text-sm">FİDAN ÜNAL ERPOLAT - ERPOLART MİMARLIK</div>
+                                 </div>
                               </div>
-                              <div>
-                                 <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{t('contact.directLabel')}</div>
-                                 <a href="mailto:hello@erpolart.com" className="text-2xl md:text-3xl font-display font-black text-white hover:text-indigo transition-colors flex items-center gap-3">
-                                    hello@erpolart.com
-                                    <ArrowRight size={24} className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500" />
-                                 </a>
+
+                              <div className="flex gap-4 items-start">
+                                 <div className="w-8 h-8 rounded-lg bg-indigo/10 flex items-center justify-center text-indigo shrink-0">
+                                    <MapPin size={16} />
+                                 </div>
+                                 <div>
+                                    <div className="font-bold text-gray-500 text-[10px] uppercase tracking-wider">{t('contact.companyAddress')}</div>
+                                    <div className="text-white font-medium mt-1 text-xs md:text-sm">Pınarlı Mah. 24096 Sk. Kapı No: 19 A Aksu / ANTALYA</div>
+                                 </div>
+                              </div>
+
+                              <div className="flex gap-4 items-start">
+                                 <div className="w-8 h-8 rounded-lg bg-indigo/10 flex items-center justify-center text-indigo shrink-0">
+                                    <Phone size={16} />
+                                 </div>
+                                 <div>
+                                    <div className="font-bold text-gray-500 text-[10px] uppercase tracking-wider">{t('contact.companyPhone')}</div>
+                                    <a href="tel:+905309440701" className="text-white hover:text-indigo transition-colors font-medium mt-1 text-xs md:text-sm block">+90 530 944 07 01</a>
+                                 </div>
+                              </div>
+
+                              <div className="flex gap-4 items-start">
+                                 <div className="w-8 h-8 rounded-lg bg-indigo/10 flex items-center justify-center text-indigo shrink-0">
+                                    <Mail size={16} />
+                                 </div>
+                                 <div>
+                                    <div className="font-bold text-gray-500 text-[10px] uppercase tracking-wider">{t('contact.companyEmail')}</div>
+                                    <a href="mailto:hello@erpolart.com" className="text-white hover:text-indigo transition-colors font-medium mt-1 text-xs md:text-sm block">hello@erpolart.com</a>
+                                 </div>
+                              </div>
+
+                              <div className="flex gap-4 items-start">
+                                 <div className="w-8 h-8 rounded-lg bg-indigo/10 flex items-center justify-center text-indigo shrink-0">
+                                    <FileText size={16} />
+                                 </div>
+                                 <div>
+                                    <div className="font-bold text-gray-500 text-[10px] uppercase tracking-wider">{t('contact.companyTaxNumber')}</div>
+                                    <div className="text-white font-medium mt-1 text-xs md:text-sm">9080295761</div>
+                                 </div>
                               </div>
                            </div>
                         </div>

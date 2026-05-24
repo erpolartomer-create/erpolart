@@ -129,6 +129,8 @@ function App() {
           <Route path="order-cancel" element={<OrderCancelPage />} />
           <Route path="proposal/:id" element={<ProposalPage />} />
           <Route path="order" element={<OrderPage />} />
+          <Route path="checkout/:id" element={<OrderPage />} />
+          <Route path="checkout/proposal/:id" element={<OrderPage />} />
           
           {/* Legal Pages */}
           <Route path="mesafeli-satis-sozlesmesi" element={<DistanceSellingPage />} />
