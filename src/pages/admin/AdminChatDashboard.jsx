@@ -8,10 +8,34 @@ import {
 import { supabaseAdmin } from '../../lib/supabaseAdmin';
 import { io } from 'socket.io-client';
 
-// Web Audio API ile programatik bildirim sesi
+// Kalıcı AudioContext — ilk kullanıcı etkileşiminde unlock edilir
+let _audioCtx = null;
+const getAudioCtx = () => {
+  if (!_audioCtx) {
+    _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  return _audioCtx;
+};
+
+// Sayfaya ilk tıklamada AudioContext'i unlock et (tarayıcı politikası)
+const unlockAudio = () => {
+  try {
+    const ctx = getAudioCtx();
+    if (ctx.state === 'suspended') ctx.resume();
+  } catch (_) {}
+  document.removeEventListener('click', unlockAudio);
+  document.removeEventListener('keydown', unlockAudio);
+};
+document.addEventListener('click', unlockAudio);
+document.addEventListener('keydown', unlockAudio);
+
 const playNotificationSound = () => {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = getAudioCtx();
+    if (ctx.state === 'suspended') {
+      // Henüz unlock olmadıysa sessizce dön (kullanıcı tıklamamış)
+      return;
+    }
     const masterGain = ctx.createGain();
     masterGain.gain.setValueAtTime(0.35, ctx.currentTime);
     masterGain.connect(ctx.destination);
@@ -30,8 +54,6 @@ const playNotificationSound = () => {
       osc.start(ctx.currentTime + delay);
       osc.stop(ctx.currentTime + delay + dur + 0.05);
     });
-
-    setTimeout(() => ctx.close(), 600);
   } catch (_) {
     // AudioContext desteklenmiyorsa sessizce geç
   }
@@ -261,7 +283,7 @@ const AdminChatDashboard = () => {
           <div className="flex items-center justify-between">
             <span className="text-[9px] font-black text-gray-600 uppercase tracking-widest">Live Sessions</span>
             <button
-              onClick={() => setSoundEnabled(p => !p)}
+              onClick={() => { unlockAudio(); setSoundEnabled(p => !p); }}
               title={soundEnabled ? 'Sesi Kapat' : 'Sesi Aç'}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider border transition-all ${
                 soundEnabled
