@@ -1,12 +1,41 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  MessageSquare, User, Bot, Send, Shield, 
-  Zap, ZapOff, Search, Circle
+import {
+  MessageSquare, User, Bot, Send, Shield,
+  Zap, ZapOff, Search, Circle, Volume2, VolumeX
 } from 'lucide-react';
 import { supabaseAdmin } from '../../lib/supabaseAdmin';
 import { io } from 'socket.io-client';
+
+// Web Audio API ile programatik bildirim sesi
+const playNotificationSound = () => {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const masterGain = ctx.createGain();
+    masterGain.gain.setValueAtTime(0.35, ctx.currentTime);
+    masterGain.connect(ctx.destination);
+
+    // İki tonlu "ding ding" efekti
+    [[880, 0, 0.12], [1100, 0.13, 0.1]].forEach(([freq, delay, dur]) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
+      gain.gain.setValueAtTime(0, ctx.currentTime + delay);
+      gain.gain.linearRampToValueAtTime(1, ctx.currentTime + delay + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + dur);
+      osc.connect(gain);
+      gain.connect(masterGain);
+      osc.start(ctx.currentTime + delay);
+      osc.stop(ctx.currentTime + delay + dur + 0.05);
+    });
+
+    setTimeout(() => ctx.close(), 600);
+  } catch (_) {
+    // AudioContext desteklenmiyorsa sessizce geç
+  }
+};
 
 const AdminChatDashboard = () => {
   const [sessions, setSessions] = useState([]);
@@ -16,9 +45,20 @@ const AdminChatDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    return localStorage.getItem('adminChatSound') !== 'off';
+  });
+  const [unreadSessions, setUnreadSessions] = useState(new Set());
   const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
   const selectedSessionRef = useRef(null);
+  const soundEnabledRef = useRef(soundEnabled);
+
+  // soundEnabled değişince ref'i güncelle (socket callback'lerinde güncel değeri okur)
+  useEffect(() => {
+    soundEnabledRef.current = soundEnabled;
+    localStorage.setItem('adminChatSound', soundEnabled ? 'on' : 'off');
+  }, [soundEnabled]);
 
   // Ref'i senkronize tut (socket callback'lerinde güncel değeri okumak için)
   useEffect(() => {
@@ -39,16 +79,25 @@ const AdminChatDashboard = () => {
     // Gelen mesajları dinle
     socketRef.current.on('new_message', (payload) => {
       const current = selectedSessionRef.current;
+
+      // Kullanıcı mesajı gelince ses çal
+      if (payload.role === 'user' && soundEnabledRef.current) {
+        playNotificationSound();
+      }
+
       if (current && payload.sessionId === current) {
         setMessages(prev => {
           // Mükerrer kontrol
-          const isDupe = prev.some(m => 
+          const isDupe = prev.some(m =>
             m.content === payload.content && m.role === payload.role &&
             Math.abs(new Date(m.created_at || 0) - new Date(payload.timestamp || 0)) < 2000
           );
           if (isDupe) return prev;
           return [...prev, { ...payload, created_at: payload.timestamp }];
         });
+      } else if (payload.role === 'user') {
+        // Farklı oturumdan mesaj geldi → unread badge ekle
+        setUnreadSessions(prev => new Set([...prev, payload.sessionId]));
       }
 
       // Session listesini hafif güncelle (tam DB sorgusu yerine)
@@ -136,6 +185,12 @@ const AdminChatDashboard = () => {
     };
 
     fetchMessages();
+    // Seçilen oturumun unread badge'ini temizle
+    setUnreadSessions(prev => {
+      const next = new Set(prev);
+      next.delete(selectedSession);
+      return next;
+    });
     if (socketRef.current) {
       socketRef.current.emit('join_session', selectedSession);
       // Sunucudan gerçek mute durumunu sorgula
@@ -202,7 +257,22 @@ const AdminChatDashboard = () => {
       </Helmet>
       {/* Sidebar */}
       <div className="w-80 flex flex-col bg-[#0f0f18] border border-white/5 rounded-2xl overflow-hidden">
-        <div className="p-4 border-b border-white/5">
+        <div className="p-4 border-b border-white/5 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] font-black text-gray-600 uppercase tracking-widest">Live Sessions</span>
+            <button
+              onClick={() => setSoundEnabled(p => !p)}
+              title={soundEnabled ? 'Sesi Kapat' : 'Sesi Aç'}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider border transition-all ${
+                soundEnabled
+                  ? 'bg-indigo/10 border-indigo/20 text-indigo hover:bg-indigo/20'
+                  : 'bg-white/5 border-white/10 text-gray-500 hover:bg-white/10'
+              }`}
+            >
+              {soundEnabled ? <Volume2 size={11} /> : <VolumeX size={11} />}
+              {soundEnabled ? 'Sound On' : 'Muted'}
+            </button>
+          </div>
           <div className="relative">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
             <input type="text" placeholder="Search sessions..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
@@ -217,13 +287,16 @@ const AdminChatDashboard = () => {
           ) : (
             filteredSessions.map(session => (
               <div key={session.id} onClick={() => setSelectedSession(session.id)}
-                className={`p-4 border-b border-white/[0.02] cursor-pointer transition-all hover:bg-white/[0.02] ${selectedSession === session.id ? 'bg-indigo/10 border-l-4 border-l-indigo' : ''}`}>
+                className={`p-4 border-b border-white/[0.02] cursor-pointer transition-all hover:bg-white/[0.02] ${selectedSession === session.id ? 'bg-indigo/10 border-l-4 border-l-indigo' : unreadSessions.has(session.id) ? 'border-l-4 border-l-amber-500 bg-amber-500/5' : ''}`}>
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[10px] font-black text-white uppercase tracking-wider truncate max-w-[120px]">
+                    <div className={`w-2 h-2 rounded-full animate-pulse ${unreadSessions.has(session.id) ? 'bg-amber-400' : 'bg-emerald-500'}`} />
+                    <span className="text-[10px] font-black text-white uppercase tracking-wider truncate max-w-[100px]">
                       {session.id.replace(/^(user_|guest_)/, '').substring(0, 10)}...
                     </span>
+                    {unreadSessions.has(session.id) && (
+                      <span className="px-1.5 py-0.5 rounded-full bg-amber-400 text-black text-[8px] font-black">NEW</span>
+                    )}
                   </div>
                   <span className="text-[8px] text-gray-600 font-bold">
                     {new Date(session.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
