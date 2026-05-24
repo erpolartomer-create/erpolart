@@ -97,14 +97,32 @@ Detay Sayfası: /templates/${t.id}
 // Lead Kayıt Yardımcısı (Supabase)
 const saveLead = async (leadData) => {
   try {
+    // 1. Chat geçmişine sistem mesajı olarak işaretle (admin chat'te görünsün)
     await supabase.from('chat_messages').insert([{
       session_id: leadData.sessionId,
       user_id: leadData.userId || null,
-      role: 'user',
+      role: 'system',
       content: `[LEAD CAPTURED - ${leadData.type}] ${leadData.message}`,
-      project_code: 'erpolart_lead'
+      project_code: 'erpolart'
     }]);
-    console.log(`[LEAD] ${leadData.type} captured for session ${leadData.sessionId}`);
+
+    // 2. Leads tablosuna da yaz (admin panelde ve Supabase'de doğrudan görünsün)
+    const emailRx = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+    const phoneRx = /(\+?\d[\d\s\-().]{7,})/;
+
+    const extractedEmail = emailRx.exec(leadData.message)?.[0] || null;
+    const extractedPhone = phoneRx.exec(leadData.message)?.[0]?.trim() || null;
+
+    await supabase.from('leads').insert([{
+      name: 'Chat Lead',
+      email: extractedEmail,
+      phone: extractedPhone,
+      message: `[Chatbot – ${leadData.type}] ${leadData.message} | session: ${leadData.sessionId}`,
+      service_type: 'chat',
+      project_code: 'erpolart',
+    }]);
+
+    console.log(`[LEAD] ${leadData.type} captured → leads tablosuna yazıldı`);
   } catch (err) {
     console.error('[LEAD SAVE ERROR]', err.message);
   }

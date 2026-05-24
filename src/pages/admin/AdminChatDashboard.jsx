@@ -348,19 +348,30 @@ const AdminChatDashboard = () => {
 
               {/* Messages */}
               <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin scrollbar-thumb-white/5 bg-[#0a0a0f]/50">
-                {messages.map((msg, i) => (
+                {messages.map((msg, i) => {
+                  // System mesajları (lead capture) ortada küçük banner olarak göster
+                  if (msg.role === 'system') {
+                    return (
+                      <div key={`${i}-${msg.created_at}`} className="flex justify-center">
+                        <div className="px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-400 text-[9px] font-black uppercase tracking-widest">
+                          {msg.content}
+                        </div>
+                      </div>
+                    );
+                  }
+                  return (
                   <div key={`${i}-${msg.created_at}`} className={`flex ${msg.role === 'user' ? 'justify-start' : 'justify-end'}`}>
                     <div className={`flex gap-4 max-w-[70%] ${msg.role === 'user' ? '' : 'flex-row-reverse'}`}>
-                      <div className={`w-8 h-8 rounded-lg shrink-0 flex items-center justify-center border ${msg.role === 'user' 
-                        ? 'bg-white/5 border-white/10 text-white' 
-                        : msg.role === 'admin' ? 'bg-indigo border-indigo text-white' 
+                      <div className={`w-8 h-8 rounded-lg shrink-0 flex items-center justify-center border ${msg.role === 'user'
+                        ? 'bg-white/5 border-white/10 text-white'
+                        : msg.role === 'admin' ? 'bg-indigo border-indigo text-white'
                         : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'}`}>
                         {msg.role === 'user' ? <User size={14} /> : msg.role === 'admin' ? <Shield size={14} /> : <Bot size={14} />}
                       </div>
                       <div className="space-y-1">
-                        <div className={`p-4 rounded-2xl text-xs leading-relaxed font-medium ${msg.role === 'user' 
-                          ? 'bg-[#0f0f18] text-gray-300 border border-white/5 rounded-tl-none' 
-                          : msg.role === 'admin' ? 'bg-indigo text-white rounded-tr-none shadow-lg shadow-indigo/20' 
+                        <div className={`p-4 rounded-2xl text-xs leading-relaxed font-medium ${msg.role === 'user'
+                          ? 'bg-[#0f0f18] text-gray-300 border border-white/5 rounded-tl-none'
+                          : msg.role === 'admin' ? 'bg-indigo text-white rounded-tr-none shadow-lg shadow-indigo/20'
                           : 'bg-emerald-500/5 text-emerald-100 border border-emerald-500/20 rounded-tr-none'}`}>
                           {msg.content}
                         </div>
@@ -370,7 +381,8 @@ const AdminChatDashboard = () => {
                       </div>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
                 <div ref={messagesEndRef} />
               </div>
 
