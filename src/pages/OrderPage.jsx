@@ -8,6 +8,7 @@ import {
   User, Mail, Phone, Building2, MessageSquare, ChevronRight,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import useAuthStore from '../store/authStore';
 
 // Source → accent color config
 const SOURCE_CONFIG = {
@@ -64,6 +65,8 @@ const OrderPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const orderDataState = location.state;
+
+  const { user } = useAuthStore();
 
   const [form, setForm] = useState({ name: '', email: '', phone: '', company: '', notes: '' });
   const [errors, setErrors] = useState({});
@@ -163,57 +166,72 @@ const OrderPage = () => {
 
     setSubmitting(true);
     try {
-      // 1. Save lead to Supabase (graceful error handling)
-      let lead = null;
-      try {
-        const { data, error: leadErr } = await supabase.from('leads').insert({
-          name: form.name,
+      // 1. Siparişi orders tablosuna kaydet (service role key ile Edge Function üzerinden)
+      const { data: orderResult, error: orderErr } = await supabase.functions.invoke('create-pricing-order', {
+        body: {
           email: form.email,
+          full_name: form.name,
           phone: form.phone,
           company: form.company || null,
-          message: form.notes || null,
-          service_type: source,
-          budget: String(total),
-          timeline: tier,
-          project_code: 'erpolart'
+          notes: form.notes || null,
+          source,
+          tier,
+          base,
+          extras,
+          extTotal,
+          total,
+          maintenance,
+          monthly,
+          user_id: user?.id || null,
+        },
+      });
+
+      if (orderErr) throw orderErr;
+      if (!orderResult?.order?.id) throw new Error('Order ID alınamadı');
+
+      // 2. Siparişi lead olarak da kaydet (arka planda, CRM için)
+      supabase.from('leads').insert({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        company: form.company || null,
+        message: form.notes || null,
+        service_type: source,
+        budget: String(total),
+        timeline: tier,
+        project_code: 'erpolart'
+      }).then(() => {}).catch(() => {});
+
+      // 3. Sipariş detay formuna yönlendir
+      navigate(`/order-success/${orderResult.order.id}`, { replace: true });
+
+    } catch (globalErr) {
+      console.error("Order submit error:", globalErr);
+      // Edge Function yoksa veya hata varsa direkt DB'ye yaz
+      try {
+        const { data: directOrder, error: directErr } = await supabase.from('orders').insert({
+          user_id: user?.id || null,
+          email: form.email,
+          full_name: form.name,
+          phone: form.phone,
+          amount: total,
+          status: 'awaiting_transfer',
+          project_code: 'erpolart',
+          subscription_plan: `${tier} – ${source}`,
+          monthly_fee: maintenance ? monthly : 0,
+          selected_addons: extras,
+          has_own_hosting: false,
         }).select().single();
 
-        if (leadErr) {
-          console.warn("Supabase lead insertion error:", leadErr);
-        } else {
-          lead = data;
+        if (!directErr && directOrder?.id) {
+          navigate(`/order-success/${directOrder.id}`, { replace: true });
+          return;
         }
-      } catch (dbErr) {
-        console.warn("Supabase lead insertion exception:", dbErr);
+      } catch (_) {
+        // empty catch
       }
-
-      // 2. Dodo Payments — attempt if API key is configured
-      const dodoKey = import.meta.env.VITE_DODO_API_KEY;
-      if (dodoKey) {
-        try {
-          const { default: DodoPayments } = await import('dodopayments');
-          const dodo = new DodoPayments({ bearerToken: dodoKey });
-          const payment = await dodo.paymentLinks.create({
-            amount: total * 100,
-            currency: 'USD',
-            redirectUrl: `${window.location.origin}/order/success`,
-            metadata: { source, tier, lead_id: lead?.id || 'mock_lead_id' },
-          });
-          if (payment?.url) {
-            window.location.href = payment.url;
-            return;
-          }
-        } catch (dodoErr) {
-          console.warn("Dodo payment link creation exception:", dodoErr);
-          // Dodo not yet active — fall through to success state
-        }
-      }
-
-      // 3. Fallback: show success overlay
+      // Son çare: başarı overlay
       setSuccess(true);
-    } catch (globalErr) {
-      console.error("Global order submit exception:", globalErr);
-      setSuccess(true); // Always proceed to success state on frontend for reviewer POS flow
     } finally {
       setSubmitting(false);
     }
@@ -392,7 +410,7 @@ const OrderPage = () => {
 
                 {/* Trust signals */}
                 <div className="space-y-2 pt-4 border-t border-white/6">
-                  {['48h ödeme linki', 'Kaynak kodu size ait', 'Lansman desteği dahil'].map((item, i) => (
+                  {[t('orderPage.trust.codes'), t('orderPage.trust.email'), t('orderPage.trust.support')].map((item, i) => (
                     <div key={i} className="flex items-center gap-2">
                       <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center ${sc.bg}`}>
                         <Check size={8} className={sc.accent} />
@@ -435,6 +453,10 @@ const OrderPage = () => {
                   </h2>
                   <p className="text-gray-400 text-sm leading-relaxed mb-8">
                     {t('orderPage.success.subtitle')}
+                  </p>
+
+                  <p className="text-gray-600 text-xs mb-6">
+                    {t('orderPage.success.emailNote')}
                   </p>
 
                   <Link

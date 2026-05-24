@@ -33,3 +33,8 @@ entrypoint = "./functions/payment-create/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/payment-callback/index.ts"
+
+[functions.create-pricing-order]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/create-pricing-order/index.ts"

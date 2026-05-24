@@ -37,11 +37,20 @@ const resources = {
           loadError: "Failed to load architectural data. Refreshing protocol...",
           trackStatus: "Track Order Status",
           fileLimitError: "Architectural Touch: Please upload your logo in a size smaller than 5MB. This helps us maintain your system's performance.",
+          revisionTitle: "REVISION REQUESTS",
+          revisionPlaceholder: "Describe the changes you'd like: text edits, color adjustments, image replacements, section rearrangements, new sections, etc. Be as specific as possible.",
           addonsTitle: "ADD-ONS & REQUIREMENTS",
           aiContextLabel: "AI CHATBOT CONTEXT / PROMPT",
           aiContextPlaceholder: "E.g., Our assistant must maintain a highly polite and professional tone. Its goal is to collect visitor contact details and route pricing inquiries to the booking form...",
           targetLanguagesLabel: "TARGET LANGUAGES (E.G. ENGLISH, TURKISH, GERMAN)",
           targetLanguagesPlaceholder: "English, Turkish, German, etc."
+        },
+        deliveryInfo: {
+          title: "WHAT HAPPENS NEXT",
+          codeDelivery: "Full Code Delivery",
+          codeDeliveryDesc: "Once your site is completed, we hand over everything: domain access, hosting credentials, GitHub repository, and CMS login. You own 100% of your project.",
+          subscription: "Monthly Maintenance Plan",
+          subscriptionDesc: "Keep your site updated, secure, and performing with our optional monthly plan — content updates, bug fixes, and priority support included."
         }
       },
       orderCancel: {
@@ -1087,7 +1096,13 @@ const resources = {
           title: "We'll Be",
           titleAccent: "In Touch.",
           subtitle: "Your order is received. We'll send a payment link to your email within 24 hours.",
+          emailNote: "If you were redirected here, please check your email for the order link.",
           cta: "Back to Home"
+        },
+        trust: {
+          codes: "All source codes delivered upon completion",
+          email: "Payment info sent within 24 hours",
+          support: "Launch support included"
         },
         noData: "No order data. Redirecting...",
         ctaNote: "Secure checkout · 24h response guarantee"
@@ -1304,11 +1319,20 @@ const resources = {
           loadError: "Mimari veriler yüklenemedi. Protokol yenileniyor...",
           trackStatus: "Sipariş Durumunu Takip Et",
           fileLimitError: "Mimari bir dokunuş: Lütfen logonuzu 5MB'dan daha düşük bir boyutta yükleyin. Bu, sisteminizin performansını korumamıza yardımcı olur.",
+          revisionTitle: "REVİZYON TALEPLERİ",
+          revisionPlaceholder: "Yapmamızı istediğiniz değişiklikleri yazın: metin düzenlemeleri, renk ayarları, görsel değişimleri, bölüm sıralama, yeni bölüm ekleme vb. Ne kadar detaylı olursa o kadar iyi.",
           addonsTitle: "EK GEREKSİNİMLER (ADD-ONS)",
           aiContextLabel: "YAPAY ZEKA ASİSTAN BAĞLAMI / PROMPT",
           aiContextPlaceholder: "Örn: Asistanımız son derece kibar ve profesyonel bir tonda konuşmalıdır. Amacı, ziyaretçilerin iletişim bilgilerini almak ve fiyat soranları doğrudan randevu formuna yönlendirmektir...",
           targetLanguagesLabel: "HEDEF DİLLER (ÖRN. İNGİLİZCE, TÜRKÇE, ALMANCA)",
           targetLanguagesPlaceholder: "Türkçe, İngilizce, Almanca vb."
+        },
+        deliveryInfo: {
+          title: "SIRADA NE VAR",
+          codeDelivery: "Tüm Kodlar Teslim Edilir",
+          codeDeliveryDesc: "Siteniz tamamlandığında domain erişimi, hosting bilgileri, GitHub reposu ve CMS girişi dahil her şey size teslim edilir. Projenin %100 sahibi sizsiniz.",
+          subscription: "Aylık Bakım Paketi",
+          subscriptionDesc: "Sitenizi güncel, güvenli ve yüksek performanslı tutmak için aylık bakım paketimize dahil olabilirsiniz — içerik güncellemeleri, hata düzeltmeleri ve öncelikli destek dahildir."
         }
       },
       orderCancel: {
@@ -2353,8 +2377,14 @@ const resources = {
           badge: "SİPARİŞ ALINDI",
           title: "Yakında",
           titleAccent: "Dönüyoruz.",
-          subtitle: "Siparişiniz alındı. 24 saat içinde e-postanıza ödeme linki gönderiyoruz.",
+          subtitle: "Siparişiniz alındı. 24 saat içinde e-postanıza ödeme bilgilerini ve sonraki adımları ileteceğiz.",
+          emailNote: "Buraya yönlendirildiyseniz lütfen e-postanızı kontrol edin.",
           cta: "Ana Sayfaya Dön"
+        },
+        trust: {
+          codes: "Tüm kaynak kodlar teslim edilir",
+          email: "24 saat içinde ödeme bilgisi",
+          support: "Lansman desteği dahil"
         },
         noData: "Sipariş verisi bulunamadı. Yönlendiriliyor...",
         ctaNote: "Güvenli ödeme · 24 saat cevap garantisi"
@@ -2617,11 +2647,20 @@ const resources = {
           trackStatus: "Bestellstatus verfolgen",
           manualReview: "Status: Manuelle Architekturprüfung",
           fileLimitError: "Architektonische Berührung: Bitte laden Sie Ihr Logo in einer Größe von weniger als 5 MB hoch.",
+          revisionTitle: "REVISION ANFORDERUNGEN",
+          revisionPlaceholder: "Beschreiben Sie die gewünschten Änderungen: Textbearbeitungen, Farbanpassungen, Bildaustausche, Abschnittsumordnungen, neue Abschnitte usw. Je detaillierter, desto besser.",
           addonsTitle: "ADD-ONS & ANFORDERUNGEN",
           aiContextLabel: "KI-CHATBOT-KONTEXT / PROMPT",
           aiContextPlaceholder: "Z.B. Unser Assistent muss einen sehr höflichen und professionellen Ton bewahren...",
           targetLanguagesLabel: "ZIELSPRACHEN (Z.B. ENGLISCH, TÜRKISCH, DEUTSCH)",
           targetLanguagesPlaceholder: "Englisch, Türkisch, Deutsch usw."
+        },
+        deliveryInfo: {
+          title: "WAS ALS NÄCHSTES PASSIERT",
+          codeDelivery: "Vollständige Code-Übergabe",
+          codeDeliveryDesc: "Nach Fertigstellung Ihrer Website erhalten Sie alles: Domain-Zugang, Hosting-Zugangsdaten, GitHub-Repository und CMS-Login. Das Projekt gehört zu 100% Ihnen.",
+          subscription: "Monatlicher Wartungsplan",
+          subscriptionDesc: "Halten Sie Ihre Website aktuell, sicher und leistungsstark mit unserem optionalen Monatsplan — Inhaltsaktualisierungen, Fehlerbehebungen und Prioritätssupport inklusive."
         }
       },
       orderCancel: {
@@ -3086,8 +3125,14 @@ const resources = {
           badge: "BESTELLUNG EINGEGANGEN",
           title: "Wir melden",
           titleAccent: "uns bald.",
-          subtitle: "Ihre Bestellung wurde erfasst. Wir senden Ihnen innerhalb von 24 Stunden einen Zahlungslink per E-Mail.",
+          subtitle: "Ihre Bestellung wurde erfasst. Wir senden Ihnen innerhalb von 24 Stunden Zahlungsinformationen und nächste Schritte per E-Mail.",
+          emailNote: "Wenn Sie hierher weitergeleitet wurden, überprüfen Sie bitte Ihre E-Mail.",
           cta: "Zur Startseite"
+        },
+        trust: {
+          codes: "Alle Quellcodes werden nach Fertigstellung übergeben",
+          email: "Zahlungsinfo innerhalb von 24 Stunden",
+          support: "Launch-Support inklusive"
         },
         noData: "Keine Bestelldaten. Weiterleitung...",
         ctaNote: "Sicherer Checkout · 24h Antwortgarantie"

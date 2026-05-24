@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, X, AlertCircle, Zap, Globe, Server, Loader2, Camera, FileText, Users, Hexagon } from 'lucide-react';
+import { ChevronRight, X, AlertCircle, Zap, Globe, Server, Loader2, Camera, FileText, Users, Hexagon, Edit3 } from 'lucide-react';
 import { supabaseAdmin } from '../../lib/supabaseAdmin';
 import { toast } from '../../components/Toast';
 
@@ -61,7 +61,7 @@ const OrderModal = ({ order, onClose }) => {
             />
           </div>
 
-          {order.brand_name || order.project_notes ? (
+          {order.brand_name || order.project_notes || order.logo_url ? (
             <div className="space-y-6 text-left">
               <div className="space-y-2">
                 <div className="text-[10px] font-black text-indigo uppercase tracking-widest">Marka Kimliği</div>
@@ -73,6 +73,42 @@ const OrderModal = ({ order, onClose }) => {
                   {order.logo_url ? <img src={order.logo_url} alt="Logo" className="max-h-[120px] object-contain drop-shadow-2xl" /> : <p className="text-xs text-gray-600 italic">Logo henüz yüklenmedi</p>}
                 </div>
               </div>
+              {order.project_notes && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-[10px] font-black text-indigo uppercase tracking-widest">
+                    <Edit3 size={12} />
+                    Revizyon Talepleri
+                  </div>
+                  <div className="p-5 bg-indigo/5 border border-indigo/10 rounded-2xl">
+                    <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">{order.project_notes}</p>
+                  </div>
+                </div>
+              )}
+              {order.brand_colors && (
+                <div className="space-y-3">
+                  <div className="text-[10px] font-black text-amber-500 uppercase tracking-widest">Marka Renkleri</div>
+                  <div className="flex gap-4">
+                    {order.brand_colors.primary && (
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg border border-white/10" style={{ backgroundColor: order.brand_colors.primary }} />
+                        <div>
+                          <p className="text-[9px] font-black text-gray-500 uppercase tracking-wider">Ana</p>
+                          <code className="text-[10px] text-white font-mono">{order.brand_colors.primary.toUpperCase()}</code>
+                        </div>
+                      </div>
+                    )}
+                    {order.brand_colors.secondary && (
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg border border-white/10" style={{ backgroundColor: order.brand_colors.secondary }} />
+                        <div>
+                          <p className="text-[9px] font-black text-gray-500 uppercase tracking-wider">İkincil</p>
+                          <code className="text-[10px] text-white font-mono">{order.brand_colors.secondary.toUpperCase()}</code>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div className="text-center py-10 bg-white/[0.01] rounded-3xl border border-dashed border-white/5">

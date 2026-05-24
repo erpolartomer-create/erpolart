@@ -21,7 +21,10 @@ import {
   Lock,
   Loader2,
   Sparkles,
-  Languages
+  Languages,
+  PackageCheck,
+  CalendarClock,
+  Edit3
 } from 'lucide-react';
 import ScrollReveal from '../components/ScrollReveal';
 import { uploadToStorage } from '../services/storageService';
@@ -281,6 +284,35 @@ const OrderSuccessPage = () => {
           </p>
         </div>
 
+        {/* Delivery & Subscription Info Cards */}
+        <div className="w-full max-w-4xl mx-auto mb-4 animate-in fade-in slide-in-from-bottom-6 duration-700">
+          <p className="text-[9px] font-black uppercase tracking-[0.4em] text-gray-600 mb-4 text-center">{t('orderSuccess.deliveryInfo.title')}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Code Delivery Card */}
+            <div className="group p-6 rounded-[2rem] bg-surface border border-white/5 flex items-start gap-4 hover:border-cyan/20 transition-colors duration-500 relative overflow-hidden">
+              <div className="absolute bottom-0 right-0 w-32 h-32 bg-cyan/5 blur-[60px] rounded-full translate-x-1/2 translate-y-1/2 group-hover:bg-cyan/10 transition-colors duration-700" />
+              <div className="w-10 h-10 rounded-xl bg-cyan/10 flex items-center justify-center text-cyan shrink-0">
+                <PackageCheck size={18} />
+              </div>
+              <div className="relative z-10">
+                <h4 className="text-white text-[11px] font-black uppercase tracking-[0.15em] mb-1">{t('orderSuccess.deliveryInfo.codeDelivery')}</h4>
+                <p className="text-gray-500 text-[10px] leading-relaxed">{t('orderSuccess.deliveryInfo.codeDeliveryDesc')}</p>
+              </div>
+            </div>
+            {/* Subscription Card */}
+            <div className="group p-6 rounded-[2rem] bg-surface border border-white/5 flex items-start gap-4 hover:border-indigo/20 transition-colors duration-500 relative overflow-hidden">
+              <div className="absolute bottom-0 right-0 w-32 h-32 bg-indigo/5 blur-[60px] rounded-full translate-x-1/2 translate-y-1/2 group-hover:bg-indigo/10 transition-colors duration-700" />
+              <div className="w-10 h-10 rounded-xl bg-indigo/10 flex items-center justify-center text-indigo shrink-0">
+                <CalendarClock size={18} />
+              </div>
+              <div className="relative z-10">
+                <h4 className="text-white text-[11px] font-black uppercase tracking-[0.15em] mb-1">{t('orderSuccess.deliveryInfo.subscription')}</h4>
+                <p className="text-gray-500 text-[10px] leading-relaxed">{t('orderSuccess.deliveryInfo.subscriptionDesc')}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="flex flex-col items-center gap-12">
           {/* Main Controls: Personalization Form */}
           <div className="w-full max-w-4xl space-y-8 h-full mx-auto">
@@ -429,19 +461,22 @@ const OrderSuccessPage = () => {
                     </div>
                   </div>
 
-                    {/* Notes */}
+                    {/* Revision Requests */}
                     <div className="space-y-3">
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 flex items-center gap-2">
-                        <MessageSquare size={12} className="text-indigo" />
-                        {t('orderSuccess.form.notes')}
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo flex items-center gap-2">
+                        <Edit3 size={12} className="text-indigo" />
+                        {t('orderSuccess.form.revisionTitle')}
                       </label>
+                      <p className="text-[9px] text-gray-600 font-bold uppercase tracking-widest -mt-1">
+                        {t('orderSuccess.form.notes')}
+                      </p>
                       <textarea
-                        rows="3"
+                        rows="5"
                         disabled={isLocked}
                         value={formData.notes}
                         onChange={(e) => { setFormData({ ...formData, notes: e.target.value }); setIsDirty(true); }}
-                        placeholder="..."
-                        className="w-full bg-deep-black/50 border border-white/5 rounded-[2.5rem] px-8 py-6 text-white text-sm font-medium focus:border-indigo transition-all outline-none placeholder:text-white/10 italic resize-none custom-scrollbar disabled:opacity-30 disabled:grayscale transition-all"
+                        placeholder={t('orderSuccess.form.revisionPlaceholder')}
+                        className="w-full bg-indigo/5 border border-indigo/10 rounded-[2.5rem] px-8 py-6 text-white text-sm font-medium focus:border-indigo transition-all outline-none placeholder:text-white/10 italic resize-none custom-scrollbar disabled:opacity-30 disabled:grayscale transition-all"
                       />
                     </div>
 
