@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
-import { Sparkles, Mail, MessageSquare, Building2, MapPin, Phone, FileText } from 'lucide-react';
+import { Sparkles, Mail, MessageSquare, Building2, Phone } from 'lucide-react';
 import ScrollReveal from '../components/ScrollReveal';
 import ContactForm from '../components/ContactForm';
 import { motion } from 'framer-motion';
@@ -75,16 +75,6 @@ const ContactPage = () => {
 
                               <div className="flex gap-4 items-start">
                                  <div className="w-8 h-8 rounded-lg bg-indigo/10 flex items-center justify-center text-indigo shrink-0">
-                                    <MapPin size={16} />
-                                 </div>
-                                 <div>
-                                    <div className="font-bold text-gray-500 text-[10px] uppercase tracking-wider">{t('contact.companyAddress')}</div>
-                                    <div className="text-white font-medium mt-1 text-xs md:text-sm">Pınarlı Mah. 24096 Sk. Kapı No: 19 A Aksu / ANTALYA</div>
-                                 </div>
-                              </div>
-
-                              <div className="flex gap-4 items-start">
-                                 <div className="w-8 h-8 rounded-lg bg-indigo/10 flex items-center justify-center text-indigo shrink-0">
                                     <Phone size={16} />
                                  </div>
                                  <div>
@@ -103,15 +93,6 @@ const ContactPage = () => {
                                  </div>
                               </div>
 
-                              <div className="flex gap-4 items-start">
-                                 <div className="w-8 h-8 rounded-lg bg-indigo/10 flex items-center justify-center text-indigo shrink-0">
-                                    <FileText size={16} />
-                                 </div>
-                                 <div>
-                                    <div className="font-bold text-gray-500 text-[10px] uppercase tracking-wider">{t('contact.companyTaxNumber')}</div>
-                                    <div className="text-white font-medium mt-1 text-xs md:text-sm">9080295761</div>
-                                 </div>
-                              </div>
                            </div>
                         </div>
                      </div>

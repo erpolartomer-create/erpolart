@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import useUIStore from '../store/uiStore';
@@ -80,7 +80,10 @@ const Footer = () => {
         <div>
           <h4 className="text-white font-medium mb-6 font-display">{t('footer.contact')}</h4>
           <ul className="space-y-4 text-sm text-muted-text">
+            <li className="text-white font-medium">FİDAN ÜNAL ERPOLAT - ERPOLART MİMARLIK</li>
             <li><a href="mailto:hello@erpolart.com" className="hover:text-cyan transition-colors">hello@erpolart.com</a></li>
+            <li>Pınarlı Mah. 24096 Sk. No: 19 A, Aksu / ANTALYA</li>
+            <li>VKN: 9080295761</li>
             <li>{t('footer.ready')}</li>
             <li><Link to="/contact" className="text-white border-b border-indigo inline-block mt-2 hover:text-indigo transition-colors">{t('footer.start')}</Link></li>
           </ul>

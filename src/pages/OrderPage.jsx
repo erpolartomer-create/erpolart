@@ -13,13 +13,13 @@ import useAuthStore from '../store/authStore';
 // Source → accent color config
 const SOURCE_CONFIG = {
   projects: {
-    accent: 'text-violet',
-    border: 'border-violet/30',
-    bg: 'bg-violet/10',
-    badgeBg: 'bg-violet/10 border-violet/20 text-violet',
-    cta: 'bg-violet text-white hover:bg-violet/80',
-    shimmer: 'bg-gradient-to-r from-transparent via-violet/35 to-transparent',
-    glow: 'bg-violet/5',
+    accent: 'text-cyan',
+    border: 'border-cyan/30',
+    bg: 'bg-cyan/10',
+    badgeBg: 'bg-cyan/10 border-cyan/20 text-cyan',
+    cta: 'bg-cyan text-black hover:bg-cyan/80',
+    shimmer: 'bg-gradient-to-r from-transparent via-cyan/35 to-transparent',
+    glow: 'bg-cyan/5',
   },
   saas: {
     accent: 'text-amber-400',
@@ -105,13 +105,14 @@ const OrderPage = () => {
         } else {
           const { data, error } = await supabase.from('templates').select('*').eq('id', id).single();
           if (error) throw error;
+          const parsedPrice = parseFloat(String(data.price).replace(/[$,]/g, '')) || 0;
           setDynamicOrderData({
             source: 'projects',
             tier: data.tier === 4 ? 'Platinum' : data.tier === 3 ? 'Premium' : data.tier === 2 ? 'Pro' : 'Corporate',
-            base: data.price,
+            base: parsedPrice,
             extras: [],
             extTotal: 0,
-            total: data.price,
+            total: parsedPrice,
             maintenance: false,
             monthly: 0,
             projectName: data.name
