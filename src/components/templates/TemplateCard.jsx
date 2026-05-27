@@ -211,7 +211,7 @@ const TemplateCard = forwardRef(({ template, index = 0 }, ref) => {
               >
                 <div className="w-[72px] h-[72px] rounded-full bg-white/10 backdrop-blur-xl border border-white/25 flex flex-col items-center justify-center gap-1.5 scale-90 group-hover:scale-100 transition-transform duration-500">
                   <ExternalLink size={20} className="text-white" />
-                  <span className="text-[7px] font-black uppercase tracking-widest text-white/80">DETAY</span>
+                  <span className="text-[7px] font-black uppercase tracking-widest text-white/80">{t('templatesPage.detailHover')}</span>
                 </div>
               </div>
             )}
@@ -259,7 +259,7 @@ const TemplateCard = forwardRef(({ template, index = 0 }, ref) => {
               {/* Price */}
               {!isSold && (
                 <div className="flex flex-col shrink-0">
-                  <span className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-600 mb-0.5">Fiyat</span>
+                  <span className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-600 mb-0.5">{t('templatesPage.priceLabel')}</span>
                   <span className={`text-2xl font-display font-black italic leading-none ${tier.priceColor}`}>
                     ${template.price?.toString().replace('$', '')}
                   </span>
@@ -294,7 +294,7 @@ const TemplateCard = forwardRef(({ template, index = 0 }, ref) => {
 
             {isSold && (
               <p className="text-[9px] text-gray-700 font-bold uppercase tracking-[0.2em] text-center mt-3 italic relative z-10">
-                Similar assets can be requested.
+                {t('templatesPage.similarRequest')}
               </p>
             )}
           </div>
@@ -315,7 +315,7 @@ const TemplateCard = forwardRef(({ template, index = 0 }, ref) => {
                   <div className="w-12 h-12 mb-3 rounded-full border border-red-500/50 flex items-center justify-center bg-red-500/10 animate-pulse shadow-[0_0_35px_rgba(239,68,68,0.35)]">
                     <ShieldCheck size={22} className="text-red-400" />
                   </div>
-                  <p className="text-[11px] font-black text-white uppercase tracking-[0.4em] italic mb-1">Project</p>
+                  <p className="text-[11px] font-black text-white uppercase tracking-[0.4em] italic mb-1">{t('templatesPage.projectLabel')}</p>
                   <p className="text-[22px] font-black text-white uppercase tracking-[0.2em] italic drop-shadow-[0_0_20px_rgba(255,255,255,0.35)]">
                     {t('status.acquired')}
                   </p>

@@ -221,7 +221,26 @@ const resources = {
           performance: "Rapid Deploy",
           build: "Build 2024.v1.0",
           authentic: "Exclusive"
-        }
+        },
+        seo: {
+          title: "Premium Templates - ErpolArt",
+          description: "High-quality, modern and customizable premium web templates. Each template sold exclusively once — guaranteed unique digital identity.",
+        },
+        priceLabel: "Price",
+        similarRequest: "Similar assets can be requested.",
+        projectLabel: "Project",
+        detailHover: "DETAIL",
+        process: {
+          title: "How Templates Work",
+          step1Title: "1. Browse & Choose",
+          step1Desc: "Explore our catalog of premium designs.",
+          step2Title: "2. Acquire Exclusive",
+          step2Desc: "Purchase to instantly lock the design. It is removed from sale.",
+          step3Title: "3. Brand Alignment",
+          step3Desc: "We update colors, fonts, and assets to match your brand (3 revision rounds).",
+          step4Title: "4. Rapid Deployment",
+          step4Desc: "We deploy to your domain within 72 hours, fully yours.",
+        },
       },
       aboutPage: {
         seo: {
@@ -278,10 +297,18 @@ const resources = {
         desc: "Websites Built with Intelligence. Delivered with Precision. Elevating brands bridging cutting-edge AI and premium aesthetics.",
         nav: "Navigation",
         contact: "Contact",
+        companyName: "FİDAN ÜNAL ERPOLAT - ERPOLART ARCHITECTURE",
+        address: "Pınarlı Mah. 24096 Sk. No: 19 A, Aksu / ANTALYA",
+        taxId: "Tax ID: 9080295761",
         ready: "Ready for your exclusive website?",
         start: "Start a Project",
         copyright: "All rights reserved.",
-        tagline: "Powered by AI. Handcrafted with precision."
+        tagline: "Powered by AI. Handcrafted with precision.",
+        legal1: "Distance Sales Agreement",
+        legal2: "Cancellation & Refund",
+        legal3: "Privacy Policy",
+        legal4: "Data Protection",
+        logoAlt: "ErpolArt Digital Solutions Logo"
       },
       techMarquee: {
         title: "Our Technology Stack",
@@ -720,6 +747,10 @@ const resources = {
         updatePassword: "Update Password"
       },
       saasPage: {
+        seo: {
+          title: "SaaS Solutions - ErpolArt",
+          description: "Scalable, secure and modern SaaS solutions for your business."
+        },
         hero: {
           badge: "NEXT-GEN SOFTWARE",
           titlePart1: "Empower Your Business",
@@ -738,10 +769,15 @@ const resources = {
           automation: { title: "Workflow Automation", desc: "Eliminate repetitive tasks with intelligent automation pipelines. From email sequences to inventory management, we automate your operations." },
           api: { title: "API & Integration Hub", desc: "Seamless third-party integrations with payment gateways, CRMs, ERPs, and custom webhooks. Your SaaS, connected to everything." },
           security: { title: "Security & Compliance", desc: "Enterprise-grade security with end-to-end encryption, role-based access control, and full compliance with GDPR, SOC2, and KVKK." },
-          infrastructure: { title: "Scalable Cloud Architecture", desc: "Cloud-native microservices built on AWS, GCP, or Azure. Auto-scaling infrastructure that grows with your user base from 100 to 100,000+." }
+          infrastructure: { title: "Scalable Cloud Architecture", desc: "Cloud-native microservices built on AWS, GCP, or Azure. Auto-scaling infrastructure that grows with your user base from 100 to 100,000+." },
+          statConcurrent: "Concurrent Users",
+          statUptime: "Uptime Guarantee",
+          statApiResponse: "API Response"
         },
         showcase: {
           badge: "CASE STUDIES",
+          livePreview: "Live Preview",
+          caseStudyBtn: "Case Study",
           title: "Deployed",
           titleAccent: "Solutions.",
           subtitle: "Real-world SaaS platforms we've architected and deployed for businesses across industries.",
@@ -1125,6 +1161,9 @@ const resources = {
         budget: "Estimated Budget",
         description: "Project Description",
         descPlaceholder: "Briefly describe your vision, goals, and any specific requirements...",
+        namePlaceholder: "Your full name",
+        emailPlaceholder: "your@email.com",
+        errorMsg: "Failed to send message. Please try again later.",
         launch: "Start Project",
         launching: "INITIALIZING...",
         timelineLabel: "Target Timeline",
@@ -1503,7 +1542,26 @@ const resources = {
           performance: "Hızlı Kurulum",
           build: "Build 2024.v1.0",
           authentic: "Ayrıcalıklı"
-        }
+        },
+        seo: {
+          title: "Premium Şablonlar - ErpolArt",
+          description: "Yüksek kaliteli, modern ve özelleştirilebilir premium web şablonları. Her şablon yalnızca bir kez satılır — benzersiz dijital kimlik garantisi.",
+        },
+        priceLabel: "Fiyat",
+        similarRequest: "Benzer varlıklar talep edilebilir.",
+        projectLabel: "Proje",
+        detailHover: "DETAY",
+        process: {
+          title: "Şablonlar Nasıl Çalışır",
+          step1Title: "1. Göz At & Seç",
+          step1Desc: "Premium tasarım katalogumuzda gezinin.",
+          step2Title: "2. Ayrıcalıklı Edin",
+          step2Desc: "Satın alın ve tasarımı anında kilitleyin. Satıştan kaldırılır.",
+          step3Title: "3. Marka Uyumu",
+          step3Desc: "Renkleri, yazı tiplerini ve görselleri markanıza uyacak şekilde güncelleriz (3 revizyon turu).",
+          step4Title: "4. Hızlı Kurulum",
+          step4Desc: "Projenizi 72 saat içinde alan adınıza yayına alırız, tamamen sizin.",
+        },
       },
       aboutPage: {
         seo: {
@@ -1560,10 +1618,18 @@ const resources = {
         desc: "Zeka ile İnşa Edilen, Hassasiyetle Teslim Edilen Web Siteleri. En ileri yapay zeka ve premium estetiği köprüleyerek markaları yükseltiyoruz.",
         nav: "Navigasyon",
         contact: "İletişim",
+        companyName: "FİDAN ÜNAL ERPOLAT - ERPOLART MİMARLIK",
+        address: "Pınarlı Mah. 24096 Sk. No: 19 A, Aksu / ANTALYA",
+        taxId: "VKN: 9080295761",
         ready: "Size özel web siteniz için hazır mısınız?",
         start: "Proje Başlat",
         copyright: "Tüm hakları saklıdır.",
-        tagline: "Yapay zeka gücüyle. Hassasiyetle el yapımı."
+        tagline: "Yapay zeka gücüyle. Hassasiyetle el yapımı.",
+        legal1: "Mesafeli Satış Sözleşmesi",
+        legal2: "İptal ve İade",
+        legal3: "Gizlilik Politikası",
+        legal4: "KVKK (Kişisel Verilerin Korunması)",
+        logoAlt: "ErpolArt Dijital Çözümler Logosu"
       },
       techMarquee: {
         title: "Teknoloji Yığınımız",
@@ -1867,7 +1933,22 @@ const resources = {
           "Ultra-Fast Speed & Performance": "Ultra Hızlı Performans",
           "Premium Animations & UI": "Premium Animasyonlar ve UI",
           "Data Protection & Secure SSL": "Veri Koruma ve Güvenli SSL",
-          "One-Page Architecture": "Tek Sayfa (One-Page) Mimarisi"
+          "One-Page Architecture": "Tek Sayfa (One-Page) Mimarisi",
+          "AI-Powered Dashboard": "AI Destekli Panel",
+          "Automated Lead & CRM System": "Otomatik Lead & CRM Sistemi",
+          "SaaS Platform Architecture": "SaaS Platform Mimarisi",
+          "Real-Time Analytics Panel": "Gerçek Zamanlı Analitik Paneli",
+          "Multi-Language Interface": "Çok Dilli Arayüz",
+          "Secure Cloud Infrastructure": "Güvenli Bulut Altyapısı",
+          "E-Commerce & Payment Integration": "E-Ticaret & Ödeme Entegrasyonu",
+          "Full SEO Optimization Suite": "Tam SEO Optimizasyon Paketi",
+          "Mobile-First Responsive Design": "Mobil Öncelikli Duyarlı Tasarım",
+          "Powerful Admin Control Panel": "Güçlü Admin Kontrol Paneli",
+          "Smart Blog & Content System": "Akıllı Blog & İçerik Sistemi",
+          "API Integration & Webhooks": "API Entegrasyonu & Webhook'lar",
+          "Email & Notification Automation": "E-posta & Bildirim Otomasyonu",
+          "Premium Animations & Motion UI": "Premium Animasyonlar & Motion UI",
+          "Custom Branding & Identity System": "Özel Marka & Kimlik Sistemi"
         }
       },
       checkout: {
@@ -2002,6 +2083,10 @@ const resources = {
         updatePassword: "Şifreyi Güncelle"
       },
       saasPage: {
+        seo: {
+          title: "SaaS Çözümleri - ErpolArt",
+          description: "İşletmeniz için ölçeklenebilir, güvenli ve modern SaaS çözümleri."
+        },
         hero: {
           badge: "YENİ NESİL YAZILIM",
           titlePart1: "İşinizi Zekâyla",
@@ -2020,10 +2105,15 @@ const resources = {
           automation: { title: "İş Akışı Otomasyonu", desc: "Akıllı otomasyon hatları ile tekrarlayan görevleri ortadan kaldırın. E-posta dizilerinden envanter yönetimine kadar operasyonlarınızı otomatikleştiriyoruz." },
           api: { title: "API & Entegrasyon Merkezi", desc: "Ödeme ağ geçitleri, CRM'ler, ERP'ler ve özel webhook'larla sorunsuz üçüncü taraf entegrasyonları. SaaS'ınız, her şeye bağlı." },
           security: { title: "Güvenlik & Uyumluluk", desc: "Uçtan uca şifreleme, rol tabanlı erişim kontrolü ve GDPR, SOC2 ve KVKK ile tam uyumluluk sağlayan kurumsal düzeyde güvenlik." },
-          infrastructure: { title: "Ölçeklenebilir Bulut Mimarisi", desc: "AWS, GCP veya Azure üzerinde cloud-native microservices. 100'den 100.000+ kullanıcıya otomatik ölçeklenen altyapı." }
+          infrastructure: { title: "Ölçeklenebilir Bulut Mimarisi", desc: "AWS, GCP veya Azure üzerinde cloud-native microservices. 100'den 100.000+ kullanıcıya otomatik ölçeklenen altyapı." },
+          statConcurrent: "Eş Zamanlı Kullanıcı",
+          statUptime: "Uptime Garantisi",
+          statApiResponse: "API Yanıt Süresi"
         },
         showcase: {
           badge: "VAKA ÇALIŞMALARI",
+          livePreview: "Canlı Önizleme",
+          caseStudyBtn: "Vaka Çalışması",
           title: "Teslim Edilen",
           titleAccent: "Çözümler.",
           subtitle: "Farklı sektörlerdeki işletmeler için tasarlayıp devreye aldığımız gerçek SaaS platformları.",
@@ -2407,6 +2497,9 @@ const resources = {
         budget: "Tahmini Bütçe",
         description: "Proje Açıklaması",
         descPlaceholder: "Vizyonunuzu, hedeflerinizi ve özel gereksinimlerinizi kısaca açıklayın...",
+        namePlaceholder: "Adınız Soyadınız",
+        emailPlaceholder: "e-posta@adresiniz.com",
+        errorMsg: "Mesajınız gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
         launch: "Projeyi Başlat",
         launching: "GÖNDERİLİYOR...",
         timelineLabel: "Hedef Zaman Çizelgesi",
@@ -2703,6 +2796,23 @@ const resources = {
         acquired: "ERWORBEN",
         offMarket: "NICHT VERFÜGBAR"
       },
+      footer: {
+        desc: "Websites gebaut mit Intelligenz. Geliefert mit Präzision. Wir stärken Marken durch modernste KI und Premium-Ästhetik.",
+        nav: "Navigation",
+        contact: "Kontakt",
+        companyName: "FİDAN ÜNAL ERPOLAT - ERPOLART ARCHITEKTUR",
+        address: "Pınarlı Mah. 24096 Sk. No: 19 A, Aksu / ANTALYA",
+        taxId: "StNr: 9080295761",
+        ready: "Bereit für Ihre exklusive Website?",
+        start: "Projekt starten",
+        copyright: "Alle Rechte vorbehalten.",
+        tagline: "KI-gestützt. Mit Präzision handgefertigt.",
+        legal1: "Fernabsatzvertrag",
+        legal2: "Widerruf & Rückgabe",
+        legal3: "Datenschutzrichtlinie",
+        legal4: "Datenschutzerklärung",
+        logoAlt: "ErpolArt Digital Solutions Logo"
+      },
       hero: {
         title1: "Moderne Arbeit,",
         title2: "Moderne Software.",
@@ -2750,6 +2860,10 @@ const resources = {
         globalScale: "Für globale Skalierung gebaut"
       },
       saasPage: {
+        seo: {
+          title: "SaaS-Lösungen - ErpolArt",
+          description: "Skalierbare, sichere und moderne SaaS-Lösungen für Ihr Unternehmen."
+        },
         hero: {
           badge: "NÄCHSTE GENERATION SOFTWARE",
           titlePart1: "Stärken Sie Ihr Business",
@@ -2768,10 +2882,15 @@ const resources = {
           automation: { title: "Workflow-Automatisierung", desc: "Eliminieren Sie repetitive Aufgaben mit intelligenten Automatisierungspipelines. Von E-Mail-Sequenzen bis zum Bestandsmanagement automatisieren wir Ihre Abläufe." },
           api: { title: "API & Integrations-Hub", desc: "Nahtlose Integrationen von Drittanbietern mit Zahlungsgateways, CRMs, ERPs und benutzerdefinierten Webhooks. Ihr SaaS, mit allem verbunden." },
           security: { title: "Sicherheit & Compliance", desc: "Sicherheit auf Unternehmensniveau mit End-to-End-Verschlüsselung, rollenbasierter Zugriffskontrolle und vollständiger Einhaltung von DSGVO, SOC2 und KVKK." },
-          infrastructure: { title: "Skalierbare Cloud-Architektur", desc: "Cloud-native Microservices auf AWS, GCP oder Azure. Eine automatisch skalierende Infrastruktur, die mit Ihrer Nutzerbasis von 100 auf über 100.000 wächst." }
+          infrastructure: { title: "Skalierbare Cloud-Architektur", desc: "Cloud-native Microservices auf AWS, GCP oder Azure. Eine automatisch skalierende Infrastruktur, die mit Ihrer Nutzerbasis von 100 auf über 100.000 wächst." },
+          statConcurrent: "Gleichzeitige Nutzer",
+          statUptime: "Uptime-Garantie",
+          statApiResponse: "API-Antwortzeit"
         },
         showcase: {
           badge: "FALLSTUDIEN",
+          livePreview: "Live-Vorschau",
+          caseStudyBtn: "Fallstudie",
           title: "Gelieferte",
           titleAccent: "Lösungen.",
           subtitle: "Echte SaaS-Plattformen, die wir für Unternehmen verschiedenster Branchen entworfen und implementiert haben.",
@@ -3218,7 +3337,26 @@ const resources = {
           performance: "Schnellere Bereitstellung",
           build: "Build 2024.v1.0",
           authentic: "Exklusiv"
-        }
+        },
+        seo: {
+          title: "Premium-Vorlagen - ErpolArt",
+          description: "Hochwertige, moderne und anpassbare Premium-Web-Vorlagen. Jede Vorlage wird exklusiv einmal verkauft — garantierte einzigartige digitale Identität.",
+        },
+        priceLabel: "Preis",
+        similarRequest: "Ähnliche Assets können angefragt werden.",
+        projectLabel: "Projekt",
+        detailHover: "DETAIL",
+        process: {
+          title: "Wie Vorlagen funktionieren",
+          step1Title: "1. Durchsuchen & Wählen",
+          step1Desc: "Erkunden Sie unseren Katalog mit Premium-Designs.",
+          step2Title: "2. Exklusiv erwerben",
+          step2Desc: "Kaufen Sie, um das Design sofort zu sperren. Es wird aus dem Verkauf genommen.",
+          step3Title: "3. Markenanpassung",
+          step3Desc: "Wir aktualisieren Farben, Schriften und Assets passend zu Ihrer Marke (3 Revisionsrunden).",
+          step4Title: "4. Schnelle Bereitstellung",
+          step4Desc: "Wir stellen Ihr Projekt innerhalb von 72 Stunden auf Ihrer Domain bereit — vollständig Ihres.",
+        },
       },
       aboutPage: {
         seo: {
@@ -3545,7 +3683,7 @@ const resources = {
         techStack: "Technologie-Stack",
         integratedCaps: "Integrierte Fähigkeiten",
         responsive: "Responsiv",
-        mobileFirst: "Mobile-First",
+        mobileFirst: "Mobilgeräte-Zuerst",
         architecture: "Architektur",
         componentBase: "Komponenten-Basiert",
         interactions: "Interaktionen",
@@ -3569,7 +3707,22 @@ const resources = {
           "Ultra-Fast Speed & Performance": "Ultraschnelle Performance",
           "Premium Animations & UI": "Premium Animationen & UI",
           "Data Protection & Secure SSL": "Datenschutz & Sicheres SSL",
-          "One-Page Architecture": "One-Page-Architektur"
+          "One-Page Architecture": "One-Page-Architektur",
+          "AI-Powered Dashboard": "KI-gestütztes Dashboard",
+          "Automated Lead & CRM System": "Automatisiertes Lead- & CRM-System",
+          "SaaS Platform Architecture": "SaaS-Plattform-Architektur",
+          "Real-Time Analytics Panel": "Echtzeit-Analyse-Panel",
+          "Multi-Language Interface": "Mehrsprachige Oberfläche",
+          "Secure Cloud Infrastructure": "Sichere Cloud-Infrastruktur",
+          "E-Commerce & Payment Integration": "E-Commerce & Zahlungsintegration",
+          "Full SEO Optimization Suite": "Vollständiges SEO-Optimierungspaket",
+          "Mobile-First Responsive Design": "Mobile-First responsives Design",
+          "Powerful Admin Control Panel": "Leistungsstarkes Admin-Kontrollzentrum",
+          "Smart Blog & Content System": "Intelligentes Blog- & Inhaltssystem",
+          "API Integration & Webhooks": "API-Integration & Webhooks",
+          "Email & Notification Automation": "E-Mail- & Benachrichtigungsautomatisierung",
+          "Premium Animations & Motion UI": "Premium-Animationen & Motion-UI",
+          "Custom Branding & Identity System": "Individuelles Marken- & Identitätssystem"
         }
       },
       checkout: {
@@ -3679,6 +3832,9 @@ const resources = {
         budget: "Geschätztes Budget",
         description: "Projektbeschreibung",
         descPlaceholder: "Beschreiben Sie kurz Ihre Vision, Ziele und spezifischen Anforderungen...",
+        namePlaceholder: "Ihr vollständiger Name",
+        emailPlaceholder: "ihre@email.de",
+        errorMsg: "Beim Senden Ihrer Nachricht ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
         launch: "Projekt starten",
         launching: "INITIALISIERUNG...",
         timelineLabel: "Zielzeitplan",

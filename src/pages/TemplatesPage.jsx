@@ -12,18 +12,18 @@ const TemplatesPage = () => {
   return (
     <div className="pt-24 pb-24 min-h-screen bg-deep-black relative overflow-hidden transition-colors duration-500">
       <Helmet>
-        <title>Premium Şablonlar - ErpolArt</title>
-        <meta name="description" content="Yüksek kaliteli, modern ve özelleştirilebilir premium web şablonları." />
+        <title>{t('templatesPage.seo.title')}</title>
+        <meta name="description" content={t('templatesPage.seo.description')} />
         <link rel="canonical" href="https://erpolart.com/templates" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="ErpolArt" />
-        <meta property="og:title" content="Premium Şablonlar - ErpolArt" />
-        <meta property="og:description" content="Yüksek kaliteli, modern ve özelleştirilebilir premium web şablonları." />
+        <meta property="og:title" content={t('templatesPage.seo.title')} />
+        <meta property="og:description" content={t('templatesPage.seo.description')} />
         <meta property="og:url" content="https://erpolart.com/templates" />
         <meta property="og:image" content="https://erpolart.com/og-image.webp" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Premium Şablonlar - ErpolArt" />
-        <meta name="twitter:description" content="Yüksek kaliteli, modern ve özelleştirilebilir premium web şablonları." />
+        <meta name="twitter:title" content={t('templatesPage.seo.title')} />
+        <meta name="twitter:description" content={t('templatesPage.seo.description')} />
         <meta name="twitter:image" content="https://erpolart.com/og-image.webp" />
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',

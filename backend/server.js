@@ -9,6 +9,7 @@ import contentRoutes from './src/routes/contentRoutes.js';
 import messageRoutes from './src/routes/messageRoutes.js';
 import paymentRoutes from './src/routes/paymentRoutes.js';
 import aiRoutes from './src/routes/aiRoutes.js';
+import dbRoutes from './src/routes/dbRoutes.js';
 import { supabase } from './src/config/supabase.js';
 
 import { Server } from 'socket.io';
@@ -18,28 +19,37 @@ import { createServer } from 'http';
 dotenv.config();
 
 const app = express();
+app.disable('x-powered-by');
 
 // Bot susturma listesi (In-memory MVP)
 const mutedSessions = new Set();
 app.set('mutedSessions', mutedSessions);
 
 const httpServer = createServer(app);
-const ALLOWED_ORIGINS = [
+const productionOrigins = [
   'https://erpolart.com',
   'https://www.erpolart.com',
-  'https://erpolart-production.up.railway.app',
-  'http://localhost:5173',
-  'http://localhost:5174',
-  'http://localhost:5175',
-  'http://localhost:5176',
-  'http://localhost:5252',
-  'http://localhost:5253',
-  'http://localhost:5254',
-  'http://localhost:5255',
-  'http://127.0.0.1:5173',
-  'http://127.0.0.1:5174',
-  'http://127.0.0.1:5254',
+  'https://contractor-os.erpolart.com',
+  'https://brand-pulse-ai.erpolart.com',
 ];
+
+const ALLOWED_ORIGINS = process.env.NODE_ENV === 'production'
+  ? productionOrigins
+  : [
+      ...productionOrigins,
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://localhost:5175',
+      'http://localhost:5176',
+      'http://localhost:5252',
+      'http://localhost:5253',
+      'http://localhost:5254',
+      'http://localhost:5255',
+      'http://127.0.0.1:5173',
+      'http://127.0.0.1:5174',
+      'http://127.0.0.1:5254',
+      'http://127.0.0.1:5255',
+    ];
 
 const io = new Server(httpServer, {
   cors: {
@@ -143,6 +153,7 @@ app.use('/api/content', contentRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api', paymentRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/db', dbRoutes);
 
 // Root Route
 app.get('/', (req, res) => {

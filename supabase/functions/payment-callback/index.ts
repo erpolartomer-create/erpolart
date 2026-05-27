@@ -67,12 +67,23 @@ serve(async (req) => {
       paid_at: new Date().toISOString(),
     }).eq('id', orderId);
 
+    // Mark template as sold (acquisition flow disabled)
+    if (order.template_id) {
+      await supabase.from('templates').update({
+        is_sold: true,
+        status: 'sold',
+      }).eq('id', order.template_id);
+    }
+
     // Send confirmation email (non-blocking)
     const resendKey = Deno.env.get('RESEND_API_KEY');
     if (resendKey) {
       const { data: fullOrder } = await supabase
         .from('orders').select('*, templates:template_id(name)').eq('id', orderId).single();
       if (fullOrder) {
+        const ref = orderId.slice(0, 8).toUpperCase();
+        const tName = ((fullOrder as { templates?: { name?: string } | null }).templates?.name) || 'Dijital Mimari';
+        // Müşteri maili
         fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
@@ -82,10 +93,24 @@ serve(async (req) => {
           body: JSON.stringify({
             from: 'ErpolArt <hello@erpolart.com>',
             to: [(fullOrder as { email: string }).email],
-            subject: `Ödeme Onaylandı #${orderId.slice(0, 8).toUpperCase()} — ErpolArt`,
+            subject: `Ödeme Onaylandı #${ref} — ErpolArt`,
             html: buildConfirmationEmail(fullOrder as Record<string, unknown>),
           }),
         }).catch((e: unknown) => console.error('Email failed:', e));
+        // Admin bildirimi
+        fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${resendKey}`,
+          },
+          body: JSON.stringify({
+            from: 'ErpolArt System <hello@erpolart.com>',
+            to: ['hello@erpolart.com'],
+            subject: `✅ Ödeme Onaylandı #${ref} — ${tName}`,
+            html: buildAdminPaymentEmail(fullOrder as Record<string, unknown>, tName, orderId),
+          }),
+        }).catch((e: unknown) => console.error('Admin payment email failed:', e));
       }
     }
 
@@ -95,6 +120,32 @@ serve(async (req) => {
     return Response.redirect(`${frontendUrl}/order-cancel`, 302);
   }
 });
+
+function buildAdminPaymentEmail(order: Record<string, unknown>, templateName: string, orderId: string): string {
+  const ref = orderId.slice(0, 8).toUpperCase();
+  return `
+    <div style="font-family:sans-serif;background:#0c0c16;color:#fff;padding:48px 40px;max-width:600px;margin:auto;border-radius:24px;">
+      <h1 style="font-style:italic;letter-spacing:-2px;color:#10b981;margin:0 0 4px;">ErpolArt Admin</h1>
+      <p style="color:#10b981;font-size:10px;text-transform:uppercase;letter-spacing:3px;margin:0 0 24px;">Ödeme Onay Bildirimi</p>
+      <hr style="border-color:#222;margin:0 0 24px;"/>
+      <div style="background:#111;border-radius:16px;padding:24px;margin-bottom:24px;border:1px solid #10b98133;">
+        <p style="margin:0 0 4px;color:#888;font-size:10px;text-transform:uppercase;letter-spacing:2px;">Sipariş Ref</p>
+        <p style="margin:0 0 20px;font-size:22px;font-family:monospace;color:#10b981;font-weight:bold;">#${ref}</p>
+        <p style="margin:0 0 4px;color:#888;font-size:10px;text-transform:uppercase;letter-spacing:2px;">Şablon</p>
+        <p style="margin:0 0 20px;">${templateName}</p>
+        <p style="margin:0 0 4px;color:#888;font-size:10px;text-transform:uppercase;letter-spacing:2px;">Müşteri</p>
+        <p style="margin:0 0 4px;">${order.full_name}</p>
+        <p style="margin:0 0 20px;color:#aaa;font-size:13px;">${order.email}</p>
+        <p style="margin:0 0 4px;color:#888;font-size:10px;text-transform:uppercase;letter-spacing:2px;">Tutar</p>
+        <p style="margin:0 0 20px;font-size:28px;font-weight:bold;color:#10b981;">$${order.amount}</p>
+        <p style="margin:0 0 4px;color:#888;font-size:10px;text-transform:uppercase;letter-spacing:2px;">İyzico Ödeme ID</p>
+        <p style="margin:0;color:#aaa;font-size:12px;font-family:monospace;">${order.iyzico_payment_id || '—'}</p>
+      </div>
+      <a href="https://erpolart.com/order-success/${orderId}" style="display:inline-block;background:#10b981;color:#000;padding:14px 28px;text-decoration:none;border-radius:12px;font-weight:900;text-transform:uppercase;font-size:11px;letter-spacing:2px;margin-bottom:12px;">Sipariş Detayına Git</a>
+      <p style="color:#555;font-size:11px;margin-top:16px;">Admin paneli: <a href="https://erpolart.com/admin/orders" style="color:#10b981;">erpolart.com/admin/orders</a></p>
+    </div>
+  `;
+}
 
 function buildConfirmationEmail(order: Record<string, unknown>): string {
   const ref = (order.id as string).slice(0, 8).toUpperCase();

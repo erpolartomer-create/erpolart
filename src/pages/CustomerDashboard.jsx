@@ -26,7 +26,7 @@ const CustomerDashboard = () => {
             id, template_id, amount, status, created_at,
             templates:template_id (name, preview_image)
           `)
-          .eq('email', user.email)
+          .or(`email.eq.${user.email},user_id.eq.${user.id}`)
           .eq('project_code', 'erpolart')
           .order('created_at', { ascending: false });
 

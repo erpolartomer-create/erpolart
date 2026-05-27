@@ -186,6 +186,7 @@ const TemplateDetailPage = () => {
   if (loading) return <div className="min-h-screen bg-deep-black flex items-center justify-center text-white font-black uppercase tracking-widest animate-pulse">{t('templateDetail.architecting')}</div>;
   if (!template) return <div className="min-h-screen bg-deep-black flex items-center justify-center text-white font-black uppercase tracking-widest">{t('templateDetail.structureNotFound')}</div>;
 
+  const isSold = template.is_sold || template.status === 'sold';
   const seoDescription = getLocalizedValue(template.short_pitch, 'description');
   const seoImage = template.image_url || template.preview_image || 'https://erpolart.com/og-image.webp';
   const seoTitle = `${template.name} - Premium Template | ErpolArt`;
@@ -387,23 +388,32 @@ const TemplateDetailPage = () => {
 
                   {/* Semantic Badge Grid */}
                   <div className="flex flex-wrap gap-3">
-                    {(template.features || []).map((feature, i) => {
-                      const Icon = getFeatureIcon(feature);
-                      return (
-                        <motion.div
-                          key={i}
-                          whileHover={{ y: -3, scale: 1.02 }}
-                          className="flex items-center gap-3 px-5 py-3.5 bg-white/[0.02] hover:bg-white border border-white/10 hover:border-white rounded-xl transition-all duration-300 group/item cursor-default"
-                        >
-                          <div className="filter grayscale group-hover/item:grayscale-0 transition-all duration-500">
-                            <Icon size={16} className="text-cyan" />
-                          </div>
-                          <span className="text-[10px] font-black text-gray-500 group-hover/item:text-black uppercase tracking-[0.2em] transition-colors leading-none relative z-10">
-                            {t(`templateDetail.features.${feature}`, feature)}
-                          </span>
-                        </motion.div>
-                      );
-                    })}
+                    {(() => {
+                      const lang = i18n.language || 'tr';
+                      const enFeatures = template.features || [];
+                      const displayFeatures = lang === 'tr'
+                        ? (template.features_tr || enFeatures)
+                        : lang === 'de'
+                        ? (template.features_de || enFeatures)
+                        : enFeatures;
+                      return displayFeatures.map((feature, i) => {
+                        const Icon = getFeatureIcon(enFeatures[i] || feature);
+                        return (
+                          <motion.div
+                            key={i}
+                            whileHover={{ y: -3, scale: 1.02 }}
+                            className="flex items-center gap-3 px-5 py-3.5 bg-white/[0.02] hover:bg-white border border-white/10 hover:border-white rounded-xl transition-all duration-300 group/item cursor-default"
+                          >
+                            <div className="filter grayscale group-hover/item:grayscale-0 transition-all duration-500">
+                              <Icon size={16} className="text-cyan" />
+                            </div>
+                            <span className="text-[10px] font-black text-gray-500 group-hover/item:text-black uppercase tracking-[0.2em] transition-colors leading-none relative z-10">
+                              {t(`templateDetail.features.${feature}`, feature)}
+                            </span>
+                          </motion.div>
+                        );
+                      });
+                    })()}
                   </div>
                 </div>
               </div>
@@ -446,13 +456,20 @@ const TemplateDetailPage = () => {
                   )}
                 </div>
 
-                <button
-                  onClick={() => navigate(`/checkout/${id}`)}
-                  className="w-full px-8 py-3.5 md:py-4 rounded-2xl bg-indigo text-pure-white font-bold uppercase tracking-[0.3em] text-[13px] md:text-[14px] transition-all hover:brightness-110 hover:shadow-[0_20px_40px_-10px_rgba(92,115,255,0.4)] flex items-center justify-center gap-3 active:scale-[0.98] shadow-[0_15px_30px_-5px_rgba(92,115,255,0.25)] relative z-10"
-                >
-                  <span>{t('latest.buyNow')}</span>
-                  <ArrowUpRight size={18} className="text-pure-white" />
-                </button>
+                {isSold ? (
+                  <div className="w-full px-8 py-3.5 md:py-4 rounded-2xl bg-white/[0.03] border border-white/8 text-gray-600 font-bold uppercase tracking-[0.3em] text-[13px] md:text-[14px] flex items-center justify-center gap-3 relative z-10 cursor-not-allowed">
+                    <ShieldCheck size={18} className="text-red-500/60" />
+                    <span>{t('status.acquired')}</span>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => navigate(`/checkout/${id}`)}
+                    className="w-full px-8 py-3.5 md:py-4 rounded-2xl bg-indigo text-pure-white font-bold uppercase tracking-[0.3em] text-[13px] md:text-[14px] transition-all hover:brightness-110 hover:shadow-[0_20px_40px_-10px_rgba(92,115,255,0.4)] flex items-center justify-center gap-3 active:scale-[0.98] shadow-[0_15px_30px_-5px_rgba(92,115,255,0.25)] relative z-10"
+                  >
+                    <span>{t('latest.buyNow')}</span>
+                    <ArrowUpRight size={18} className="text-pure-white" />
+                  </button>
+                )}
               </div>
             </ScrollReveal>
 
@@ -521,14 +538,21 @@ const TemplateDetailPage = () => {
               </motion.a>
             )}
 
-            <motion.button
-              whileTap={{ scale: 0.98 }}
-              onClick={() => navigate(`/checkout/${id}`)}
-              className="flex-1 px-3 py-3 rounded-xl bg-indigo text-[#FFFFFF] font-black uppercase tracking-wider text-[10px] shadow-[0_10px_20px_-5px_rgba(92,115,255,0.4)] flex items-center justify-center gap-1.5"
-            >
-              <span className="whitespace-nowrap">{t('latest.buyNow')}</span>
-              <ArrowUpRight size={13} className="shrink-0" />
-            </motion.button>
+                {isSold ? (
+                  <div className="flex-1 px-3 py-3 rounded-xl bg-white/[0.03] border border-white/8 text-gray-600 font-black uppercase tracking-wider text-[10px] flex items-center justify-center gap-1.5 cursor-not-allowed">
+                    <ShieldCheck size={12} className="text-red-500/60 shrink-0" />
+                    <span className="whitespace-nowrap">{t('status.acquired')}</span>
+                  </div>
+                ) : (
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => navigate(`/checkout/${id}`)}
+                    className="flex-1 px-3 py-3 rounded-xl bg-indigo text-[#FFFFFF] font-black uppercase tracking-wider text-[10px] shadow-[0_10px_20px_-5px_rgba(92,115,255,0.4)] flex items-center justify-center gap-1.5"
+                  >
+                    <span className="whitespace-nowrap">{t('latest.buyNow')}</span>
+                    <ArrowUpRight size={13} className="shrink-0" />
+                  </motion.button>
+                )}
           </div>
         </div>
       </motion.div>

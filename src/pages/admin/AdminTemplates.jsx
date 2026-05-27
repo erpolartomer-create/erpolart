@@ -70,6 +70,9 @@ const AdminTemplates = () => {
   const [newFeatureEN, setNewFeatureEN] = useState('');
   const [newFeatureDE, setNewFeatureDE] = useState('');
   const [isTranslatingFeature, setIsTranslatingFeature] = useState(false);
+  const [isTranslatingAllFeatures, setIsTranslatingAllFeatures] = useState(false);
+  // EN → { tr, de } translation map for custom features added this session
+  const [featureTranslations, setFeatureTranslations] = useState({});
 
   // Tracks whether the form pushed a history entry so back-button closes modal
   const formOpenRef = useRef(false);
@@ -225,14 +228,54 @@ const AdminTemplates = () => {
   };
 
   const addFeatureToPool = () => {
-    const label = newFeatureEN.trim() || newFeatureName.trim();
-    if (!label) return;
-    if (!featurePool.some(f => f.toLowerCase() === label.toLowerCase())) {
-      setFeaturePool(prev => [...prev, label]);
+    const enLabel = newFeatureEN.trim() || newFeatureName.trim();
+    if (!enLabel) return;
+    if (!featurePool.some(f => f.toLowerCase() === enLabel.toLowerCase())) {
+      setFeaturePool(prev => [...prev, enLabel]);
+    }
+    // Persist TR and DE translations so they travel to the DB on save
+    if (newFeatureName.trim() || newFeatureDE.trim()) {
+      setFeatureTranslations(prev => ({
+        ...prev,
+        [enLabel]: { tr: newFeatureName.trim(), de: newFeatureDE.trim() },
+      }));
     }
     setNewFeatureName('');
     setNewFeatureEN('');
     setNewFeatureDE('');
+  };
+
+  const translateAllFeatures = async () => {
+    const selected = form.features.split(',').map(s => s.trim()).filter(Boolean);
+    if (!selected.length) return;
+    setIsTranslatingAllFeatures(true);
+    try {
+      const results = await Promise.all(
+        selected.map(async (enFeature) => {
+          // Skip if already translated this session
+          if (featureTranslations[enFeature]?.tr) return { enFeature, tr: featureTranslations[enFeature].tr, de: featureTranslations[enFeature].de };
+          try {
+            const { data } = await API.post('/ai/translate', {
+              text: enFeature,
+              targetLanguages: ['tr', 'de'],
+            });
+            return { enFeature, tr: data.translations?.tr || enFeature, de: data.translations?.de || enFeature };
+          } catch {
+            return { enFeature, tr: enFeature, de: enFeature };
+          }
+        })
+      );
+      setFeatureTranslations(prev => {
+        const next = { ...prev };
+        results.forEach(({ enFeature, tr, de }) => { next[enFeature] = { tr, de }; });
+        return next;
+      });
+      toast.success(`${selected.length} özellik çevrildi ✓`);
+    } catch (err) {
+      toast.error('Toplu çeviri başarısız');
+    } finally {
+      setIsTranslatingAllFeatures(false);
+    }
   };
 
   const removeFeatureFromPool = (feature) => {
@@ -256,6 +299,7 @@ const AdminTemplates = () => {
   const openCreate = () => {
     setEditingId(null);
     setForm({ ...emptyForm, templateId: templates.length + 1 });
+    setFeatureTranslations({});
     formOpenRef.current = true;
     window.history.pushState({ adminFormOpen: true }, '');
     setShowForm(true);
@@ -305,6 +349,18 @@ const AdminTemplates = () => {
       pages_info: template.pages_info || '',
       extra_services: template.extra_services || [],
     });
+    // Re-build featureTranslations from DB data (features=EN, features_tr=TR, features_de=DE)
+    const enArr = templateFeatures;
+    const trArr = template.features_tr || [];
+    const deArr = template.features_de || [];
+    const initTranslations = {};
+    enArr.forEach((enF, i) => {
+      if (trArr[i] || deArr[i]) {
+        initTranslations[enF] = { tr: trArr[i] || '', de: deArr[i] || '' };
+      }
+    });
+    setFeatureTranslations(initTranslations);
+
     formOpenRef.current = true;
     window.history.pushState({ adminFormOpen: true }, '');
     setShowForm(true);
@@ -329,6 +385,10 @@ const AdminTemplates = () => {
         return !isGhost;
       });
 
+      // Build per-language feature arrays from featureTranslations map
+      const featuresTR = finalFeatures.map(f => featureTranslations[f]?.tr || f);
+      const featuresDE = finalFeatures.map(f => featureTranslations[f]?.de || f);
+
       const payload = {
         name: form.name,
         description: form.short_pitch, // Mapped to snake_case 'description'
@@ -344,6 +404,8 @@ const AdminTemplates = () => {
         core_breakdown: form.core_breakdown,
         tech_stack: form.techStack.split(',').map(s => s.trim()).filter(Boolean),
         features: finalFeatures,
+        features_tr: featuresTR,
+        features_de: featuresDE,
         structure_type: form.structure_type,
         pages_info: form.pages_info,
         extra_services: form.extra_services,
@@ -710,8 +772,11 @@ const AdminTemplates = () => {
                     <div className="flex flex-wrap gap-2">
                       {featurePool.filter(f => !form.features.split(',').map(s => s.trim()).includes(f)).map(feature => (
                         <div key={feature} className="flex items-center gap-1 group/feat">
-                          <button type="button" onClick={() => toggleOption('features', feature)} className="px-4 py-2 bg-white/5 text-gray-400 border border-white/5 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-violet/10 hover:text-white hover:border-violet/20 transition-all">
+                          <button type="button" onClick={() => toggleOption('features', feature)} className="px-4 py-2 bg-white/5 text-gray-400 border border-white/5 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-violet/10 hover:text-white hover:border-violet/20 transition-all flex items-center gap-2">
                             + {feature}
+                            {featureTranslations[feature] && (
+                              <span className="text-[7px] font-black px-1.5 py-0.5 rounded bg-violet/20 text-violet/70 tracking-widest">TR·DE</span>
+                            )}
                           </button>
                           <button type="button" onClick={() => removeFeatureFromPool(feature)} className="w-5 h-5 rounded-full text-gray-700 hover:bg-red-500/20 hover:text-red-400 transition-all flex items-center justify-center opacity-0 group-hover/feat:opacity-100 shrink-0">
                             <X size={9} />
@@ -762,6 +827,22 @@ const AdminTemplates = () => {
 
                   <div className="flex items-center justify-between">
                     <label className={labelClass}>Integrated Template Logic</label>
+                    <button
+                      type="button"
+                      onClick={translateAllFeatures}
+                      disabled={isTranslatingAllFeatures || !form.features.trim()}
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
+                        isTranslatingAllFeatures || !form.features.trim()
+                          ? 'bg-violet/10 text-violet/40 cursor-not-allowed'
+                          : 'bg-violet/20 text-violet hover:bg-violet hover:text-white'
+                      }`}
+                    >
+                      {isTranslatingAllFeatures
+                        ? <div className="w-3 h-3 border-2 border-violet border-t-transparent rounded-full animate-spin" />
+                        : <Sparkles size={12} />
+                      }
+                      {isTranslatingAllFeatures ? 'Çevriliyor...' : 'Tümünü Çevir (TR · DE)'}
+                    </button>
                   </div>
                   <div className="flex flex-wrap gap-2 p-6 bg-violet/5 border border-violet/10 rounded-3xl min-h-[90px]">
                     {form.features.split(',').map(s => s.trim()).filter(Boolean).map(feature => (

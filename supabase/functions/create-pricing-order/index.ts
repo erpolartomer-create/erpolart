@@ -63,6 +63,7 @@ serve(async (req) => {
     // Onay e-postası gönder (non-blocking)
     if (resendKey && order) {
       const ref = order.id.slice(0, 8).toUpperCase();
+      // Müşteri maili
       fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
@@ -76,6 +77,20 @@ serve(async (req) => {
           html: buildOrderEmail(order, source, tier, notes, company),
         }),
       }).catch((e: unknown) => console.error('Email failed:', e));
+      // Admin bildirimi
+      fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${resendKey}`,
+        },
+        body: JSON.stringify({
+          from: 'ErpolArt System <hello@erpolart.com>',
+          to: ['hello@erpolart.com'],
+          subject: `🔔 Yeni Sipariş #${ref} — ${(source || '').toUpperCase()} — $${total}`,
+          html: buildAdminEmail(order, source, tier, extras, total, monthly, maintenance, phone, company),
+        }),
+      }).catch((e: unknown) => console.error('Admin email failed:', e));
     }
 
     return new Response(
@@ -90,6 +105,54 @@ serve(async (req) => {
     );
   }
 });
+
+function buildAdminEmail(
+  order: Record<string, unknown>,
+  source: string,
+  tier: string,
+  extras: string[],
+  total: number,
+  monthly: number,
+  maintenance: boolean,
+  phone: string,
+  company: string | null,
+): string {
+  const ref = (order.id as string).slice(0, 8).toUpperCase();
+  const sourceLabel: Record<string, string> = {
+    projects: 'Web Sitesi',
+    saas: 'SaaS Ürünü',
+    automations: 'AI Otomasyon',
+    templates: 'Hazır Şablon',
+  };
+  const addonsList = extras.length > 0
+    ? extras.map(e => `<li style="color:#ccc;font-size:13px;margin-bottom:4px;">· ${e}</li>`).join('')
+    : '<li style="color:#555;font-size:13px;">—</li>';
+  return `
+    <div style="font-family:sans-serif;background:#0c0c16;color:#fff;padding:48px 40px;max-width:600px;margin:auto;border-radius:24px;">
+      <h1 style="font-style:italic;letter-spacing:-2px;color:#f59e0b;margin:0 0 4px;">ErpolArt Admin</h1>
+      <p style="color:#f59e0b;font-size:10px;text-transform:uppercase;letter-spacing:3px;margin:0 0 24px;">Yeni Sipariş Bildirimi</p>
+      <hr style="border-color:#222;margin:0 0 24px;"/>
+      <div style="background:#111;border-radius:16px;padding:24px;margin-bottom:24px;border:1px solid #f59e0b33;">
+        <p style="margin:0 0 4px;color:#888;font-size:10px;text-transform:uppercase;letter-spacing:2px;">Sipariş Ref</p>
+        <p style="margin:0 0 20px;font-size:22px;font-family:monospace;color:#f59e0b;font-weight:bold;">#${ref}</p>
+        <p style="margin:0 0 4px;color:#888;font-size:10px;text-transform:uppercase;letter-spacing:2px;">Hizmet / Tier</p>
+        <p style="margin:0 0 20px;">${sourceLabel[source] || source} — ${tier}</p>
+        <p style="margin:0 0 4px;color:#888;font-size:10px;text-transform:uppercase;letter-spacing:2px;">Müşteri</p>
+        <p style="margin:0 0 4px;">${order.full_name}</p>
+        <p style="margin:0 0 4px;color:#aaa;font-size:13px;">${order.email}</p>
+        <p style="margin:0 0 20px;color:#aaa;font-size:13px;">${phone}</p>
+        ${company ? `<p style="margin:0 0 4px;color:#888;font-size:10px;text-transform:uppercase;letter-spacing:2px;">Şirket</p><p style="margin:0 0 20px;">${company}</p>` : ''}
+        <p style="margin:0 0 4px;color:#888;font-size:10px;text-transform:uppercase;letter-spacing:2px;">Toplam Tutar</p>
+        <p style="margin:0 0 20px;font-size:28px;font-weight:bold;color:#f59e0b;">$${total}</p>
+        ${maintenance && monthly > 0 ? `<p style="margin:0 0 4px;color:#888;font-size:10px;text-transform:uppercase;letter-spacing:2px;">Aylık Bakım</p><p style="margin:0 0 20px;color:#aaa;">$${monthly}/ay</p>` : ''}
+        <p style="margin:0 0 4px;color:#888;font-size:10px;text-transform:uppercase;letter-spacing:2px;">Eklentiler</p>
+        <ul style="margin:0 0 0 0;padding-left:0;list-style:none;">${addonsList}</ul>
+      </div>
+      <a href="https://erpolart.com/order-success/${order.id}" style="display:inline-block;background:#f59e0b;color:#000;padding:14px 28px;text-decoration:none;border-radius:12px;font-weight:900;text-transform:uppercase;font-size:11px;letter-spacing:2px;margin-bottom:12px;">Sipariş Formuna Git</a>
+      <p style="color:#555;font-size:11px;margin-top:16px;">Admin paneli: <a href="https://erpolart.com/admin/orders" style="color:#f59e0b;">erpolart.com/admin/orders</a></p>
+    </div>
+  `;
+}
 
 function buildOrderEmail(
   order: Record<string, unknown>,

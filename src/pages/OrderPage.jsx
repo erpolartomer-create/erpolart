@@ -70,6 +70,16 @@ const OrderPage = () => {
 
   const [form, setForm] = useState({ name: '', email: '', phone: '', company: '', notes: '' });
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (user) {
+      setForm(prev => ({
+        ...prev,
+        name: prev.name || user.user_metadata?.full_name || '',
+        email: prev.email || user.email || '',
+      }));
+    }
+  }, [user]);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
@@ -105,6 +115,10 @@ const OrderPage = () => {
         } else {
           const { data, error } = await supabase.from('templates').select('*').eq('id', id).single();
           if (error) throw error;
+          if (data.is_sold || data.status === 'sold') {
+            navigate('/templates', { replace: true });
+            return;
+          }
           const parsedPrice = parseFloat(String(data.price).replace(/[$,]/g, '')) || 0;
           setDynamicOrderData({
             source: 'projects',
