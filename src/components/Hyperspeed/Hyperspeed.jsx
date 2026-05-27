@@ -1154,9 +1154,15 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
     };
     options.distortion = distortions[options.distortion];
 
-    const myApp = new App(container, options);
-    appRef.current = myApp;
-    myApp.loadAssets().then(myApp.init);
+    let myApp;
+    try {
+      myApp = new App(container, options);
+      appRef.current = myApp;
+      myApp.loadAssets().then(myApp.init).catch((e) => console.error('Hyperspeed init failed:', e));
+    } catch (e) {
+      console.error('Hyperspeed setup failed:', e);
+      return;
+    }
 
     return () => {
       if (appRef.current) {

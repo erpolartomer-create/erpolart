@@ -22,6 +22,20 @@ export default defineConfig({
       ]
     })
   ],
+  optimizeDeps: {
+    include: ['three', 'postprocessing'],
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('three') || id.includes('postprocessing')) {
+            return 'three-bundle';
+          }
+        },
+      },
+    },
+  },
   server: {
     port: 5253,
     proxy: {
