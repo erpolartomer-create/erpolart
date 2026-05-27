@@ -40,7 +40,7 @@ const Footer = () => {
       <div className="container mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-4 gap-12 relative z-10">
 
         <div className="col-span-1 md:col-span-2 space-y-6">
-          <img src={theme === 'dark' ? "/logo-beyaz.png" : "/logo.png"} alt="ErpolArt Dijital Çözümler Logosu" className="h-10 object-contain opacity-90 transition-opacity" />
+          <img src={theme === 'dark' ? "/logo-beyaz.png" : "/logo.png"} alt={t('footer.logoAlt')} className="h-10 object-contain opacity-90 transition-opacity" />
           <p className="text-muted-text max-w-sm text-sm">
             {t('footer.desc')}
           </p>
@@ -80,10 +80,10 @@ const Footer = () => {
         <div>
           <h4 className="text-white font-medium mb-6 font-display">{t('footer.contact')}</h4>
           <ul className="space-y-4 text-sm text-muted-text">
-            <li className="text-white font-medium">FİDAN ÜNAL ERPOLAT - ERPOLART MİMARLIK</li>
+            <li className="text-white font-medium">{t('footer.companyName')}</li>
             <li><a href="mailto:hello@erpolart.com" className="hover:text-cyan transition-colors">hello@erpolart.com</a></li>
-            <li>Pınarlı Mah. 24096 Sk. No: 19 A, Aksu / ANTALYA</li>
-            <li>VKN: 9080295761</li>
+            <li>{t('footer.address')}</li>
+            <li>{t('footer.taxId')}</li>
             <li>{t('footer.ready')}</li>
             <li><Link to="/contact" className="text-white border-b border-indigo inline-block mt-2 hover:text-indigo transition-colors">{t('footer.start')}</Link></li>
           </ul>
@@ -98,10 +98,10 @@ const Footer = () => {
         </div>
         
         <div className="flex flex-wrap justify-center gap-4 md:gap-6 font-medium uppercase tracking-widest text-[9px]">
-          <Link to="/mesafeli-satis-sozlesmesi" className="hover:text-cyan transition-colors">Mesafeli Satış Sözleşmesi</Link>
-          <Link to="/iptal-ve-iade-kosullari" className="hover:text-cyan transition-colors">İptal ve İade</Link>
-          <Link to="/gizlilik-politikasi" className="hover:text-violet transition-colors">Gizlilik Politikası</Link>
-          <Link to="/kvkk-metni" className="hover:text-indigo transition-colors">KVKK</Link>
+          <Link to="/mesafeli-satis-sozlesmesi" className="hover:text-cyan transition-colors">{t('footer.legal1')}</Link>
+          <Link to="/iptal-ve-iade-kosullari" className="hover:text-cyan transition-colors">{t('footer.legal2')}</Link>
+          <Link to="/gizlilik-politikasi" className="hover:text-violet transition-colors">{t('footer.legal3')}</Link>
+          <Link to="/kvkk-metni" className="hover:text-indigo transition-colors">{t('footer.legal4')}</Link>
         </div>
       </div>
     </footer>

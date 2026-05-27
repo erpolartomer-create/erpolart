@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import SaaSHero from '../components/saas/SaaSHero';
 import SaaSFeatures from '../components/saas/SaaSFeatures';
 import SaaSShowcase from '../components/saas/SaaSShowcase';
@@ -7,21 +8,22 @@ import SaaSPricing from '../components/saas/SaaSPricing';
 import SaaSFAQ from '../components/saas/SaaSFAQ';
 
 const SaaSPage = () => {
+  const { t } = useTranslation();
   return (
     <div className="pt-24 pb-24 min-h-screen bg-deep-black relative" style={{ overflowX: 'clip' }}>
       <Helmet>
-        <title>SaaS Çözümleri - ErpolArt</title>
-        <meta name="description" content="İşletmeniz için ölçeklenebilir, güvenli ve modern SaaS çözümleri." />
+        <title>{t('saasPage.seo.title')}</title>
+        <meta name="description" content={t('saasPage.seo.description')} />
         <link rel="canonical" href="https://erpolart.com/saas" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="ErpolArt" />
-        <meta property="og:title" content="SaaS Çözümleri - ErpolArt" />
-        <meta property="og:description" content="İşletmeniz için ölçeklenebilir, güvenli ve modern SaaS çözümleri." />
+        <meta property="og:title" content={t('saasPage.seo.title')} />
+        <meta property="og:description" content={t('saasPage.seo.description')} />
         <meta property="og:url" content="https://erpolart.com/saas" />
         <meta property="og:image" content="https://erpolart.com/og-image.webp" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="SaaS Çözümleri - ErpolArt" />
-        <meta name="twitter:description" content="İşletmeniz için ölçeklenebilir, güvenli ve modern SaaS çözümleri." />
+        <meta name="twitter:title" content={t('saasPage.seo.title')} />
+        <meta name="twitter:description" content={t('saasPage.seo.description')} />
         <meta name="twitter:image" content="https://erpolart.com/og-image.webp" />
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',

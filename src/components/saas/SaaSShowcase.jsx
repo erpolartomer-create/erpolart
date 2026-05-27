@@ -174,7 +174,7 @@ const SaaSShowcase = () => {
                       rel="noopener noreferrer"
                       className="group/btn relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-white text-deep-black font-black uppercase tracking-[0.2em] text-[11px] overflow-hidden hover:scale-105 transition-all shadow-xl shadow-white/10"
                     >
-                      <span className="relative z-10">Live Preview</span>
+                      <span className="relative z-10">{t('saasPage.showcase.livePreview')}</span>
                       <ArrowUpRight size={16} className="relative z-10 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                     </a>
                     
@@ -182,7 +182,7 @@ const SaaSShowcase = () => {
                       to={`/saas/case-study/${project.key}`}
                       className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-surface border border-white/10 text-gray-400 hover:text-white hover:border-white/30 font-black uppercase tracking-[0.2em] text-[11px] transition-all"
                     >
-                      Case Study
+                      {t('saasPage.showcase.caseStudyBtn')}
                     </Link>
                   </div>
                 </motion.div>

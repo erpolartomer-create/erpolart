@@ -235,9 +235,9 @@ const SaaSFeatures = () => {
             <div className="grid grid-cols-2 md:flex md:flex-wrap gap-4 relative z-10 flex-1">
               {[
                 { value: 'AWS', sub: 'GCP · Azure' },
-                { value: '100K+', sub: 'Eş zamanlı kullanıcı' },
-                { value: '99.9%', sub: 'Uptime garantisi' },
-                { value: '<50ms', sub: 'API yanıt süresi' },
+                { value: '100K+', sub: t('saasPage.features.statConcurrent') },
+                { value: '99.9%', sub: t('saasPage.features.statUptime') },
+                { value: '<50ms', sub: t('saasPage.features.statApiResponse') },
               ].map((stat, i) => (
                 <div key={i} className="px-6 py-5 rounded-2xl bg-amber-500/6 border border-amber-500/15 group-hover:border-amber-500/30 transition-all duration-500 min-w-[110px]" style={{ transitionDelay: `${i * 60}ms` }}>
                   <div className="text-2xl font-black text-amber-400 tracking-tight mb-1">{stat.value}</div>

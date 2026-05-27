@@ -97,7 +97,7 @@ const SaaSContactSection = () => {
       setIsSubmitted(true);
     } catch (err) {
       console.error(err);
-      toast.error('Mesajınız gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+      toast.error(t('contact.errorMsg'));
     } finally {
       setIsLoading(false);
     }
@@ -163,7 +163,7 @@ const SaaSContactSection = () => {
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         className={inputClass}
-                        placeholder="Adınız Soyadınız"
+                        placeholder={t('contact.namePlaceholder')}
                       />
                     </div>
                     <div>
@@ -179,7 +179,7 @@ const SaaSContactSection = () => {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         className={inputClass}
-                        placeholder="E-posta adresiniz"
+                        placeholder={t('contact.emailPlaceholder')}
                       />
                     </div>
                   </div>
