@@ -93,7 +93,6 @@ const WorkspacePage = () => {
     try {
       const { error } = await supabase.from('orders').update({
         siteData: siteData,
-        status: 'published'
       }).eq('id', id).eq('project_code', 'erpolart');
       if (error) throw error;
       setShowPublishSuccess(true);

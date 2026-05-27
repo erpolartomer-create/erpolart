@@ -2,7 +2,7 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'https://erpolart.com',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
@@ -28,6 +28,31 @@ serve(async (req) => {
     if (!email || !full_name || !total) {
       return new Response(
         JSON.stringify({ success: false, message: 'Gerekli alanlar eksik.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
+
+    // Minimum price validation — prevents price manipulation via direct API calls (CORS only blocks browsers)
+    const MIN_PRICES: Record<string, Record<string, number>> = {
+      saas:        { starter: 3500, pro: 7500,  scale: 15000, enterprise: 30000 },
+      automations: { starter: 1500, growth: 3500, scale: 7000,  enterprise: 14000 },
+      projects:    { corporate: 130, pro: 300,  premium: 1550, platinum: 2200 },
+    };
+
+    const parsedTotal = Number(total);
+    if (!Number.isFinite(parsedTotal) || parsedTotal <= 0) {
+      return new Response(
+        JSON.stringify({ success: false, message: 'Geçersiz tutar.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
+
+    const sourceKey = (source || '').toLowerCase();
+    const tierKey   = (tier   || '').toLowerCase();
+    const minPrice  = MIN_PRICES[sourceKey]?.[tierKey];
+    if (minPrice !== undefined && parsedTotal < minPrice) {
+      return new Response(
+        JSON.stringify({ success: false, message: 'Geçersiz tutar.' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       );
     }

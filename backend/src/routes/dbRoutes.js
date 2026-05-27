@@ -1,7 +1,18 @@
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import { supabase } from '../config/supabase.js';
 
 const router = express.Router();
+
+const dbLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests' },
+});
+
+router.use(dbLimiter);
 
 // Helper function to extract user and check if they are admin
 const getRequestUser = async (req) => {
@@ -77,6 +88,11 @@ router.post('/:table/query', async (req, res) => {
           }
         } 
         else if (method === 'POST') {
+          // Strip server-only financial fields — must come from edge functions, not client
+          delete body.amount;
+          delete body.monthly_fee;
+          delete body.iyzico_payment_id;
+          delete body.paid_at;
           // Force user_id field for insertion
           if (user) {
             body.user_id = user.id;
@@ -105,6 +121,13 @@ router.post('/:table/query', async (req, res) => {
             if (!checkOrder || checkOrder.user_id !== user.id) {
               return res.status(403).json({ error: 'Access denied: Order does not belong to you' });
             }
+            // Strip server-only financial/status fields — users cannot self-modify payment state
+            delete body.status;
+            delete body.amount;
+            delete body.paid_at;
+            delete body.iyzico_payment_id;
+            delete body.user_id;
+            delete body.template_id;
           } else {
             // Guest: only allow updating hosted options / metadata on their own order ID
             const idFilter = filters.find(f => f.column === 'id' && f.type === 'eq');
@@ -160,6 +183,8 @@ router.post('/:table/query', async (req, res) => {
       for (const f of filters) {
         if (f.type === 'eq') {
           query = query.eq(f.column, f.value);
+        } else if (f.type === 'or') {
+          query = query.or(f.value);
         }
       }
       if (order) {

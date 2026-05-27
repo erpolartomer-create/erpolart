@@ -1,4 +1,4 @@
-import translate from 'google-translate-api-next';
+import { translate } from '@vitalets/google-translate-api';
 import { GoogleGenAI } from '@google/genai';
 import { createClient } from '@supabase/supabase-js';
 import { SYSTEM_PROMPT } from '../config/systemPrompt.js';
@@ -199,8 +199,6 @@ export const chatWithAI = async (req, res) => {
       return res.status(500).json({ error: "Sistem Hatası: API anahtarı eksik." });
     }
 
-    // GOOGLE_API_KEY env var'ını temizle — kütüphane onu override olarak kullanıyor
-    delete process.env.GOOGLE_API_KEY;
     const ai = new GoogleGenAI({ apiKey: apiKey });
     
     // 1.5 TEMPLATE BİLGİLERİNİ ÇEK VE PROMPT'A EKLE

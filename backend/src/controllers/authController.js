@@ -54,8 +54,8 @@ export const adminLogin = async (req, res) => {
 
     if (error) throw error;
 
-    // Admin role check (Email based or metadata based)
-    const isAdmin = data.user.email.includes('admin') || data.user.app_metadata?.role === 'admin';
+    const ADMIN_EMAIL = 'hello@erpolart.com';
+    const isAdmin = data.user.email === ADMIN_EMAIL || data.user.app_metadata?.role === 'admin';
     if (!isAdmin) {
       return res.status(403).json({ message: 'Access denied. Admin privileges required.' });
     }

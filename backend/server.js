@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import dotenv from 'dotenv';
 
 import authRoutes from './src/routes/authRoutes.js';
@@ -20,6 +21,7 @@ dotenv.config();
 
 const app = express();
 app.disable('x-powered-by');
+app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 
 // Bot susturma listesi (In-memory MVP)
 const mutedSessions = new Set();
@@ -91,20 +93,18 @@ io.on('connection', (socket) => {
 
   // Admin sends a message to a client
   socket.on('admin_send_message', ({ sessionId, content }) => {
-    console.log(`Admin sending message to session ${sessionId}: ${content}`);
-    // Emit to the specific session room
+    if (!socket.rooms.has('admin_room')) return;
     io.to(sessionId).emit('message', {
       role: 'admin',
       content,
       timestamp: new Date().toISOString()
     });
-    // Also notify other admins if any
     io.to('admin_room').emit('admin_message_sent', { sessionId, content });
   });
 
   // Admin mutes the bot for a session
   socket.on('mute_bot', (sessionId) => {
-    console.log(`Muting bot for session: ${sessionId}`);
+    if (!socket.rooms.has('admin_room')) return;
     mutedSessions.add(sessionId);
     io.to(sessionId).emit('bot_status_update', { sessionId, isMuted: true });
     io.to('admin_room').emit('bot_status_update', { sessionId, isMuted: true });
@@ -112,7 +112,7 @@ io.on('connection', (socket) => {
 
   // Admin unmutes the bot for a session
   socket.on('unmute_bot', (sessionId) => {
-    console.log(`Unmuting bot for session: ${sessionId}`);
+    if (!socket.rooms.has('admin_room')) return;
     mutedSessions.delete(sessionId);
     io.to(sessionId).emit('bot_status_update', { sessionId, isMuted: false });
     io.to('admin_room').emit('bot_status_update', { sessionId, isMuted: false });

@@ -40,7 +40,7 @@ const MyPurchases = () => {
               image_url
             )
           `)
-          .eq('email', user.email)
+          .or(`email.eq.${user.email},user_id.eq.${user.id}`)
           .eq('project_code', 'erpolart')
           .order('created_at', { ascending: false });
 

@@ -222,31 +222,7 @@ const OrderPage = () => {
 
     } catch (globalErr) {
       console.error("Order submit error:", globalErr);
-      // Edge Function yoksa veya hata varsa direkt DB'ye yaz
-      try {
-        const { data: directOrder, error: directErr } = await supabase.from('orders').insert({
-          user_id: user?.id || null,
-          email: form.email,
-          full_name: form.name,
-          phone: form.phone,
-          amount: total,
-          status: 'awaiting_transfer',
-          project_code: 'erpolart',
-          subscription_plan: `${tier} – ${source}`,
-          monthly_fee: maintenance ? monthly : 0,
-          selected_addons: extras,
-          has_own_hosting: false,
-        }).select().single();
-
-        if (!directErr && directOrder?.id) {
-          navigate(`/order-success/${directOrder.id}`, { replace: true });
-          return;
-        }
-      } catch (_) {
-        // empty catch
-      }
-      // Son çare: başarı overlay
-      setSuccess(true);
+      setErrors({ _global: 'Sipariş oluşturulamadı. Lütfen tekrar deneyin veya hello@erpolart.com ile iletişime geçin.' });
     } finally {
       setSubmitting(false);
     }

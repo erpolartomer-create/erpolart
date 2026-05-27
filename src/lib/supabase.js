@@ -76,6 +76,10 @@ const createBuilder = (table, method = 'GET', body = null) => {
       state.filters.push({ type: 'eq', column, value });
       return builder;
     },
+    or(filterString) {
+      state.filters.push({ type: 'or', value: filterString });
+      return builder;
+    },
     order(column, options = {}) {
       state.order = { column, ascending: options.ascending !== false };
       return builder;

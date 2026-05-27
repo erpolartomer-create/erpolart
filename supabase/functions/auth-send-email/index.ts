@@ -1,9 +1,23 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
+// Only allow redirects to erpolart.com — prevents phishing via direct function calls
+const ALLOWED_REDIRECT_ORIGIN = 'https://erpolart.com';
+
 serve(async (req) => {
   try {
     const { user, email_data } = await req.json();
-    const { token_hash, redirect_to, email_action_type } = email_data;
+    const { token_hash, email_action_type } = email_data;
+    let redirect_to: string = email_data.redirect_to || ALLOWED_REDIRECT_ORIGIN;
+
+    // Guard: strip any redirect_to that doesn't point to our domain
+    try {
+      const redirectUrl = new URL(redirect_to);
+      if (redirectUrl.origin !== ALLOWED_REDIRECT_ORIGIN) {
+        redirect_to = ALLOWED_REDIRECT_ORIGIN;
+      }
+    } catch {
+      redirect_to = ALLOWED_REDIRECT_ORIGIN;
+    }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const resendKey = Deno.env.get('RESEND_API_KEY')!;

@@ -311,7 +311,7 @@ export const paymentCallback = async (req, res) => {
     });
   } catch (error) {
     console.error("CALLBACK ERROR:", error);
-    res.status(400).send(`Verification Error: ${error.message}`);
+    res.status(400).json({ message: 'Ödeme doğrulama başarısız.' });
   }
 };
 
@@ -332,7 +332,7 @@ export const getOrderConfig = async (req, res) => {
 
     // Authorization check
     const currentUserId = req.user.uid || req.user.id;
-    if (order.user_id.toString() !== currentUserId.toString()) {
+    if (!order.user_id || order.user_id.toString() !== currentUserId.toString()) {
       return res.status(403).json({ message: 'Access denied' });
     }
 

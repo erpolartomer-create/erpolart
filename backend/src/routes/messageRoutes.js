@@ -1,11 +1,20 @@
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import { submitMessage, getMyMessages, getAllMessages } from '../controllers/messageController.js';
-import { protect } from '../middleware/authMiddleware.js';
+import { protect, adminOnly } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/', submitMessage); // Public submission
-router.get('/', protect, getAllMessages); // Admin retrieval (All messages)
-router.get('/:siteId', protect, getMyMessages); // Private retrieval
+const messageLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Çok fazla mesaj gönderildi. Lütfen bekleyin.' },
+});
+
+router.post('/', messageLimiter, submitMessage);
+router.get('/', adminOnly, getAllMessages);
+router.get('/:siteId', adminOnly, getMyMessages);
 
 export default router;
