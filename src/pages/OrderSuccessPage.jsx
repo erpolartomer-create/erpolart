@@ -66,8 +66,9 @@ const OrderSuccessPage = () => {
         const { data, error } = await supabase.from('orders').select('*').eq('id', id).eq('project_code', 'erpolart').single();
         if (error) throw error;
         if (data) {
-          // Ownership check: prevent accessing other users' orders
-          if (data.user_id && user?.id && data.user_id !== user.id) {
+          // Ownership check: order must belong to this user OR be a guest order with no user
+          const orderBelongsToUser = !data.user_id || (user?.id && data.user_id === user.id);
+          if (!orderBelongsToUser) {
             navigate('/dashboard');
             return;
           }

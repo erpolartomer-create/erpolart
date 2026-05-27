@@ -142,6 +142,13 @@ export const chatWithAI = async (req, res) => {
       return res.status(400).json({ error: "sessionId is required" });
     }
 
+    if (!message || typeof message !== 'string' || message.trim().length === 0) {
+      return res.status(400).json({ error: "Message is required" });
+    }
+    if (message.length > 4000) {
+      return res.status(400).json({ error: "Message too long" });
+    }
+
     // 0. MESAJI VERİTABANINA KAYDET (Temiz kullanıcı mesajı — context etiketi olmadan)
     try {
       await supabase.from('chat_messages').insert([{
