@@ -574,6 +574,19 @@ const resources = {
           speedVisual: "Load Time",
           mobileVisual: "Screen Sizes",
           uniqueVisual: "Your Signature"
+        },
+        faq: {
+          badge: "FAQ",
+          title: "Common",
+          titleAccent: "Questions.",
+          items: [
+            { q: "How long does a custom web project take?", a: "Most projects are delivered in 5–14 business days. One-page corporate sites take 2–3 days, multi-page Pro builds 5–7 days, and complex Premium/Platinum architectures 10–29 days. We agree on a precise timeline in writing before we start." },
+            { q: "Do we own the source code after delivery?", a: "100% yes. We hand over the full source code, all assets, and deployment credentials. There is no lock-in, no licensing fee, and no dependency on us to run the site." },
+            { q: "How does pricing work — is it really fixed?", a: "Yes. Once we agree on a scope, you receive a fixed-price proposal. No surprise invoices mid-project. The price you approve is the price you pay, regardless of how long the build takes on our end." },
+            { q: "How many revision rounds are included?", a: "It depends on your tier: Corporate includes 1 round, Pro includes 2, Premium includes 3, and Platinum includes unlimited revisions. We define 'revision' as adjustments to the approved design — not a scope change." },
+            { q: "How will I be involved in the design process?", a: "After the discovery call, we present a visual direction within 48 hours. You give feedback, we refine. You're involved at every key checkpoint without needing to manage daily details." },
+            { q: "Is post-launch support included?", a: "Yes. Every tier includes a post-launch support window (1–12 months depending on tier). For ongoing hosting, maintenance, and monthly updates, we offer a fixed-rate Monthly Care Plan you can add at any time." }
+          ]
         }
       },
       templateDetail: {
@@ -1895,6 +1908,19 @@ const resources = {
           speedVisual: "Yüklenme Süresi",
           mobileVisual: "Ekran Boyutu",
           uniqueVisual: "Sizin İmzanız"
+        },
+        faq: {
+          badge: "SSS",
+          title: "Sıkça Sorulan",
+          titleAccent: "Sorular.",
+          items: [
+            { q: "Özel web projesi ne kadar sürede teslim edilir?", a: "Çoğu proje 5–14 iş günü içinde teslim edilir. Tek sayfalık kurumsal siteler 2–3 gün, çok sayfalı Pro yapılar 5–7 gün, Premium/Platinum mimariler ise 10–29 gün sürer. Başlamadan önce kesin teslimat tarihi yazılı olarak netleştirilir." },
+            { q: "Teslimden sonra kaynak kod bize mi ait olacak?", a: "Kesinlikle evet. Tüm kaynak kodları, görseller ve sunucu erişim bilgileri eksiksiz teslim edilir. Bağımlılık yok, lisans ücreti yok; siteyi bağımsız olarak çalıştırabilirsiniz." },
+            { q: "Fiyatlandırma gerçekten sabit mi?", a: "Evet. Kapsam netleşince sabit fiyatlı bir teklif alırsınız. Proje ortasında sürpriz fatura gelmez; onayladığınız fiyat ödediğiniz fiyattır." },
+            { q: "Kaç revizyon hakkım var?", a: "Pakete göre değişir: Corporate 1, Pro 2, Premium 3, Platinum ise sınırsız revizyon içerir. Revizyon; onaylanan tasarımda yapılan ayarlamalar anlamına gelir, kapsam değişikliği değil." },
+            { q: "Tasarım sürecine nasıl dahil olacağım?", a: "Keşif görüşmesinin ardından 48 saat içinde görsel yönelim sunulur. Geri bildirim verirsiniz, biz rafine ederiz. Günlük detayları takip etmek zorunda kalmadan tüm kritik adımlarda sürece dahil olursunuz." },
+            { q: "Lansman sonrası destek sağlıyor musunuz?", a: "Evet. Her paket lansman sonrası destek süresi içerir (pakete göre 1–12 ay). Devam eden hosting, bakım ve aylık güncellemeler için isteğe bağlı aylık sabit ücretli Bakım Paketi sunuyoruz." }
+          ]
         }
       },
       templateDetail: {
@@ -3658,6 +3684,19 @@ const resources = {
           speedVisual: "Ladezeit",
           mobileVisual: "Bildschirmgröße",
           uniqueVisual: "Ihre Signatur"
+        },
+        faq: {
+          badge: "FAQ",
+          title: "Häufig gestellte",
+          titleAccent: "Fragen.",
+          items: [
+            { q: "Wie lange dauert ein individuelles Webprojekt?", a: "Die meisten Projekte werden in 5–14 Werktagen geliefert. Einseitige Corporate-Seiten dauern 2–3 Tage, mehrseitige Pro-Builds 5–7 Tage und komplexe Premium/Platinum-Architekturen 10–29 Tage. Der genaue Zeitplan wird schriftlich vor Projektstart vereinbart." },
+            { q: "Gehört uns der Quellcode nach der Übergabe?", a: "Zu 100 % ja. Wir übergeben den vollständigen Quellcode, alle Assets und Zugangsdaten. Kein Vendor-Lock-in, keine Lizenzgebühren — Sie können die Website völlig unabhängig betreiben." },
+            { q: "Ist der Preis wirklich festgesetzt?", a: "Ja. Nach Klärung des Umfangs erhalten Sie ein Festpreisangebot. Keine überraschenden Rechnungen während des Projekts. Der von Ihnen genehmigte Preis ist der Preis, den Sie zahlen." },
+            { q: "Wie viele Überarbeitungsrunden sind inbegriffen?", a: "Je nach Paket: Corporate 1 Runde, Pro 2 Runden, Premium 3 Runden, Platinum unbegrenzte Überarbeitungen. Eine Überarbeitung umfasst Anpassungen am genehmigten Design — keine Änderungen des Projektumfangs." },
+            { q: "Wie bin ich am Designprozess beteiligt?", a: "Nach dem Discovery Call präsentieren wir innerhalb von 48 Stunden eine visuelle Richtung. Sie geben Feedback, wir verfeinern. Sie sind an jedem wichtigen Meilenstein beteiligt, ohne täglich Details verwalten zu müssen." },
+            { q: "Ist Support nach dem Launch inbegriffen?", a: "Ja. Jedes Paket enthält einen Post-Launch-Support-Zeitraum (1–12 Monate je nach Paket). Für laufendes Hosting, Wartung und monatliche Updates bieten wir einen optionalen monatlichen Pflegeplan zu einem Festpreis an." }
+          ]
         }
       },
       templatesData: {

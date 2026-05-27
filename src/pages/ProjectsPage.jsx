@@ -5,6 +5,7 @@ import BespokeComparison from '../components/projects/BespokeComparison';
 import ProcessTimeline from '../components/projects/ProcessTimeline';
 import DesignManifesto from '../components/projects/DesignManifesto';
 import ProjectsPricing from '../components/projects/ProjectsPricing';
+import ProjectsFAQ from '../components/projects/ProjectsFAQ';
 import ScrollReveal from '../components/ScrollReveal';
 
 import { motion } from 'framer-motion';
@@ -87,6 +88,7 @@ const ProjectsPage = () => {
         <DesignManifesto />
         <BespokeComparison />
         <ProcessTimeline />
+        <ProjectsFAQ />
 
         {/* Narrative Block 3: The Promise - Final Closing Statement */}
         <ScrollReveal>
