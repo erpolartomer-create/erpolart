@@ -551,8 +551,13 @@ const OrderPage = () => {
                     id="paytriframe"
                     frameBorder="0"
                     scrolling="no"
-                    style={{ width: '100%', minHeight: '550px', display: 'block' }}
+                    style={{ width: '100%', minHeight: '850px', display: 'block' }}
                     title="PayTR Güvenli Ödeme"
+                    onLoad={() => {
+                      if (window.iFrameResize && iframeRef.current) {
+                        window.iFrameResize({ heightCalculationMethod: 'lowestElement' }, iframeRef.current);
+                      }
+                    }}
                   />
                 </div>
 
