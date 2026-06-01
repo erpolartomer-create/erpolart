@@ -932,6 +932,8 @@ const resources = {
           cta: "Buy Now",
           ctaNote: "Secure checkout · 24h response guarantee",
           enterpriseNote: "The best for your brand.",
+          secureNote: "Your payments are secured by Iyzico 3D Secure",
+          cardsNote: "Troy, Visa, Mastercard are accepted",
           tiers: {
             starter: { tierName: "Starter", tagline: "SaaS MVP", features: ["Auth & user management", "3 core feature modules", "Basic admin panel", "Mobile responsive"] },
             pro: { tierName: "Pro", tagline: "Full-Featured SaaS", features: ["Everything in Starter", "Stripe payment integration", "REST API & webhooks", "6 core modules", "Role-based access", "AI/LLM ready"] },
@@ -1074,6 +1076,8 @@ const resources = {
           cta: "Buy Now",
           ctaNote: "Secure checkout · 24h response guarantee",
           enterpriseNote: "The best for your brand.",
+          secureNote: "Your payments are secured by Iyzico 3D Secure",
+          cardsNote: "Troy, Visa, Mastercard are accepted",
           tiers: {
             starter: { tierName: "Starter", tagline: "2–3 Automations", features: ["2–3 workflow automations", "Basic integrations (2–3 tools)", "Email & form triggers", "1-month post-launch support"] },
             growth: { tierName: "Growth", tagline: "5–8 Automations", features: ["Everything in Starter", "5–8 workflow automations", "AI/LLM integration", "Monitoring dashboard", "Priority support & SLA"] },
@@ -2281,6 +2285,8 @@ const resources = {
           cta: "Satın Al",
           ctaNote: "Güvenli ödeme · 24 saat cevap garantisi",
           enterpriseNote: "Markanız için en iyisi.",
+          secureNote: "Ödemeleriniz Iyzico 3D Secure güvencesindedir",
+          cardsNote: "Troy, Visa, Mastercard geçerlidir",
           tiers: {
             starter: { tierName: "Starter", tagline: "SaaS MVP", features: ["Auth ve kullanıcı yönetimi", "3 temel modül", "Basit admin paneli", "Mobil uyumlu"] },
             pro: { tierName: "Pro", tagline: "Tam Özellikli SaaS", features: ["Starter'ın her şeyi", "Stripe ödeme entegrasyonu", "REST API ve webhook'lar", "6 temel modül", "Rol tabanlı erişim", "AI/LLM hazır"] },
@@ -2423,6 +2429,8 @@ const resources = {
           cta: "Satın Al",
           ctaNote: "Güvenli ödeme · 24 saat cevap garantisi",
           enterpriseNote: "Markanız için en iyisi.",
+          secureNote: "Ödemeleriniz Iyzico 3D Secure güvencesindedir",
+          cardsNote: "Troy, Visa, Mastercard geçerlidir",
           tiers: {
             starter: { tierName: "Starter", tagline: "2–3 Otomasyon", features: ["2–3 iş akışı otomasyonu", "Temel entegrasyonlar (2–3 araç)", "E-posta ve form tetikleyicileri", "1 aylık lansman sonrası destek"] },
             growth: { tierName: "Growth", tagline: "5–8 Otomasyon", features: ["Starter'ın her şeyi", "5–8 iş akışı otomasyonu", "AI/LLM entegrasyonu", "İzleme panosu", "Öncelikli destek ve SLA"] },
@@ -3058,6 +3066,8 @@ const resources = {
           cta: "Jetzt kaufen",
           ctaNote: "Sicherer Checkout · 24h Antwortgarantie",
           enterpriseNote: "Das Beste für Ihre Marke.",
+          secureNote: "Ihre Zahlungen sind durch Iyzico 3D Secure gesichert",
+          cardsNote: "Troy, Visa, Mastercard werden akzeptiert",
           tiers: {
             starter: { tierName: "Starter", tagline: "SaaS MVP", features: ["Auth & Nutzerverwaltung", "3 Kernfunktionsmodule", "Einfaches Admin-Panel", "Mobil responsiv"] },
             pro: { tierName: "Pro", tagline: "Vollständiges SaaS", features: ["Alles aus Starter", "Stripe-Zahlungsintegration", "REST API & Webhooks", "6 Kernmodule", "Rollenbasierter Zugriff", "AI/LLM-bereit"] },
@@ -3200,6 +3210,8 @@ const resources = {
           cta: "Jetzt kaufen",
           ctaNote: "Sicherer Checkout · 24h Antwortgarantie",
           enterpriseNote: "Das Beste für Ihre Marke.",
+          secureNote: "Ihre Zahlungen sind durch Iyzico 3D Secure gesichert",
+          cardsNote: "Troy, Visa, Mastercard werden akzeptiert",
           tiers: {
             starter: { tierName: "Starter", tagline: "2–3 Automatisierungen", features: ["2–3 Workflow-Automatisierungen", "Basis-Integrationen (2–3 Tools)", "E-Mail- & Formular-Trigger", "1 Monat Support nach Launch"] },
             growth: { tierName: "Growth", tagline: "5–8 Automatisierungen", features: ["Alles aus Starter", "5–8 Workflow-Automatisierungen", "AI/LLM-Integration", "Monitoring-Dashboard", "Prioritätssupport & SLA"] },

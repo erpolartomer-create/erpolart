@@ -80,6 +80,43 @@ const TC = {
 const TIERS_ORDER = ['starter', 'pro', 'scale', 'enterprise'];
 const fmt = (n) => '$' + n.toLocaleString('en-US');
 
+const PaymentTrustBadges = ({ themeAccentClass = 'text-amber-400', pagePrefix = 'saasPage' }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="mt-6 pt-5 border-t border-white/5 flex flex-col items-center gap-4 text-center">
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.02] border border-white/5">
+        <ShieldCheck size={13} className={themeAccentClass} />
+        <span className="text-[10px] text-gray-400 font-medium tracking-tight">
+          {t(`${pagePrefix}.pricing.secureNote`)}
+        </span>
+      </div>
+      <div className="flex flex-col items-center gap-2">
+        <span className="text-[9px] text-gray-500 font-black uppercase tracking-[0.15em]">
+          {t(`${pagePrefix}.pricing.cardsNote`)}
+        </span>
+        <div className="flex items-center gap-2.5 opacity-60 hover:opacity-90 transition-opacity">
+          <div className="h-6 w-9 rounded bg-[#1e1f2b] border border-white/5 flex items-center justify-center p-1 text-[8px] font-black italic tracking-tighter text-white select-none">
+            TROY
+          </div>
+          <svg className="h-6 w-9 rounded bg-[#1e1f2b] border border-white/5 p-1 select-none" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 6L17.5 15.5H15.2L16.7 6H19Z" fill="#1434CB"/>
+            <path d="M12.5 6L10.2 12.2L9.3 7.8C9.1 7 8.5 6.2 7.7 6H5V6.3C5.9 6.5 6.8 6.9 7.4 7.5L9.6 15.5H12L15.6 6H12.5Z" fill="#1434CB"/>
+            <path d="M22 6L19.7 15.5H17.8L20.1 6H22Z" fill="#F8A11B"/>
+            <path d="M5.1 6H1L0.8 6.2C2.1 6.6 3.1 7.2 3.8 8.1L2.3 15.5H4.6L7.6 6H5.1Z" fill="#1434CB"/>
+          </svg>
+          <svg className="h-6 w-9 rounded bg-[#1e1f2b] border border-white/5 p-1 select-none" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="9.5" cy="12" r="5.5" fill="#EB001B"/>
+            <circle cx="14.5" cy="12" r="5.5" fill="#F79E1B" fillOpacity="0.8"/>
+          </svg>
+          <div className="h-6 px-2 rounded bg-[#1e1f2b] border border-white/5 flex items-center justify-center text-[7px] font-black tracking-widest text-[#00c5df] select-none">
+            iyzico
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const SaaSPricing = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -570,6 +607,8 @@ const SaaSPricing = () => {
               <p className="text-center text-[9px] text-gray-600 mt-3">
                 {t('saasPage.pricing.ctaNote')}
               </p>
+
+              <PaymentTrustBadges themeAccentClass={c.text} pagePrefix="saasPage" />
             </div>
           </div>
         </div>
