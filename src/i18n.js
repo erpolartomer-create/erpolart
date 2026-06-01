@@ -1124,6 +1124,25 @@ const resources = {
           }
         }
       },
+      checkout: {
+        titlePre: "Secure", titleAccent: "Payment.",
+        subtitle: "Enter your details and complete the payment in one step.",
+        tier: "Tier", total: "Total", basePrice: "Base price", maintenanceFirst: "Maintenance (1st month)",
+        trustCodes: "All source code delivered", trustEmail: "Payment info within 24 hours", trustLaunch: "Launch support included",
+        billingTitle: "Billing Details", name: "Full Name", email: "Email", phone: "Phone", company: "Company (optional)",
+        notes: "Project Notes", notesPlaceholder: "Optional note...",
+        cardTitle: "Card Details", cardNumber: "Card Number", cardOwner: "Name on Card", expiry: "Expiry",
+        installmentLabel: "Installment Option", single: "Single Payment", installmentWord: "Installments",
+        perMonth: "/mo", withInterest: "(incl. interest)",
+        installmentNoCard: "Installments not available for this card", foreignCard: "Foreign/unknown card · single payment only",
+        secSsl: "Protected with 256-bit SSL encryption", secNoStore: "Your card data never reaches our servers", sec3d: "Secure 3D Secure payment via PayTR",
+        preparing: "Preparing Payment...", payCta: "Secure Pay",
+        legal1: "By paying you accept the", privacy: "Privacy Policy", and: "and", distance: "Distance Sales Agreement", legal2: ".",
+        vName: "Full name is required.", vEmail: "Enter a valid email address.", vPhone: "Phone is required.",
+        vCardOwner: "Cardholder name is required.", vCardNumber: "Card number must be 16 digits.",
+        vExpiry: "Enter expiry as MM / YY.", vCvv: "CVV must be 3-4 digits.",
+        errGeneric: "Could not start payment. Please try again.",
+      },
       orderPage: {
         title: "Complete Your",
         titleAccent: "Order.",
@@ -2478,6 +2497,25 @@ const resources = {
           }
         }
       },
+      checkout: {
+        titlePre: "Güvenli", titleAccent: "Ödeme.",
+        subtitle: "Bilgilerinizi girin ve tek adımda ödemeyi tamamlayın.",
+        tier: "Paket", total: "Toplam", basePrice: "Baz fiyat", maintenanceFirst: "Aylık bakım (1. ay)",
+        trustCodes: "Tüm kaynak kodlar teslim edilir", trustEmail: "24 saat içinde ödeme bilgisi", trustLaunch: "Lansman desteği dahil",
+        billingTitle: "Fatura Bilgileri", name: "Ad Soyad", email: "E-posta", phone: "Telefon", company: "Şirket (opsiyonel)",
+        notes: "Proje Notları", notesPlaceholder: "İsteğe bağlı not...",
+        cardTitle: "Kart Bilgileri", cardNumber: "Kart Numarası", cardOwner: "Kart Üzerindeki Ad", expiry: "Son Kullanma",
+        installmentLabel: "Taksit Seçeneği", single: "Tek Çekim", installmentWord: "Taksit",
+        perMonth: "/ay", withInterest: "(vade farkı dahil)",
+        installmentNoCard: "Bu kartla taksit yapılamıyor", foreignCard: "Yabancı/tanımsız kart · sadece tek çekim",
+        secSsl: "256-bit SSL şifreleme ile korunuyor", secNoStore: "Kart veriniz sunucularımıza ulaşmaz", sec3d: "PayTR ile güvenli 3D Secure ödeme",
+        preparing: "Ödeme Hazırlanıyor...", payCta: "Güvenli Öde",
+        legal1: "Ödeme yaparak", privacy: "Gizlilik Politikası", and: "ve", distance: "Mesafeli Satış Sözleşmesi", legal2: "'ni kabul etmiş olursunuz.",
+        vName: "Ad soyad zorunlu.", vEmail: "Geçerli e-posta girin.", vPhone: "Telefon zorunlu.",
+        vCardOwner: "Kart sahibi adı zorunlu.", vCardNumber: "Kart numarası 16 haneli olmalı.",
+        vExpiry: "Son kullanma tarihini MM / YY girin.", vCvv: "CVV 3-4 haneli olmalı.",
+        errGeneric: "Ödeme başlatılamadı. Lütfen tekrar deneyin.",
+      },
       orderPage: {
         title: "Siparişinizi",
         titleAccent: "Tamamlayın.",
@@ -3259,6 +3297,25 @@ const resources = {
             ]
           }
         }
+      },
+      checkout: {
+        titlePre: "Sichere", titleAccent: "Zahlung.",
+        subtitle: "Geben Sie Ihre Daten ein und schließen Sie die Zahlung in einem Schritt ab.",
+        tier: "Paket", total: "Gesamt", basePrice: "Grundpreis", maintenanceFirst: "Wartung (1. Monat)",
+        trustCodes: "Gesamter Quellcode geliefert", trustEmail: "Zahlungsinfo innerhalb 24 Stunden", trustLaunch: "Launch-Support inklusive",
+        billingTitle: "Rechnungsdaten", name: "Vollständiger Name", email: "E-Mail", phone: "Telefon", company: "Firma (optional)",
+        notes: "Projektnotizen", notesPlaceholder: "Optionale Notiz...",
+        cardTitle: "Kartendaten", cardNumber: "Kartennummer", cardOwner: "Name auf der Karte", expiry: "Gültig bis",
+        installmentLabel: "Ratenoption", single: "Einmalzahlung", installmentWord: "Raten",
+        perMonth: "/Mon", withInterest: "(inkl. Zinsen)",
+        installmentNoCard: "Ratenzahlung für diese Karte nicht verfügbar", foreignCard: "Ausländische/unbekannte Karte · nur Einmalzahlung",
+        secSsl: "Geschützt mit 256-Bit-SSL-Verschlüsselung", secNoStore: "Ihre Kartendaten erreichen unsere Server nie", sec3d: "Sichere 3D-Secure-Zahlung über PayTR",
+        preparing: "Zahlung wird vorbereitet...", payCta: "Sicher Bezahlen",
+        legal1: "Mit der Zahlung akzeptieren Sie die", privacy: "Datenschutzrichtlinie", and: "und", distance: "Fernabsatzvertrag", legal2: ".",
+        vName: "Vollständiger Name erforderlich.", vEmail: "Gültige E-Mail eingeben.", vPhone: "Telefon erforderlich.",
+        vCardOwner: "Karteninhaber erforderlich.", vCardNumber: "Kartennummer muss 16 Ziffern haben.",
+        vExpiry: "Gültigkeit als MM / JJ eingeben.", vCvv: "CVV muss 3-4 Ziffern haben.",
+        errGeneric: "Zahlung konnte nicht gestartet werden. Bitte erneut versuchen.",
       },
       orderPage: {
         title: "Ihre Bestellung",

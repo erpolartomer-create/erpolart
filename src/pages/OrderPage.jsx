@@ -252,15 +252,15 @@ const OrderPage = () => {
   // ── Validation ──────────────────────────────────────────────────────────────
   const validate = () => {
     const e = {};
-    if (!billing.name.trim())  e.name  = 'Ad soyad zorunlu.';
-    if (!billing.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) e.email = 'Geçerli e-posta girin.';
-    if (!billing.phone.trim()) e.phone = 'Telefon zorunlu.';
-    if (!card.owner.trim())    e.cardOwner = 'Kart sahibi adı zorunlu.';
+    if (!billing.name.trim())  e.name  = t('checkout.vName');
+    if (!billing.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) e.email = t('checkout.vEmail');
+    if (!billing.phone.trim()) e.phone = t('checkout.vPhone');
+    if (!card.owner.trim())    e.cardOwner = t('checkout.vCardOwner');
     const rawCard = card.number.replace(/\s/g, '');
-    if (rawCard.length !== 16) e.cardNumber = 'Kart numarası 16 haneli olmalı.';
+    if (rawCard.length !== 16) e.cardNumber = t('checkout.vCardNumber');
     const expiryDigits = card.expiry.replace(/\D/g, '');
-    if (expiryDigits.length !== 4) e.expiry = 'Son kullanma tarihi MM/YY formatında girin.';
-    if (card.cvv.length < 3)   e.cvv = 'CVV 3-4 haneli olmalı.';
+    if (expiryDigits.length !== 4) e.expiry = t('checkout.vExpiry');
+    if (card.cvv.length < 3)   e.cvv = t('checkout.vCvv');
     return e;
   };
 
@@ -310,7 +310,7 @@ const OrderPage = () => {
 
     } catch (err) {
       console.error('Checkout error:', err);
-      setErrors({ _global: err?.response?.data?.error || err?.response?.data?.message || 'Ödeme başlatılamadı. Lütfen tekrar deneyin.' });
+      setErrors({ _global: err?.response?.data?.error || err?.response?.data?.message || t('checkout.errGeneric') });
       setSubmitting(false);
     }
   };
@@ -373,10 +373,10 @@ const OrderPage = () => {
               <Sparkles size={10} />{sourceName}
             </div>
             <h1 className="text-3xl md:text-5xl font-display font-black italic tracking-tighter leading-none mb-2">
-              <span className="text-white">Güvenli </span>
-              <span className={`text-transparent bg-clip-text bg-gradient-to-r ${sc.grad} pr-1`}>Ödeme.</span>
+              <span className="text-white">{t('checkout.titlePre')} </span>
+              <span className={`text-transparent bg-clip-text bg-gradient-to-r ${sc.grad} pr-1`}>{t('checkout.titleAccent')}</span>
             </h1>
-            <p className="text-gray-500 text-sm">Bilgilerinizi girin ve tek adımda ödemeyi tamamlayın.</p>
+            <p className="text-gray-500 text-sm">{t('checkout.subtitle')}</p>
           </div>
 
           <form onSubmit={handleSubmit}>
@@ -404,24 +404,24 @@ const OrderPage = () => {
 
                   <div className="flex justify-between items-start mb-3">
                     <div>
-                      <div className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-600">Tier</div>
+                      <div className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-600">{t('checkout.tier')}</div>
                       <div className={`font-black text-base capitalize ${sc.accent}`}>{tier}</div>
                       <div className="text-xs text-gray-500">{sourceName}</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-600 mb-0.5">Toplam</div>
+                      <div className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-600 mb-0.5">{t('checkout.total')}</div>
                       <div className={`text-2xl font-display font-black tracking-tighter ${sc.accent}`}>{fmt(total)}</div>
                     </div>
                   </div>
 
                   <div className="space-y-1.5 py-3 border-t border-white/6 text-xs">
-                    <div className="flex justify-between"><span className="text-gray-500">Baz fiyat</span><span className="text-gray-300">{fmt(base)}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">{t('checkout.basePrice')}</span><span className="text-gray-300">{fmt(base)}</span></div>
                     {extras.length > 0 && extras.map(k => <div key={k} className="flex justify-between pl-2"><span className="text-gray-600">· {k}</span></div>)}
-                    {maintenance && monthly > 0 && <div className="flex justify-between"><span className="text-gray-500">Aylık bakım (1. ay)</span><span className="text-gray-300">+{fmt(monthly)}</span></div>}
+                    {maintenance && monthly > 0 && <div className="flex justify-between"><span className="text-gray-500">{t('checkout.maintenanceFirst')}</span><span className="text-gray-300">+{fmt(monthly)}</span></div>}
                   </div>
 
                   <div className="space-y-1.5 pt-3 border-t border-white/6">
-                    {['Tüm kaynak kodlar teslim edilir', '24 saat içinde ödeme bilgisi', 'Lansman desteği dahil'].map((item, i) => (
+                    {[t('checkout.trustCodes'), t('checkout.trustEmail'), t('checkout.trustLaunch')].map((item, i) => (
                       <div key={i} className="flex items-center gap-2">
                         <div className={`w-3 h-3 rounded-full flex items-center justify-center ${sc.bg}`}><Check size={7} className={sc.accent} /></div>
                         <span className="text-[10px] text-gray-500">{item}</span>
@@ -433,19 +433,19 @@ const OrderPage = () => {
                 {/* Billing Info */}
                 <div className={`relative rounded-[1.75rem] border bg-surface/20 backdrop-blur-xl p-5 overflow-hidden ${sc.border}`}>
                   <div className={`absolute top-0 left-0 right-0 h-px ${sc.shimmer}`} />
-                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-500 mb-4">Fatura Bilgileri</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-500 mb-4">{t('checkout.billingTitle')}</p>
                   <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-3">
-                      <Field label="Ad Soyad" icon={User} placeholder="Ömer Erpolat" value={billing.name} onChange={e => setBilling({ ...billing, name: e.target.value })} error={errors.name} />
-                      <Field label="E-posta" icon={Mail} type="email" placeholder="omer@erpolart.com" value={billing.email} onChange={e => setBilling({ ...billing, email: e.target.value })} error={errors.email} />
+                      <Field label={t('checkout.name')} icon={User} placeholder="Ömer Erpolat" value={billing.name} onChange={e => setBilling({ ...billing, name: e.target.value })} error={errors.name} />
+                      <Field label={t('checkout.email')} icon={Mail} type="email" placeholder="omer@erpolart.com" value={billing.email} onChange={e => setBilling({ ...billing, email: e.target.value })} error={errors.email} />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
-                      <Field label="Telefon" icon={Phone} type="tel" placeholder="+90 530..." value={billing.phone} onChange={e => setBilling({ ...billing, phone: e.target.value })} error={errors.phone} />
-                      <Field label="Şirket (opsiyonel)" icon={Building2} placeholder="Şirket Adı" value={billing.company} onChange={e => setBilling({ ...billing, company: e.target.value })} />
+                      <Field label={t('checkout.phone')} icon={Phone} type="tel" placeholder="+90 530..." value={billing.phone} onChange={e => setBilling({ ...billing, phone: e.target.value })} error={errors.phone} />
+                      <Field label={t('checkout.company')} icon={Building2} placeholder="Acme" value={billing.company} onChange={e => setBilling({ ...billing, company: e.target.value })} />
                     </div>
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 flex items-center gap-1.5 mb-1.5"><MessageSquare size={10} className="text-gray-600" />Proje Notları</label>
-                      <textarea rows={2} placeholder="İsteğe bağlı not..." value={billing.notes} onChange={e => setBilling({ ...billing, notes: e.target.value })}
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 flex items-center gap-1.5 mb-1.5"><MessageSquare size={10} className="text-gray-600" />{t('checkout.notes')}</label>
+                      <textarea rows={2} placeholder={t('checkout.notesPlaceholder')} value={billing.notes} onChange={e => setBilling({ ...billing, notes: e.target.value })}
                         className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-white/30 rounded-xl px-4 py-3 text-white text-sm font-medium outline-none transition-all placeholder:text-gray-700 resize-none" />
                     </div>
                   </div>
@@ -459,7 +459,7 @@ const OrderPage = () => {
 
                   {/* Card logos */}
                   <div className="flex items-center justify-between mb-5">
-                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-500 flex items-center gap-2"><CreditCard size={11} />Kart Bilgileri</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-500 flex items-center gap-2"><CreditCard size={11} />{t('checkout.cardTitle')}</p>
                     <div className="flex gap-1.5">
                       {['VISA','MC','TROY','AMEX'].map(c => (
                         <div key={c} className="px-2 py-0.5 rounded bg-white/8 border border-white/10 text-[8px] font-black text-gray-500 tracking-wider">{c}</div>
@@ -470,7 +470,7 @@ const OrderPage = () => {
                   <div className="space-y-3">
                     {/* Card number */}
                     <Field
-                      label="Kart Numarası"
+                      label={t('checkout.cardNumber')}
                       icon={CreditCard}
                       placeholder="0000 0000 0000 0000"
                       value={card.number}
@@ -482,7 +482,7 @@ const OrderPage = () => {
 
                     {/* Card owner */}
                     <Field
-                      label="Kart Üzerindeki Ad"
+                      label={t('checkout.cardOwner')}
                       icon={User}
                       placeholder="ÖMER ERPOLAT"
                       value={card.owner}
@@ -493,7 +493,7 @@ const OrderPage = () => {
                     {/* Expiry + CVV */}
                     <div className="grid grid-cols-2 gap-3">
                       <Field
-                        label="Son Kullanma"
+                        label={t('checkout.expiry')}
                         placeholder="MM / YY"
                         value={card.expiry}
                         onChange={e => setCard({ ...card, expiry: formatExpiry(e.target.value) })}
@@ -520,26 +520,28 @@ const OrderPage = () => {
 
                     {/* Taksit */}
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 block mb-1.5">Taksit Seçeneği</label>
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 block mb-1.5">{t('checkout.installmentLabel')}</label>
                       <select
                         value={installment}
                         onChange={e => setInstallment(e.target.value)}
                         disabled={!installmentAvailable}
                         className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-white/30 rounded-xl px-4 py-3 text-white text-sm font-medium outline-none transition-all appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <option value="0" className="bg-surface text-white">Tek Çekim — {fmt(total)}</option>
+                        <option value="0" className="bg-surface text-white">{t('checkout.single')} — {fmt(total)}</option>
                         {installmentAvailable && installmentOptions.map(n => {
                           const totalN = installmentTotalUsd(n);
-                          const label = totalN ? `${n} Taksit · ${fmt(totalN / n)}/ay` : `${n} Taksit`;
+                          const label = totalN
+                            ? `${n} ${t('checkout.installmentWord')} · ${fmt(totalN / n)}${t('checkout.perMonth')}`
+                            : `${n} ${t('checkout.installmentWord')}`;
                           return <option key={n} value={String(n)} className="bg-surface text-white">{label}</option>;
                         })}
                       </select>
                       {/* Taksitli toplam bilgisi (vade farkı dahil) */}
                       {selectedInstTotalUsd && (
                         <div className="mt-2 text-[11px] text-gray-400">
-                          {installment} taksit × {fmt(selectedInstTotalUsd / Number(installment))} =
+                          {installment} × {fmt(selectedInstTotalUsd / Number(installment))} =
                           <span className={`font-bold ${sc.accent}`}> {fmt(selectedInstTotalUsd)}</span>
-                          <span className="text-gray-600"> (vade farkı dahil)</span>
+                          <span className="text-gray-600"> {t('checkout.withInterest')}</span>
                         </div>
                       )}
                       {/* BIN tespit göstergesi */}
@@ -549,10 +551,10 @@ const OrderPage = () => {
                             <>
                               {binInfo.schema && <span className="px-2 py-0.5 rounded bg-white/8 border border-white/10 text-[9px] font-black text-gray-400 tracking-wider">{binInfo.schema}</span>}
                               {binInfo.bank && <span className="text-[10px] text-gray-500">{binInfo.bank}</span>}
-                              {!installmentAvailable && <span className="text-[10px] text-amber-400/80">· Bu kartla taksit yapılamıyor</span>}
+                              {!installmentAvailable && <span className="text-[10px] text-amber-400/80">· {t('checkout.installmentNoCard')}</span>}
                             </>
                           ) : (
-                            <span className="text-[10px] text-gray-600">Yabancı/tanımsız kart · sadece tek çekim</span>
+                            <span className="text-[10px] text-gray-600">{t('checkout.foreignCard')}</span>
                           )}
                         </div>
                       )}
@@ -565,9 +567,9 @@ const OrderPage = () => {
                   <div className={`absolute top-0 left-0 right-0 h-px ${sc.shimmer}`} />
                   <div className="space-y-2">
                     {[
-                      { icon: ShieldCheck, text: '256-bit SSL şifreleme ile korunuyor' },
-                      { icon: Lock, text: 'Kart veriniz sunucularımıza ulaşmaz' },
-                      { icon: CreditCard, text: 'PayTR ile güvenli 3D Secure ödeme' },
+                      { icon: ShieldCheck, text: t('checkout.secSsl') },
+                      { icon: Lock, text: t('checkout.secNoStore') },
+                      { icon: CreditCard, text: t('checkout.sec3d') },
                     ].map(({ icon: Icon, text }) => (
                       <div key={text} className="flex items-center gap-2">
                         <Icon size={11} className={sc.accent} />
@@ -593,14 +595,14 @@ const OrderPage = () => {
                   className={`w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-black text-[12px] uppercase tracking-[0.15em] transition-all duration-300 disabled:opacity-60 ${sc.cta}`}
                 >
                   {submitting ? (
-                    <><Loader2 size={15} className="animate-spin" />Ödeme Hazırlanıyor...</>
+                    <><Loader2 size={15} className="animate-spin" />{t('checkout.preparing')}</>
                   ) : (
-                    <><Lock size={14} />{fmt(selectedInstTotalUsd ?? total)} Güvenli Öde</>
+                    <><Lock size={14} />{fmt(selectedInstTotalUsd ?? total)} {t('checkout.payCta')}</>
                   )}
                 </motion.button>
 
                 <p className="text-center text-[9px] text-gray-600">
-                  Ödeme yaparak <span className="text-gray-400">Gizlilik Politikası</span> ve <span className="text-gray-400">Mesafeli Satış Sözleşmesi</span>'ni kabul etmiş olursunuz.
+                  {t('checkout.legal1')} <span className="text-gray-400">{t('checkout.privacy')}</span> {t('checkout.and')} <span className="text-gray-400">{t('checkout.distance')}</span>{t('checkout.legal2')}
                 </p>
               </div>
             </div>
