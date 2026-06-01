@@ -167,8 +167,9 @@ export const createPayTRToken = async (req, res) => {
       return res.status(500).json({ error: 'PayTR credentials eksik.' });
     }
 
-    // PayTR desteklenen para birimleri: TL (TRY), USD, EUR, GBP, RUB
-    const PAYTR_CURRENCIES = ['TL', 'USD', 'EUR', 'GBP', 'RUB'];
+    // PayTR desteklenen para birimleri (mağazada aktif olanlar): şu an sadece TL.
+    // Diğerleri PayTR onayı sonrası eklenir: 'USD', 'EUR', 'GBP'
+    const PAYTR_CURRENCIES = ['TL'];
     const currency = PAYTR_CURRENCIES.includes(reqCurrency) ? reqCurrency : 'TL';
 
     // Para birimi dönüşümü (DB'deki tutar USD cinsinden)
@@ -185,7 +186,7 @@ export const createPayTRToken = async (req, res) => {
         if (rate) convertedAmount = usdAmount * rate;
       } catch {
         // Fallback sabit kurlar (güncel değerlere yakın)
-        const fallback = { TL: 38, EUR: 0.92, GBP: 0.79, RUB: 90 };
+        const fallback = { TL: 38, EUR: 0.92, GBP: 0.79 };
         convertedAmount = usdAmount * (fallback[currency] || 1);
       }
     }
@@ -497,7 +498,9 @@ export const createPayTRDirectToken = async (req, res) => {
     }
 
     // Para birimi ve kur dönüşümü
-    const SUPPORTED = ['TL', 'USD', 'EUR', 'GBP', 'RUB'];
+    // Mağazada aktif para birimleri: şu an sadece TL.
+    // PayTR diğerlerini onaylayınca ekle: 'USD', 'EUR', 'GBP'
+    const SUPPORTED = ['TL'];
     const currency   = SUPPORTED.includes(reqCurrency) ? reqCurrency : 'TL';
 
     const usdAmount = Number(order.amount) + Number(order.monthly_fee || 0);
@@ -511,7 +514,7 @@ export const createPayTRDirectToken = async (req, res) => {
         const rate     = rateData?.rates?.[rateKey];
         if (rate) convertedAmount = usdAmount * rate;
       } catch {
-        const fallback = { TL: 38, EUR: 0.92, GBP: 0.79, RUB: 90 };
+        const fallback = { TL: 38, EUR: 0.92, GBP: 0.79 };
         convertedAmount = usdAmount * (fallback[currency] || 1);
       }
     }

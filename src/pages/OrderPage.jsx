@@ -13,15 +13,21 @@ import useAuthStore from '../store/authStore';
 import API from '../services/api';
 
 // ─── Currency detection ───────────────────────────────────────────────────────
+const CURRENCY_SYMBOLS = { TL: '₺', USD: '$', EUR: '€', GBP: '£' };
+
+// PayTR'de şu an sadece TL aktif. Diğerleri onaylanınca buraya eklenir:
+// örn. ['TL', 'USD', 'EUR', 'GBP']
+const ACTIVE_CURRENCIES = ['TL'];
+
 const detectCurrency = () => {
   const lang = (navigator.language || navigator.languages?.[0] || 'en').toLowerCase();
-  if (lang.startsWith('tr')) return 'TL';
-  if (lang.startsWith('ru')) return 'RUB';
-  if (lang === 'en-gb') return 'GBP';
-  if (['de','fr','it','es','nl','pt','pl','cs','ro'].some(l => lang.startsWith(l))) return 'EUR';
-  return 'USD';
+  let detected = 'USD';
+  if (lang.startsWith('tr')) detected = 'TL';
+  else if (lang === 'en-gb') detected = 'GBP';
+  else if (['de','fr','it','es','nl','pt','pl','cs','ro'].some(l => lang.startsWith(l))) detected = 'EUR';
+  // Sadece aktif para birimlerine izin ver; değilse TL'ye düş
+  return ACTIVE_CURRENCIES.includes(detected) ? detected : 'TL';
 };
-const CURRENCY_SYMBOLS = { TL: '₺', USD: '$', EUR: '€', GBP: '£', RUB: '₽' };
 
 // ─── Source config ────────────────────────────────────────────────────────────
 const SOURCE_CONFIG = {
@@ -98,7 +104,7 @@ const OrderPage = () => {
   const hiddenFormRef = useRef(null);
 
   const [currency, setCurrency] = useState(detectCurrency);
-  const [rates, setRates] = useState({ TRY: 38, EUR: 0.92, GBP: 0.79, RUB: 90 });
+  const [rates, setRates] = useState({ TRY: 38, EUR: 0.92, GBP: 0.79 });
 
   const isProposal = location.pathname.includes('/proposal/');
 
@@ -198,7 +204,7 @@ const OrderPage = () => {
   const fmt = (usd) => {
     const v = convertPrice(usd);
     const s = CURRENCY_SYMBOLS[currency] || '$';
-    return (currency === 'TL' || currency === 'RUB') ? `${s}${Math.round(v).toLocaleString()}` : `${s}${v.toFixed(2)}`;
+    return currency === 'TL' ? `${s}${Math.round(v).toLocaleString()}` : `${s}${v.toFixed(2)}`;
   };
 
   // ── Validation ──────────────────────────────────────────────────────────────
@@ -339,16 +345,18 @@ const OrderPage = () => {
                 <div className={`relative rounded-[1.75rem] border bg-surface/20 backdrop-blur-xl p-5 overflow-hidden ${sc.border}`}>
                   <div className={`absolute top-0 left-0 right-0 h-px ${sc.shimmer}`} />
 
-                  {/* Currency Switcher */}
-                  <div className="flex gap-1 mb-4 flex-wrap">
-                    {Object.keys(CURRENCY_SYMBOLS).map(c => (
-                      <button key={c} type="button" onClick={() => setCurrency(c)}
-                        className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-[0.1em] transition-all border
-                          ${currency === c ? `${sc.bg} ${sc.accent} ${sc.border}` : 'bg-transparent border-white/8 text-gray-600 hover:text-gray-400 hover:border-white/15'}`}>
-                        {CURRENCY_SYMBOLS[c]} {c}
-                      </button>
-                    ))}
-                  </div>
+                  {/* Currency Switcher — sadece birden fazla aktif para birimi varsa göster */}
+                  {ACTIVE_CURRENCIES.length > 1 && (
+                    <div className="flex gap-1 mb-4 flex-wrap">
+                      {ACTIVE_CURRENCIES.map(c => (
+                        <button key={c} type="button" onClick={() => setCurrency(c)}
+                          className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-[0.1em] transition-all border
+                            ${currency === c ? `${sc.bg} ${sc.accent} ${sc.border}` : 'bg-transparent border-white/8 text-gray-600 hover:text-gray-400 hover:border-white/15'}`}>
+                          {CURRENCY_SYMBOLS[c]} {c}
+                        </button>
+                      ))}
+                    </div>
+                  )}
 
                   <div className="flex justify-between items-start mb-3">
                     <div>
