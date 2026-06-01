@@ -344,6 +344,135 @@ export const paytrCallback = async (req, res) => {
   }
 };
 
+// --- PayTR Direkt API Token ---
+
+// @route   POST /api/payment/paytr-direct-token
+// @access  Public
+export const createPayTRDirectToken = async (req, res) => {
+  try {
+    const {
+      orderId,
+      merchantOkUrl,
+      merchantFailUrl,
+      userPhone,
+      userName,
+      installment_count = '0',
+      currency: reqCurrency,
+    } = req.body;
+
+    if (!orderId || !merchantOkUrl || !merchantFailUrl) {
+      return res.status(400).json({ error: 'orderId, merchantOkUrl ve merchantFailUrl zorunlu.' });
+    }
+
+    const { data: order, error } = await supabase
+      .from('orders')
+      .select('*, templates:template_id(name)')
+      .eq('id', orderId)
+      .single();
+
+    if (error || !order) {
+      return res.status(404).json({ error: 'Sipariş bulunamadı.' });
+    }
+
+    const merchant_id   = process.env.PAYTR_MERCHANT_ID;
+    const merchant_key  = process.env.PAYTR_MERCHANT_KEY;
+    const merchant_salt = process.env.PAYTR_MERCHANT_SALT;
+
+    if (!merchant_id || !merchant_key || !merchant_salt) {
+      return res.status(500).json({ error: 'PayTR credentials eksik.' });
+    }
+
+    // Para birimi ve kur dönüşümü
+    const SUPPORTED = ['TL', 'USD', 'EUR', 'GBP', 'RUB'];
+    const currency   = SUPPORTED.includes(reqCurrency) ? reqCurrency : 'TL';
+
+    const usdAmount = Number(order.amount) + Number(order.monthly_fee || 0);
+    let convertedAmount = usdAmount;
+
+    if (currency !== 'USD') {
+      try {
+        const rateRes  = await fetch('https://open.er-api.com/v6/latest/USD');
+        const rateData = await rateRes.json();
+        const rateKey  = currency === 'TL' ? 'TRY' : currency;
+        const rate     = rateData?.rates?.[rateKey];
+        if (rate) convertedAmount = usdAmount * rate;
+      } catch {
+        const fallback = { TL: 38, EUR: 0.92, GBP: 0.79, RUB: 90 };
+        convertedAmount = usdAmount * (fallback[currency] || 1);
+      }
+    }
+
+    // ÖNEMLİ: Direkt API payment_amount = decimal string "100.99"
+    // iFrame API'de ×100 (kuruş) idi — bu farklı
+    const payment_amount = convertedAmount.toFixed(2);
+
+    const merchant_oid = order.id.replace(/-/g, '');
+    const user_ip      = (req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || '')
+      .replace('::ffff:', '')
+      .replace('::1', '') || '1.2.3.4';
+
+    // PayTR telefon formatı: 05XXXXXXXXX
+    const rawPhone   = userPhone || '05000000000';
+    const user_phone = rawPhone.startsWith('+90')
+      ? '0' + rawPhone.slice(3)
+      : rawPhone.startsWith('90') && rawPhone.length === 12
+        ? '0' + rawPhone.slice(2)
+        : rawPhone;
+
+    // Basket — Direkt API: PLAIN JSON string (iFrame'de base64'tü)
+    const monthlyFeeUsd = Number(order.monthly_fee || 0);
+    const convRate      = usdAmount > 0 ? convertedAmount / usdAmount : 1;
+    const basketItems   = [[
+      order.templates?.name || 'Digital Architecture',
+      (Number(order.amount) * convRate).toFixed(2),
+      1,
+    ]];
+    if (monthlyFeeUsd > 0) {
+      basketItems.push(['Aylık Bakım (1. Ay)', (monthlyFeeUsd * convRate).toFixed(2), 1]);
+    }
+    const user_basket = JSON.stringify(basketItems); // plain JSON — no base64
+
+    const payment_type = 'card';
+    const non_3d       = '0';
+    const test_mode    = process.env.PAYTR_TEST_MODE || '0';
+    const debug_on     = test_mode === '1' ? '1' : '0';
+
+    // Hash formülü Direkt API'ye özgü (iFrame'den farklı!)
+    const hashSTR = `${merchant_id}${user_ip}${merchant_oid}${order.email}${payment_amount}${payment_type}${installment_count}${currency}${test_mode}${non_3d}`;
+    const paytr_token = crypto
+      .createHmac('sha256', merchant_key)
+      .update(hashSTR + merchant_salt)
+      .digest('base64');
+
+    res.json({
+      paytr_token,
+      merchant_id,
+      user_ip,
+      merchant_oid,
+      email:             order.email,
+      payment_type,
+      payment_amount,
+      currency,
+      test_mode,
+      non_3d,
+      merchant_ok_url:   merchantOkUrl,
+      merchant_fail_url: merchantFailUrl,
+      user_name:         userName || order.full_name || 'Guest',
+      user_address:      'Digital Delivery',
+      user_phone,
+      user_basket,
+      debug_on,
+      client_lang:       'tr',
+      non3d_test_failed: '0',
+      installment_count: installment_count.toString(),
+      card_type:         '',
+    });
+  } catch (error) {
+    console.error('[PAYTR DIRECT TOKEN ERROR]', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // --- Order Config ---
 
 // @route   GET /api/templates/order-config/:orderId

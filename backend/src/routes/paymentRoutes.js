@@ -3,6 +3,7 @@ import {
   getAllOrders,
   createOrder,
   createPayTRToken,
+  createPayTRDirectToken,
   paytrCallback,
 } from '../controllers/paymentController.js';
 import { adminProtect } from '../middleware/authMiddleware.js';
@@ -14,6 +15,9 @@ router.post('/orders', createOrder);
 
 // PayTR iFrame token (public — order ID ile çağrılır)
 router.post('/payment/paytr-token', createPayTRToken);
+
+// PayTR Direkt API token (public — form doğrudan paytr.com/odeme'ye POST atar)
+router.post('/payment/paytr-direct-token', createPayTRDirectToken);
 
 // PayTR callback (public — PayTR server-to-server POST)
 router.post('/payment/paytr-callback', paytrCallback);
