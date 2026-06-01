@@ -229,6 +229,16 @@ const OrderPage = () => {
   const sc = SOURCE_CONFIG[source] || SOURCE_CONFIG.projects;
   const sourceName = orderData.projectName || t(`orderPage.summary.source.${source}`);
 
+  // Paket adı ve ek hizmet adlarını sayfa diline göre yerelleştir (ham anahtar yerine).
+  // Çeviri yoksa güvenli geri dönüş = ham değer.
+  const PRICING_PREFIX = { projects: 'projectsPage', saas: 'saasPage', automations: 'automationsPage' };
+  const _prefix = PRICING_PREFIX[source] || 'saasPage';
+  const _tierKey = source === 'projects'
+    ? `${_prefix}.pricing.${String(tier).toLowerCase()}.tierName`
+    : `${_prefix}.pricing.tiers.${String(tier).toLowerCase()}.tierName`;
+  const tierLabel = t(_tierKey, { defaultValue: tier });
+  const extraLabel = (k) => t(`${_prefix}.pricing.extras.${k}`, { defaultValue: k });
+
   const convertPrice = (usd) => {
     if (!usd) return 0;
     if (currency === 'USD') return Number(usd);
@@ -405,7 +415,7 @@ const OrderPage = () => {
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <div className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-600">{t('checkout.tier')}</div>
-                      <div className={`font-black text-base capitalize ${sc.accent}`}>{tier}</div>
+                      <div className={`font-black text-base capitalize ${sc.accent}`}>{tierLabel}</div>
                       <div className="text-xs text-gray-500">{sourceName}</div>
                     </div>
                     <div className="text-right">
@@ -416,7 +426,7 @@ const OrderPage = () => {
 
                   <div className="space-y-1.5 py-3 border-t border-white/6 text-xs">
                     <div className="flex justify-between"><span className="text-gray-500">{t('checkout.basePrice')}</span><span className="text-gray-300">{fmt(base)}</span></div>
-                    {extras.length > 0 && extras.map(k => <div key={k} className="flex justify-between pl-2"><span className="text-gray-600">· {k}</span></div>)}
+                    {extras.length > 0 && extras.map(k => <div key={k} className="flex justify-between pl-2"><span className="text-gray-600">· {extraLabel(k)}</span></div>)}
                     {maintenance && monthly > 0 && <div className="flex justify-between"><span className="text-gray-500">{t('checkout.maintenanceFirst')}</span><span className="text-gray-300">+{fmt(monthly)}</span></div>}
                   </div>
 
@@ -436,7 +446,7 @@ const OrderPage = () => {
                   <p className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-500 mb-4">{t('checkout.billingTitle')}</p>
                   <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-3">
-                      <Field label={t('checkout.name')} icon={User} placeholder="Ömer Erpolat" value={billing.name} onChange={e => setBilling({ ...billing, name: e.target.value })} error={errors.name} />
+                      <Field label={t('checkout.name')} icon={User} placeholder="John Doe" value={billing.name} onChange={e => setBilling({ ...billing, name: e.target.value })} error={errors.name} />
                       <Field label={t('checkout.email')} icon={Mail} type="email" placeholder="omer@erpolart.com" value={billing.email} onChange={e => setBilling({ ...billing, email: e.target.value })} error={errors.email} />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
@@ -484,7 +494,7 @@ const OrderPage = () => {
                     <Field
                       label={t('checkout.cardOwner')}
                       icon={User}
-                      placeholder="ÖMER ERPOLAT"
+                      placeholder="JOHN DOE"
                       value={card.owner}
                       onChange={e => setCard({ ...card, owner: e.target.value.toUpperCase() })}
                       error={errors.cardOwner}
