@@ -1,5 +1,5 @@
 import { translate } from '@vitalets/google-translate-api';
-import { GoogleGenAI } from '@google/genai';
+import Anthropic from '@anthropic-ai/sdk';
 import { createClient } from '@supabase/supabase-js';
 import { SYSTEM_PROMPT } from '../config/systemPrompt.js';
 
@@ -201,16 +201,16 @@ export const chatWithAI = async (req, res) => {
       }
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
       return res.status(500).json({ error: "Sistem Hatası: API anahtarı eksik." });
     }
 
-    const ai = new GoogleGenAI({ apiKey: apiKey });
-    
+    const anthropic = new Anthropic({ apiKey });
+
     // 1.5 TEMPLATE BİLGİLERİNİ ÇEK VE PROMPT'A EKLE
     const templatesContext = await fetchTemplatesForAI();
-    
+
     // userContext'i system prompt'a ekle (mesaj gövdesine DEĞİL — AI tekrarlıyordu)
     const userAuthInfo = userContext ? `\n\nKULLANICI DURUMU: ${userContext.trim()}. Bu bilgiyi asla mesajlarında gösterme veya tekrarlama.` : '';
     const enrichedSystemPrompt = SYSTEM_PROMPT +
@@ -218,29 +218,27 @@ export const chatWithAI = async (req, res) => {
       "\n\nÖNEMLİ: Müşteri bir şablon hakkında soru sorarsa, yukarıdaki teknik detayları ve fiyatları baz alarak net bilgi ver." +
       userAuthInfo;
 
-    const formattedContents = (history || []).map(item => ({
-      role: item.role === 'assistant' || item.role === 'model' ? 'model' : 'user',
-      parts: Array.isArray(item.parts) ? item.parts : [{ text: String(item.content || item.text || " ") }]
+    // Gemini format (model/parts) → Claude format (assistant/content)
+    const formattedMessages = (history || []).map(item => ({
+      role: item.role === 'assistant' || item.role === 'model' ? 'assistant' : 'user',
+      content: Array.isArray(item.parts)
+        ? item.parts.map(p => p.text || '').join('')
+        : String(item.content || item.text || ' '),
     }));
 
-    // Temiz kullanıcı mesajını ekle (context etiketi system prompt'ta)
-    formattedContents.push({
+    formattedMessages.push({
       role: 'user',
-      parts: [{ text: String(message || " ") }]
+      content: String(message || ' '),
     });
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: formattedContents,
-      config: {
-        systemInstruction: enrichedSystemPrompt,
-        maxOutputTokens: 1500,
-        temperature: 0.7,
-      }
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1500,
+      system: enrichedSystemPrompt,
+      messages: formattedMessages,
     });
 
-    // Boş/undefined response kontrolü
-    const aiText = response?.text || response?.candidates?.[0]?.content?.parts?.[0]?.text || 'Anlıyorum. Size daha iyi yardımcı olabilmem için iletişim bilgilerinizi bırakabilir misiniz?';
+    const aiText = response.content?.[0]?.text || 'Anlıyorum. Size daha iyi yardımcı olabilmem için iletişim bilgilerinizi bırakabilir misiniz?';
 
     // 3. ASİSTAN CEVABINI VERİTABANINA KAYDET
     try {
@@ -267,9 +265,9 @@ export const chatWithAI = async (req, res) => {
 
   } catch (error) {
     console.error("═══════════════════════════════════════");
-    console.error("[GEMINI ERROR]", error?.message || error);
-    console.error("[GEMINI STATUS]", error?.status || error?.response?.status || 'N/A');
-    console.error("[GEMINI DETAILS]", JSON.stringify(error?.errorDetails || error?.response?.data || {}, null, 2));
+    console.error("[CLAUDE ERROR]", error?.message || error);
+    console.error("[CLAUDE STATUS]", error?.status || error?.response?.status || 'N/A');
+    console.error("[CLAUDE DETAILS]", JSON.stringify(error?.error || error?.response?.data || {}, null, 2));
     console.error("═══════════════════════════════════════");
     const fallbackMessage = "Şu an sistemlerimizde yoğunluk yaşanıyor. Projenizi detaylandırmak için lütfen telefon numaranızı veya e-posta adresinizi bırakın, ekibimiz size anında dönüş yapsın.";
     res.status(200).json({ text: fallbackMessage });
