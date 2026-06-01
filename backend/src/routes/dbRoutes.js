@@ -70,23 +70,21 @@ router.post('/:table/query', async (req, res) => {
       } 
       else if (table === 'orders') {
         if (method === 'GET') {
-          // Customers can only see their own orders. Guests can only see a single order by ID.
-          if (user) {
-            // Force filter to customer's user_id
-            const existingUserFilterIdx = filters.findIndex(f => f.column === 'user_id');
-            if (existingUserFilterIdx !== -1) {
-              filters[existingUserFilterIdx] = { type: 'eq', column: 'user_id', value: user.id };
-            } else {
-              filters.push({ type: 'eq', column: 'user_id', value: user.id });
-            }
+          // Belirli sipariş ID'siyle (gizli UUID) sorgu → herkese izin ver.
+          // Siparişler guest (user_id=null) olarak oluşabildiği için giriş yapmış
+          // kullanıcıya zorla user_id filtresi UYGULAMA — aksi halde kendi siparişini
+          // ID ile çekemez (.single() 0 satır → 400). ID tahmin edilemez; order-success
+          // bununla açılır, sahiplik gösterimini frontend yapar.
+          const idFilter = filters.find(f => f.column === 'id' && f.type === 'eq');
+          if (idFilter && idFilter.value) {
+            // ID ile sorgu — user_id zorlaması yok
+          } else if (user) {
+            // Listeleme: sadece kullanıcının kendi siparişleri
+            filters.push({ type: 'eq', column: 'user_id', value: user.id });
           } else {
-            // Guest: must query single order by ID
-            const idFilter = filters.find(f => f.column === 'id' && f.type === 'eq');
-            if (!idFilter || !idFilter.value) {
-              return res.status(403).json({ error: 'Access denied: Unauthenticated users can only query specific orders by ID' });
-            }
+            return res.status(403).json({ error: 'Access denied: Unauthenticated users can only query specific orders by ID' });
           }
-        } 
+        }
         else if (method === 'POST') {
           // Strip server-only financial fields — must come from edge functions, not client
           delete body.amount;
@@ -105,41 +103,32 @@ router.post('/:table/query', async (req, res) => {
           }
         } 
         else if (method === 'PATCH') {
-          // Customers can only update their own orders. Guests can only update by specific ID.
-          if (user) {
-            // Ensure target order belongs to user
-            const idFilter = filters.find(f => f.column === 'id' && f.type === 'eq');
-            if (!idFilter) {
-              return res.status(403).json({ error: 'Access denied: Must update by specific order ID' });
-            }
-            // Verify ownership first
-            const { data: checkOrder } = await supabase
-              .from('orders')
-              .select('user_id')
-              .eq('id', idFilter.value)
-              .single();
-            if (!checkOrder || checkOrder.user_id !== user.id) {
-              return res.status(403).json({ error: 'Access denied: Order does not belong to you' });
-            }
-            // Strip server-only financial/status fields — users cannot self-modify payment state
-            delete body.status;
-            delete body.amount;
-            delete body.paid_at;
-            delete body.iyzico_payment_id;
-            delete body.user_id;
-            delete body.template_id;
-          } else {
-            // Guest: only allow updating hosted options / metadata on their own order ID
-            const idFilter = filters.find(f => f.column === 'id' && f.type === 'eq');
-            if (!idFilter) {
-              return res.status(403).json({ error: 'Access denied: Must specify order ID' });
-            }
-            // Block updating protected fields like amount, status, email, user_id
-            delete body.amount;
-            delete body.status;
-            delete body.email;
-            delete body.user_id;
+          // Sipariş ID'si (gizli UUID) zorunlu.
+          const idFilter = filters.find(f => f.column === 'id' && f.type === 'eq');
+          if (!idFilter || !idFilter.value) {
+            return res.status(403).json({ error: 'Access denied: Must update by specific order ID' });
           }
+          // Sahiplik: guest sipariş (user_id=null) ise ID'ye sahip olan düzenleyebilir;
+          // sahipli sipariş ise sadece sahibi düzenleyebilir.
+          const { data: checkOrder } = await supabase
+            .from('orders')
+            .select('user_id')
+            .eq('id', idFilter.value)
+            .single();
+          if (!checkOrder) {
+            return res.status(403).json({ error: 'Access denied: Order not found' });
+          }
+          if (checkOrder.user_id && (!user || checkOrder.user_id !== user.id)) {
+            return res.status(403).json({ error: 'Access denied: Order does not belong to you' });
+          }
+          // Sunucu-only / finansal alanları her durumda koru
+          delete body.amount;
+          delete body.status;
+          delete body.paid_at;
+          delete body.iyzico_payment_id;
+          delete body.user_id;
+          delete body.template_id;
+          delete body.email;
         } 
         else {
           return res.status(403).json({ error: 'Access denied: Admin only' });
