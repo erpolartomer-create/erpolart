@@ -180,6 +180,7 @@ export const createPayTRToken = async (req, res) => {
     const no_installment  = '0';
     const max_installment = '0';
     const test_mode       = process.env.PAYTR_TEST_MODE || '0';
+    const debug_on        = test_mode === '1' ? '1' : '0'; // test modunda hata mesajlarını göster
 
     const hashSTR = `${merchant_id}${user_ip}${merchant_oid}${order.email}${payment_amount}${user_basket}${no_installment}${max_installment}${currency}${test_mode}`;
     const paytr_token = crypto
@@ -202,7 +203,7 @@ export const createPayTRToken = async (req, res) => {
       user_basket,
       user_ip,
       timeout_limit:    '30',
-      debug_on:         '0',
+      debug_on,
       test_mode,
       lang:             'tr',
       no_installment,
