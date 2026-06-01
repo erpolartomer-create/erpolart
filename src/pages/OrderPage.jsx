@@ -288,7 +288,7 @@ const OrderPage = () => {
         ? { proposalId: id, isProposal: true, email: billing.email, full_name: billing.name, phone: billing.phone, company: billing.company || null, notes: billing.notes || null }
         : id
           ? { templateId: id, email: billing.email, full_name: billing.name, phone: billing.phone, company: billing.company || null, notes: billing.notes || null }
-          : { direct_amount: total, tier, source, email: billing.email, full_name: billing.name, phone: billing.phone, company: billing.company || null, notes: billing.notes || null };
+          : { direct_amount: total, tier, source, extras, pages: orderData.pages, langCount: orderData.langCount, email: billing.email, full_name: billing.name, phone: billing.phone, company: billing.company || null, notes: billing.notes || null };
 
       const { data: orderResult } = await API.post('/orders', orderPayload);
       const orderId = orderResult.order.id;

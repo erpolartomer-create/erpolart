@@ -207,6 +207,7 @@ const ProjectsPricing = () => {
       source: 'projects',
       tier,
       pages,
+      langCount,
       base,
       extras: [...selected],
       extTotal,

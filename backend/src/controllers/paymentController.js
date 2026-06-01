@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { supabase } from '../config/supabase.js';
 import sendEmail from '../utils/sendEmail.js';
 import { getOrderConfirmationTemplate } from '../templates/orderConfirmation.js';
+import { computeServiceTotal, SERVICE_SOURCES } from '../config/pricing.js';
 
 const isUUID = (str) => {
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -28,6 +29,9 @@ export const createOrder = async (req, res) => {
     tier,
     company,
     notes,
+    extras = [],
+    pages,
+    langCount,
   } = req.body;
 
   try {
@@ -84,8 +88,22 @@ export const createOrder = async (req, res) => {
       monthlyFee = isMaintenanceActive ? (MAINTENANCE_TIERS[subscriptionPlan] || 49) : 0;
 
     } else {
-      // Service order (projects / saas / automations — direct amount)
-      totalAmount = Number(direct_amount) || 0;
+      // Service order (projects / saas / automations)
+      // GÜVENLİK: tutarı SUNUCUDA otoriter hesapla — istemciden gelen direct_amount'a
+      // güvenme (aksi halde 1$'a hizmet alınabilir).
+      if (SERVICE_SOURCES.has(source)) {
+        const computed = computeServiceTotal({ source, tier, extras, pages, langCount });
+        if (computed == null || computed <= 0) {
+          return res.status(400).json({
+            success: false,
+            message: 'Geçersiz sipariş parametreleri. Lütfen seçiminizi yenileyip tekrar deneyin.',
+          });
+        }
+        totalAmount = computed;
+      } else {
+        // Bilinmeyen kaynak — güvenli taraf: reddet (sessizce direct_amount'a düşme).
+        return res.status(400).json({ success: false, message: 'Geçersiz sipariş kaynağı.' });
+      }
       subscriptionPlan = tier || 'Custom';
     }
 
@@ -318,6 +336,19 @@ export const paytrCallback = async (req, res) => {
 
     // Idempotency — tekrar işleme engel
     if (order.status === 'paid') return res.send('OK');
+
+    // Derinlemesine savunma (bloklamaz): tahsil edilen tutarı beklenen taban tutarla
+    // karşılaştır. total_amount PayTR'den kuruş (×100 TL) gelir. order.amount USD'dir.
+    // Çok düşük FX (konservatif) ile taban hesaplanır; tahsilat tabanın %50'sinin
+    // altındaysa olası yapılandırma/manipülasyon uyarısı logla (ödemeyi reddetme).
+    if (status === 'success') {
+      const baseUsd = Number(order.amount || 0) + Number(order.monthly_fee || 0);
+      const floorKurus = baseUsd * 25 * 100 * 0.5; // 25 TRY/USD konservatif × %50 tolerans
+      const paidKurus = Number(total_amount || 0);
+      if (baseUsd > 0 && paidKurus > 0 && paidKurus < floorKurus) {
+        console.warn(`[PAYTR CALLBACK] ⚠️ Tutar şüpheli düşük → oid=${merchant_oid} tahsil=${paidKurus}kr beklenen_taban≈${Math.round(floorKurus)}kr (orderUSD=${baseUsd})`);
+      }
+    }
 
     if (status === 'success') {
       // Önce paid_at ile dene; kolon yoksa (PGRST204 / "column ... does not exist")
