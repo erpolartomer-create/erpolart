@@ -6,6 +6,7 @@ import { Helmet } from 'react-helmet-async';
 import {
   ArrowRight, Sparkles, Check, Loader2,
   User, Mail, Phone, Building2, MessageSquare, ShieldCheck, Lock,
+  CreditCard, X,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import useAuthStore from '../store/authStore';
@@ -91,6 +92,9 @@ const OrderPage = () => {
   const [iframeToken, setIframeToken] = useState(null);
   const iframeRef = useRef(null);
 
+  // Taksit popup
+  const [showTaksit, setShowTaksit] = useState(false);
+
   // Para birimi
   const [currency, setCurrency] = useState(detectCurrency);
   const [rates, setRates] = useState({ TRY: 38, EUR: 0.92, GBP: 0.79, RUB: 90 });
@@ -110,6 +114,20 @@ const OrderPage = () => {
     const rateKey = currency === 'TL' ? 'TRY' : currency;
     return n * (rates[rateKey] || 1);
   };
+
+  // PayTR taksit tablosunu yükle (modal açıldığında)
+  useEffect(() => {
+    if (!showTaksit) return;
+    const container = document.getElementById('paytr_taksit_tablosu');
+    if (container) container.innerHTML = '';
+    const old = document.getElementById('paytr-taksit-script');
+    if (old) old.remove();
+    const tlAmount = (total * (rates.TRY || 38)).toFixed(2);
+    const script = document.createElement('script');
+    script.id  = 'paytr-taksit-script';
+    script.src = `https://www.paytr.com/odeme/taksit-tablosu/v2?token=400fc80a3b111727c665b40c8fb6e4a9b64434278a61ffb4d596dbead9a2dc9c&merchant_id=707720&amount=${tlAmount}&taksit=0&tumu=0`;
+    document.body.appendChild(script);
+  }, [showTaksit, total, rates.TRY]);
 
   const fmtPrice = (usdAmount) => {
     const converted = convertPrice(usdAmount);
@@ -518,6 +536,15 @@ const OrderPage = () => {
                         </div>
                       ))}
                     </div>
+
+                    {/* Taksit Seçenekleri Butonu */}
+                    <button
+                      onClick={() => setShowTaksit(true)}
+                      className={`w-full mt-4 flex items-center justify-center gap-2 py-3 rounded-2xl border text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${sc.border} ${sc.accent} ${sc.bg} hover:opacity-80`}
+                    >
+                      <CreditCard size={12} />
+                      Taksit Seçenekleri
+                    </button>
                   </div>
                 </motion.div>
               </motion.div>
@@ -569,6 +596,47 @@ const OrderPage = () => {
           </AnimatePresence>
         </div>
       </div>
+      {/* Taksit Popup */}
+      <AnimatePresence>
+        {showTaksit && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-deep-black/85 backdrop-blur-xl"
+            onClick={() => setShowTaksit(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+              className="relative w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-[2rem] bg-white shadow-2xl"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="sticky top-0 bg-white border-b border-gray-100 px-8 py-5 flex items-center justify-between z-10 rounded-t-[2rem]">
+                <div className="flex items-center gap-3">
+                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${sc.bg}`}>
+                    <CreditCard size={14} className={sc.accent} />
+                  </div>
+                  <div>
+                    <p className="text-gray-900 font-black text-sm uppercase tracking-wider">Taksit Seçenekleri</p>
+                    <p className="text-gray-400 text-[10px]">{fmtPrice(total)} tutarındaki ödemeniz için</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowTaksit(false)}
+                  className="w-8 h-8 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                >
+                  <X size={14} className="text-gray-500" />
+                </button>
+              </div>
+
+              {/* PayTR Widget */}
+              <div className="p-6">
+                <div id="paytr_taksit_tablosu" />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
