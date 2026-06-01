@@ -84,6 +84,9 @@ const OrderPage = () => {
   // Card form
   const [card, setCard] = useState({ owner: '', number: '', expiry: '', cvv: '' });
   const [installment, setInstallment] = useState('0');
+  // BIN detection (kart markası/banka tespiti)
+  const [binInfo, setBinInfo] = useState(null); // { brand, bank, schema, cardType, status }
+  const binCacheRef = useRef({}); // bin → result cache
 
   const [errors, setErrors]         = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -148,6 +151,32 @@ const OrderPage = () => {
       hiddenFormRef.current.submit();
     }
   }, [paytrData]);
+
+  // BIN sorgulama — kart numarası 6+ haneye ulaşınca markayı/bankayı tespit et
+  const cardDigits = card.number.replace(/\s/g, '');
+  useEffect(() => {
+    const bin = cardDigits.slice(0, 8);
+    if (cardDigits.length < 6) { setBinInfo(null); return; }
+    if (binCacheRef.current[bin]) { setBinInfo(binCacheRef.current[bin]); return; }
+
+    const timer = setTimeout(async () => {
+      try {
+        const { data } = await API.post('/payment/bin-detail', { binNumber: bin });
+        binCacheRef.current[bin] = data;
+        setBinInfo(data);
+        // Yabancı kart / taksitsiz kart → tek çekime zorla
+        if (data.status !== 'success' || data.brand === 'none') {
+          setInstallment('0');
+        }
+      } catch {
+        setBinInfo(null);
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [cardDigits]);
+
+  // Taksit yapılabilir mi? (kart markası tanımlıysa)
+  const installmentAvailable = binInfo?.status === 'success' && binInfo?.brand && binInfo.brand !== 'none';
 
   if (loadingData || (!orderDataState?.source && !dynamicOrderData)) {
     return (
@@ -221,6 +250,7 @@ const OrderPage = () => {
         userName:         billing.name,
         installment_count: installment,
         currency,
+        cardType:          binInfo?.brand || '',
       });
 
       // 3. Trigger auto-submit of hidden form (card data + paytrData → paytr.com/odeme)
@@ -443,15 +473,28 @@ const OrderPage = () => {
                       <select
                         value={installment}
                         onChange={e => setInstallment(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-white/30 rounded-xl px-4 py-3 text-white text-sm font-medium outline-none transition-all appearance-none"
+                        disabled={!installmentAvailable}
+                        className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-white/30 rounded-xl px-4 py-3 text-white text-sm font-medium outline-none transition-all appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <option value="0" className="bg-surface text-white">Tek Çekim</option>
-                        <option value="2" className="bg-surface text-white">2 Taksit</option>
-                        <option value="3" className="bg-surface text-white">3 Taksit</option>
-                        <option value="6" className="bg-surface text-white">6 Taksit</option>
-                        <option value="9" className="bg-surface text-white">9 Taksit</option>
-                        <option value="12" className="bg-surface text-white">12 Taksit</option>
+                        {installmentAvailable && [2, 3, 6, 9, 12].map(n => (
+                          <option key={n} value={String(n)} className="bg-surface text-white">{n} Taksit</option>
+                        ))}
                       </select>
+                      {/* BIN tespit göstergesi */}
+                      {cardDigits.length >= 6 && binInfo && (
+                        <div className="mt-2 flex items-center gap-2 flex-wrap">
+                          {binInfo.status === 'success' ? (
+                            <>
+                              {binInfo.schema && <span className="px-2 py-0.5 rounded bg-white/8 border border-white/10 text-[9px] font-black text-gray-400 tracking-wider">{binInfo.schema}</span>}
+                              {binInfo.bank && <span className="text-[10px] text-gray-500">{binInfo.bank}</span>}
+                              {!installmentAvailable && <span className="text-[10px] text-amber-400/80">· Bu kartla taksit yapılamıyor</span>}
+                            </>
+                          ) : (
+                            <span className="text-[10px] text-gray-600">Yabancı/tanımsız kart · sadece tek çekim</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

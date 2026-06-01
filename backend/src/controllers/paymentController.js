@@ -89,24 +89,38 @@ export const createOrder = async (req, res) => {
       subscriptionPlan = tier || 'Custom';
     }
 
-    const { data: order, error: orderError } = await supabase
+    const baseInsert = {
+      user_id:           userId,
+      template_id:       dbTemplateId,
+      amount:            totalAmount,
+      status:            'pending',
+      email:             email || req.user?.email,
+      full_name,
+      project_code:      'erpolart',
+      has_own_hosting:   false,
+      subscription_plan: isMaintenanceActive ? 'Maintenance' : 'None',
+      monthly_fee:       monthlyFee,
+      selected_addons:   selectedAddons,
+      project_notes:     notes || null,
+      customer_phone:    phone || null,
+    };
+
+    let { data: order, error: orderError } = await supabase
       .from('orders')
-      .insert([{
-        user_id:           userId,
-        template_id:       dbTemplateId,
-        amount:            totalAmount,
-        status:            'pending',
-        email:             email || req.user?.email,
-        full_name,
-        project_code:      'erpolart',
-        has_own_hosting:   false,
-        subscription_plan: isMaintenanceActive ? 'Maintenance' : 'None',
-        monthly_fee:       monthlyFee,
-        selected_addons:   selectedAddons,
-        project_notes:     notes || null,
-      }])
+      .insert([baseInsert])
       .select()
       .single();
+
+    // customer_phone kolonu henüz eklenmemişse (PGRST204) onsuz tekrar dene —
+    // SQL migration uygulanmadan da createOrder çalışmaya devam etsin.
+    if (orderError && (orderError.code === 'PGRST204' || /column/i.test(orderError.message || ''))) {
+      const { customer_phone, ...withoutPhone } = baseInsert;
+      ({ data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert([withoutPhone])
+        .select()
+        .single());
+    }
 
     if (orderError) throw orderError;
 
@@ -316,7 +330,7 @@ export const paytrCallback = async (req, res) => {
           html: getOrderConfirmationTemplate({
             customerName:    order.full_name,
             customerEmail:   order.email,
-            customerPhone:   order.phone,
+            customerPhone:   order.customer_phone || order.phone,
             customerAddress: order.address,
             customerTaxId:   order.tax_id,
             orderId:         order.id.slice(0, 8).toUpperCase(),
@@ -342,6 +356,56 @@ export const paytrCallback = async (req, res) => {
   } catch (error) {
     console.error('[PAYTR CALLBACK EXCEPTION]', error);
     res.send('OK'); // Yine de OK dön, aksi halde PayTR tekrar dener
+  }
+};
+
+// --- PayTR BIN Sorgulama ---
+// Kart numarasının ilk 6-8 hanesiyle kart markası/bankası/şeması öğrenilir.
+// brand (axess/bonus/world...) → taksit için card_type olarak kullanılır.
+// brand 'none' veya status 'failed' (yabancı kart) → taksit yapılamaz.
+
+// @route   POST /api/payment/bin-detail
+export const binDetail = async (req, res) => {
+  try {
+    const { binNumber } = req.body;
+    const bin = String(binNumber || '').replace(/\D/g, '').slice(0, 8);
+    if (bin.length < 6) {
+      return res.status(400).json({ status: 'error', err_msg: 'BIN en az 6 hane olmalı.' });
+    }
+
+    const merchant_id   = process.env.PAYTR_MERCHANT_ID;
+    const merchant_key  = process.env.PAYTR_MERCHANT_KEY;
+    const merchant_salt = process.env.PAYTR_MERCHANT_SALT;
+    if (!merchant_id || !merchant_key || !merchant_salt) {
+      return res.status(500).json({ status: 'error', err_msg: 'PayTR credentials eksik.' });
+    }
+
+    const paytr_token = crypto
+      .createHmac('sha256', merchant_key)
+      .update(bin + merchant_id + merchant_salt)
+      .digest('base64');
+
+    const form = new URLSearchParams({ merchant_id, bin_number: bin, paytr_token });
+
+    const r = await fetch('https://www.paytr.com/odeme/api/bin-detail', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body:    form.toString(),
+    });
+    const data = await r.json();
+
+    // Sadece gerekli alanları dön (kart no asla loglanmaz/saklanmaz)
+    res.json({
+      status:       data.status,
+      brand:        data.brand || 'none',     // axess, bonus, world... veya none
+      cardType:     data.cardType || null,    // credit / debit
+      bank:         data.bank || null,
+      schema:       data.schema || null,      // VISA, MASTERCARD, TROY, AMEX, OTHER
+      businessCard: data.businessCard || null,
+    });
+  } catch (error) {
+    console.error('[BIN DETAIL ERROR]', error);
+    res.status(500).json({ status: 'error', err_msg: error.message });
   }
 };
 
@@ -378,11 +442,18 @@ export const createPayTRDirectToken = async (req, res) => {
       userName,
       installment_count = '0',
       currency: reqCurrency,
+      cardType: reqCardType,
     } = req.body;
 
     if (!orderId || !merchantOkUrl || !merchantFailUrl) {
       return res.status(400).json({ error: 'orderId, merchantOkUrl ve merchantFailUrl zorunlu.' });
     }
+
+    // Taksitli işlemde kart markası (axess/bonus/world...) gönderilmeli.
+    // Tek çekimde boş bırakılır. 'none' gelirse boş gönder.
+    const card_type = (installment_count !== '0' && reqCardType && reqCardType !== 'none')
+      ? reqCardType
+      : '';
 
     const { data: order, error } = await supabase
       .from('orders')
@@ -488,7 +559,7 @@ export const createPayTRDirectToken = async (req, res) => {
       client_lang:       'tr',
       non3d_test_failed: '0',
       installment_count: installment_count.toString(),
-      card_type:         '',
+      card_type,
     });
   } catch (error) {
     console.error('[PAYTR DIRECT TOKEN ERROR]', error);

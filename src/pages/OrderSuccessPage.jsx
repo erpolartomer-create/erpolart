@@ -104,6 +104,25 @@ const OrderSuccessPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, navigate]);
 
+  // Ödeme sonrası durum polling — PayTR callback siparişi 'paid'/'active' yapana kadar
+  // (kullanıcı callback'ten önce sayfaya ulaşmış olabilir). Pending iken ~30sn izle.
+  useEffect(() => {
+    if (orderStatus !== 'pending') return;
+    let attempts = 0;
+    const interval = setInterval(async () => {
+      attempts += 1;
+      try {
+        const { data } = await supabase.from('orders').select('status').eq('id', id).eq('project_code', 'erpolart').single();
+        if (data?.status && data.status !== 'pending') {
+          setOrderStatus(data.status);
+          clearInterval(interval);
+        }
+      } catch { /* sessizce yut */ }
+      if (attempts >= 10) clearInterval(interval); // 10 × 3sn = 30sn
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [orderStatus, id]);
+
   // Handle unsaved changes warning
   useEffect(() => {
     const handleBeforeUnload = (e) => {
