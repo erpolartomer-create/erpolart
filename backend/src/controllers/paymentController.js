@@ -359,6 +359,29 @@ export const paytrCallback = async (req, res) => {
   }
 };
 
+// --- Döviz Kurları (cache'li proxy) ---
+// Frontend doğrudan open.er-api.com'a çağrı yapamıyor (CSP engeli) — bu yüzden
+// backend üzerinden (CSP'de izinli) servis ediyoruz. 1 saat cache.
+let _ratesCache = { rates: null, ts: 0 };
+
+// @route   GET /api/payment/rates
+export const getExchangeRates = async (req, res) => {
+  try {
+    if (_ratesCache.rates && Date.now() - _ratesCache.ts < 3600000) {
+      return res.json({ rates: _ratesCache.rates });
+    }
+    const r = await fetch('https://open.er-api.com/v6/latest/USD');
+    const d = await r.json();
+    if (d?.rates) {
+      _ratesCache = { rates: d.rates, ts: Date.now() };
+      return res.json({ rates: d.rates });
+    }
+    res.json({ rates: null });
+  } catch {
+    res.json({ rates: null });
+  }
+};
+
 // --- PayTR BIN Sorgulama ---
 // Kart numarasının ilk 6-8 hanesiyle kart markası/bankası/şeması öğrenilir.
 // brand (axess/bonus/world...) → taksit için card_type olarak kullanılır.

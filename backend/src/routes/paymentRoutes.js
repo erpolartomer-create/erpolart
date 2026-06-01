@@ -8,6 +8,7 @@ import {
   paymentSuccessRedirect,
   paymentFailRedirect,
   binDetail,
+  getExchangeRates,
 } from '../controllers/paymentController.js';
 import { adminProtect } from '../middleware/authMiddleware.js';
 
@@ -24,6 +25,9 @@ router.post('/payment/paytr-direct-token', createPayTRDirectToken);
 
 // PayTR BIN sorgulama (public — kart markası/banka tespiti, taksit için)
 router.post('/payment/bin-detail', binDetail);
+
+// Döviz kurları (public — frontend fiyat gösterimi için, cache'li)
+router.get('/payment/rates', getExchangeRates);
 
 // PayTR callback (public — PayTR server-to-server POST)
 router.post('/payment/paytr-callback', paytrCallback);

@@ -111,11 +111,10 @@ const OrderPage = () => {
     }));
   }, [user]);
 
-  // Exchange rates
+  // Exchange rates — backend üzerinden (CSP open.er-api.com'a izin vermiyor)
   useEffect(() => {
-    fetch('https://open.er-api.com/v6/latest/USD')
-      .then(r => r.json())
-      .then(d => { if (d?.rates) setRates(d.rates); })
+    API.get('/payment/rates')
+      .then(({ data }) => { if (data?.rates) setRates(data.rates); })
       .catch(() => {});
   }, []);
 

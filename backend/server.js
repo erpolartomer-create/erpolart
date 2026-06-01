@@ -21,6 +21,13 @@ dotenv.config();
 
 const app = express();
 app.disable('x-powered-by');
+
+// Railway/Cloudflare gibi tek proxy arkasında çalışıyoruz.
+// Bu olmadan express-rate-limit X-Forwarded-For'u doğrulayamayıp ValidationError
+// fırlatır (tüm /api/db/* çağrıları 500 döner). Ayrıca req.ip'yi gerçek istemci
+// IP'sine çevirir — PayTR user_ip için de doğru değer sağlar.
+app.set('trust proxy', 1);
+
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 
 // Bot susturma listesi (In-memory MVP)
