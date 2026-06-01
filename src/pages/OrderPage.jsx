@@ -246,6 +246,8 @@ const OrderPage = () => {
         orderId,
         merchantOkUrl:   `${origin}/payment-result?status=success&orderId=${orderId}`,
         merchantFailUrl: `${origin}/payment-result?status=fail`,
+        userPhone:       form.phone,
+        userName:        form.name,
       });
 
       setIframeToken(tokenResult.iframeToken);

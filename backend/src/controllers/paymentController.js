@@ -92,20 +92,18 @@ export const createOrder = async (req, res) => {
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .insert([{
-        user_id: userId,
-        template_id: dbTemplateId,
-        amount: totalAmount,
-        status: 'pending',
-        email: email || req.user?.email,
+        user_id:           userId,
+        template_id:       dbTemplateId,
+        amount:            totalAmount,
+        status:            'pending',
+        email:             email || req.user?.email,
         full_name,
-        phone,
-        address,
-        tax_id,
-        project_code: 'erpolart',
-        has_own_hosting: false,
+        project_code:      'erpolart',
+        has_own_hosting:   false,
         subscription_plan: isMaintenanceActive ? 'Maintenance' : 'None',
-        monthly_fee: monthlyFee,
-        selected_addons: selectedAddons,
+        monthly_fee:       monthlyFee,
+        selected_addons:   selectedAddons,
+        project_notes:     notes || null,
       }])
       .select()
       .single();
@@ -131,7 +129,7 @@ export const createOrder = async (req, res) => {
 // @route   POST /api/payment/paytr-token
 export const createPayTRToken = async (req, res) => {
   try {
-    const { orderId, merchantOkUrl, merchantFailUrl } = req.body;
+    const { orderId, merchantOkUrl, merchantFailUrl, userPhone, userName } = req.body;
 
     if (!orderId || !merchantOkUrl || !merchantFailUrl) {
       return res.status(400).json({ error: 'orderId, merchantOkUrl ve merchantFailUrl zorunlu.' });
@@ -163,13 +161,14 @@ export const createPayTRToken = async (req, res) => {
     const rawIp   = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || '';
     const user_ip = rawIp.replace('::ffff:', '').replace('::1', '') || '127.0.0.1';
 
-    // PayTR telefon formatı: 05XXXXXXXXX
-    const rawPhone   = order.phone || '05000000000';
+    // PayTR telefon formatı: 05XXXXXXXXX (form'dan direkt alınır — orders tablosunda depolanmıyor)
+    const rawPhone   = userPhone || '05000000000';
     const user_phone = rawPhone.startsWith('+90')
       ? '0' + rawPhone.slice(3)
       : rawPhone.startsWith('90') && rawPhone.length === 12
         ? '0' + rawPhone.slice(2)
         : rawPhone;
+    const user_name = userName || order.full_name || 'Guest';
 
     const basket = JSON.stringify([[
       order.templates?.name || 'Digital Architecture',
@@ -195,7 +194,7 @@ export const createPayTRToken = async (req, res) => {
       email:            order.email,
       payment_amount:   payment_amount.toString(),
       merchant_oid,
-      user_name:        order.full_name || 'Guest',
+      user_name,
       user_address:     order.address  || 'Digital Delivery',
       user_phone,
       merchant_ok_url:  merchantOkUrl,
