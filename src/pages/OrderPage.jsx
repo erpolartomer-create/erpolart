@@ -11,6 +11,19 @@ import { supabase } from '../lib/supabase';
 import useAuthStore from '../store/authStore';
 import API from '../services/api';
 
+// Para birimi tarayıcı diline göre otomatik tespit
+const detectCurrency = () => {
+  const lang = (navigator.language || navigator.languages?.[0] || 'en').toLowerCase();
+  if (lang.startsWith('tr')) return 'TL';
+  if (lang.startsWith('ru')) return 'RUB';
+  if (lang === 'en-gb') return 'GBP';
+  if (['de','fr','it','es','nl','pt','pl','cs','ro'].some(l => lang.startsWith(l))) return 'EUR';
+  return 'USD';
+};
+
+const CURRENCY_SYMBOLS = { TL: '₺', USD: '$', EUR: '€', GBP: '£', RUB: '₽' };
+const CURRENCY_LABELS  = { TL: 'TL', USD: 'USD', EUR: 'EUR', GBP: 'GBP', RUB: 'RUB' };
+
 // Source → accent color config
 const SOURCE_CONFIG = {
   projects: {
@@ -42,7 +55,6 @@ const SOURCE_CONFIG = {
   },
 };
 
-const fmt = (n) => '$' + n.toLocaleString('en-US');
 
 const InputField = ({ label, icon: Icon, error, ...props }) => (
   <div>
@@ -78,6 +90,33 @@ const OrderPage = () => {
   const [step, setStep] = useState('billing'); // 'billing' | 'payment'
   const [iframeToken, setIframeToken] = useState(null);
   const iframeRef = useRef(null);
+
+  // Para birimi
+  const [currency, setCurrency] = useState(detectCurrency);
+  const [rates, setRates] = useState({ TRY: 38, EUR: 0.92, GBP: 0.79, RUB: 90 });
+
+  // Döviz kurlarını çek
+  useEffect(() => {
+    fetch('https://open.er-api.com/v6/latest/USD')
+      .then(r => r.json())
+      .then(d => { if (d?.rates) setRates(d.rates); })
+      .catch(() => {});
+  }, []);
+
+  const convertPrice = (usdAmount) => {
+    if (!usdAmount) return 0;
+    const n = Number(usdAmount);
+    if (currency === 'USD') return n;
+    const rateKey = currency === 'TL' ? 'TRY' : currency;
+    return n * (rates[rateKey] || 1);
+  };
+
+  const fmtPrice = (usdAmount) => {
+    const converted = convertPrice(usdAmount);
+    const sym = CURRENCY_SYMBOLS[currency] || '$';
+    if (currency === 'TL' || currency === 'RUB') return `${sym}${Math.round(converted).toLocaleString()}`;
+    return `${sym}${converted.toFixed(2)}`;
+  };
 
   const isProposal = location.pathname.includes('/proposal/');
 
@@ -248,6 +287,7 @@ const OrderPage = () => {
         merchantFailUrl: `${origin}/payment-result?status=fail`,
         userPhone:       form.phone,
         userName:        form.name,
+        currency,
       });
 
       setIframeToken(tokenResult.iframeToken);
@@ -410,6 +450,22 @@ const OrderPage = () => {
                       {t('orderPage.summary.title')}
                     </div>
 
+                    {/* Currency Switcher */}
+                    <div className="flex gap-1 mb-5 flex-wrap">
+                      {Object.keys(CURRENCY_LABELS).map(c => (
+                        <button
+                          key={c}
+                          onClick={() => setCurrency(c)}
+                          className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-[0.15em] transition-all border
+                            ${currency === c
+                              ? `${sc.bg} ${sc.accent} ${sc.border}`
+                              : 'bg-transparent border-white/10 text-gray-600 hover:border-white/20 hover:text-gray-400'}`}
+                        >
+                          {CURRENCY_SYMBOLS[c]} {c}
+                        </button>
+                      ))}
+                    </div>
+
                     <div className="mb-4">
                       <div className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-600 mb-1">{t('orderPage.summary.tier')}</div>
                       <div className={`text-sm font-black capitalize ${sc.accent}`}>{tier}</div>
@@ -419,14 +475,14 @@ const OrderPage = () => {
                     <div className="space-y-2 py-4 border-t border-b border-white/6 mb-4">
                       <div className="flex justify-between text-xs">
                         <span className="text-gray-500">{t('orderPage.summary.basePrice')}</span>
-                        <span className="text-gray-300 font-medium">{fmt(base)}</span>
+                        <span className="text-gray-300 font-medium">{fmtPrice(base)}</span>
                       </div>
 
                       {extras.length > 0 && (
                         <>
                           <div className="flex justify-between text-xs">
                             <span className="text-gray-500">{t('orderPage.summary.extras')}</span>
-                            <span className="text-gray-300 font-medium">+{fmt(extTotal)}</span>
+                            <span className="text-gray-300 font-medium">+{fmtPrice(extTotal)}</span>
                           </div>
                           {extras.map((key) => (
                             <div key={key} className="flex justify-between text-xs pl-2">
@@ -439,7 +495,7 @@ const OrderPage = () => {
                       {maintenance && monthly > 0 && (
                         <div className="flex justify-between text-xs">
                           <span className="text-gray-500">{t('orderPage.summary.maintenance')}</span>
-                          <span className="text-gray-300 font-medium">+{fmt(monthly)}/mo</span>
+                          <span className="text-gray-300 font-medium">+{fmtPrice(monthly)}/mo</span>
                         </div>
                       )}
                     </div>
@@ -447,7 +503,7 @@ const OrderPage = () => {
                     <div className="mb-6">
                       <div className="text-[9px] font-black uppercase tracking-[0.25em] text-gray-600 mb-1">{t('orderPage.summary.total')}</div>
                       <div className={`text-4xl font-display font-black tracking-tighter ${sc.accent}`}>
-                        {fmt(total)}
+                        {fmtPrice(total)}
                       </div>
                       <div className="text-[9px] text-gray-600 mt-1">{t('orderPage.summary.oneTime')}</div>
                     </div>

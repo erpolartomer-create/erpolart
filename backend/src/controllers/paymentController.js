@@ -129,7 +129,7 @@ export const createOrder = async (req, res) => {
 // @route   POST /api/payment/paytr-token
 export const createPayTRToken = async (req, res) => {
   try {
-    const { orderId, merchantOkUrl, merchantFailUrl, userPhone, userName } = req.body;
+    const { orderId, merchantOkUrl, merchantFailUrl, userPhone, userName, currency: reqCurrency } = req.body;
 
     if (!orderId || !merchantOkUrl || !merchantFailUrl) {
       return res.status(400).json({ error: 'orderId, merchantOkUrl ve merchantFailUrl zorunlu.' });
@@ -153,9 +153,30 @@ export const createPayTRToken = async (req, res) => {
       return res.status(500).json({ error: 'PayTR credentials eksik.' });
     }
 
+    // PayTR desteklenen para birimleri: TL (TRY), USD, EUR, GBP, RUB
+    const PAYTR_CURRENCIES = ['TL', 'USD', 'EUR', 'GBP', 'RUB'];
+    const currency = PAYTR_CURRENCIES.includes(reqCurrency) ? reqCurrency : 'TL';
+
+    // Para birimi dönüşümü (DB'deki tutar USD cinsinden)
+    const usdAmount = Number(order.amount);
+    let convertedAmount = usdAmount;
+
+    if (currency !== 'USD') {
+      try {
+        const rateRes = await fetch('https://open.er-api.com/v6/latest/USD');
+        const rateData = await rateRes.json();
+        const rateKey  = currency === 'TL' ? 'TRY' : currency;
+        const rate     = rateData?.rates?.[rateKey];
+        if (rate) convertedAmount = usdAmount * rate;
+      } catch {
+        // Fallback sabit kurlar (güncel değerlere yakın)
+        const fallback = { TL: 38, EUR: 0.92, GBP: 0.79, RUB: 90 };
+        convertedAmount = usdAmount * (fallback[currency] || 1);
+      }
+    }
+
     const merchant_oid   = order.id.replace(/-/g, ''); // 32-char UUID, no dashes
-    const payment_amount = Math.round(Number(order.amount) * 100); // USD cents
-    const currency       = 'USD';
+    const payment_amount = Math.round(convertedAmount * 100);
 
     // Gerçek IPv4 çıkar (Railway/Cloudflare proxy arkasında)
     const rawIp   = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || '';
@@ -172,7 +193,7 @@ export const createPayTRToken = async (req, res) => {
 
     const basket = JSON.stringify([[
       order.templates?.name || 'Digital Architecture',
-      Number(order.amount).toFixed(2),
+      convertedAmount.toFixed(2),
       1,
     ]]);
     const user_basket = Buffer.from(basket).toString('base64');
