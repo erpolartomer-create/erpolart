@@ -104,21 +104,22 @@ const OrderSuccessPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, navigate]);
 
-  // Ödeme sonrası durum polling — PayTR callback siparişi 'paid'/'active' yapana kadar
-  // (kullanıcı callback'ten önce sayfaya ulaşmış olabilir). Pending iken ~30sn izle.
+  // Ödeme sonrası durum polling — PayTR callback siparişi 'paid' yapana kadar
+  // (kullanıcı callback'ten önce sayfaya ulaşmış olabilir). Ödeme öncesi durumlarda ~60sn izle.
   useEffect(() => {
-    if (orderStatus !== 'pending') return;
+    const waitingStatuses = ['pending', 'awaiting_transfer'];
+    if (!waitingStatuses.includes(orderStatus)) return;
     let attempts = 0;
     const interval = setInterval(async () => {
       attempts += 1;
       try {
         const { data } = await supabase.from('orders').select('status').eq('id', id).eq('project_code', 'erpolart').single();
-        if (data?.status && data.status !== 'pending') {
-          setOrderStatus(data.status);
+        if (data?.status && !waitingStatuses.includes(data.status)) {
+          setOrderStatus(data.status); // 'paid' / 'active' vb. → durum güncellenir
           clearInterval(interval);
         }
       } catch { /* sessizce yut */ }
-      if (attempts >= 10) clearInterval(interval); // 10 × 3sn = 30sn
+      if (attempts >= 20) clearInterval(interval); // 20 × 3sn = 60sn
     }, 3000);
     return () => clearInterval(interval);
   }, [orderStatus, id]);
@@ -270,13 +271,15 @@ const OrderSuccessPage = () => {
       <div className="container mx-auto px-6 lg:px-12 relative z-10 max-w-7xl">
         {/* Celebration Header */}
         <div className="flex flex-col items-center text-center mb-12 animate-in fade-in slide-in-from-top-10 duration-1000">
-          {orderStatus === 'active' ? (
+          {(orderStatus === 'active' || orderStatus === 'paid') ? (
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-[0.3em] mb-6 shadow-[0_0_20px_rgba(16,185,129,0.15)]">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              {t('customerDashboard.status.active') || 'SİPARİŞ ONAYLANDI'}
+              {orderStatus === 'paid'
+                ? (t('customerDashboard.status.paid') || 'ÖDENDİ')
+                : (t('customerDashboard.status.active') || 'SİPARİŞ ONAYLANDI')}
             </div>
           ) : orderStatus === 'awaiting_transfer' ? (
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 text-[10px] font-black uppercase tracking-[0.3em] mb-6 shadow-[0_0_20px_rgba(245,158,11,0.15)]">

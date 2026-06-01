@@ -1217,6 +1217,7 @@ const resources = {
         },
         status: {
           active: "ACTIVE SYSTEM",
+          paid: "PAID",
           revision: "AWAITING REVISION",
           development: "IN DEVELOPMENT",
           processing: "PROCESSING",
@@ -2570,6 +2571,7 @@ const resources = {
         },
         status: {
           active: "AKTİF SİSTEM",
+          paid: "ÖDENDİ",
           revision: "REVİZYON BEKLİYOR",
           development: "KURULUM AŞAMASINDA",
           processing: "İŞLENİYOR",
@@ -3922,6 +3924,7 @@ const resources = {
         },
         status: {
           active: "AKTIVES SYSTEM",
+          paid: "BEZAHLT",
           revision: "REVISION AUSSTEHEND",
           development: "IN ENTWICKLUNG",
           processing: "VERARBEITUNG",

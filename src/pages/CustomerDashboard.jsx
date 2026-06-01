@@ -53,13 +53,17 @@ const CustomerDashboard = () => {
     switch (status) {
       case 'active':
         return { label: t('customerDashboard.status.active'), color: 'text-emerald-500', bg: 'bg-emerald-500/10', glow: 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)]' };
+      case 'paid':
+        // Ödeme alındı — PayTR callback'i 'paid' yapar
+        return { label: t('customerDashboard.status.paid'), color: 'text-emerald-400', bg: 'bg-emerald-500/10', glow: 'bg-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.8)]' };
       case 'revision':
         return { label: t('customerDashboard.status.revision'), color: 'text-rose-500', bg: 'bg-rose-500/10', glow: 'bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.8)]' };
-      case 'awaiting_transfer':
-        return { label: t('customerDashboard.status.pending') || 'ÖDEME BEKLENİYOR', color: 'text-amber-500', bg: 'bg-amber-500/10', glow: 'bg-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.8)]' };
       case 'development':
+        return { label: t('customerDashboard.status.development'), color: 'text-indigo', bg: 'bg-indigo/10', glow: 'bg-indigo shadow-[0_0_12px_rgba(92,115,255,0.8)]' };
+      case 'awaiting_transfer':
       case 'pending':
-        return { label: t('customerDashboard.status.development'), color: 'text-amber-500', bg: 'bg-amber-500/10', glow: 'bg-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.8)]' };
+        // Ödeme öncesi / bekleniyor
+        return { label: t('customerDashboard.status.pending') || 'ÖDEME BEKLENİYOR', color: 'text-amber-500', bg: 'bg-amber-500/10', glow: 'bg-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.8)]' };
       default:
         return { label: t('customerDashboard.status.processing'), color: 'text-gray-500', bg: 'bg-white/5', glow: 'bg-gray-500' };
     }
