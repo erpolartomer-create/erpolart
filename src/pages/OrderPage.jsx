@@ -157,15 +157,21 @@ const OrderPage = () => {
     if (!showTaksit) return;
     const currentTotal = orderDataState?.total || dynamicOrderData?.total || 0;
     if (!currentTotal) return;
-    const container = document.getElementById('paytr_taksit_tablosu');
-    if (container) container.innerHTML = '';
-    const old = document.getElementById('paytr-taksit-script');
-    if (old) old.remove();
-    const tlAmount = (currentTotal * (rates.TRY || 38)).toFixed(2);
-    const script = document.createElement('script');
-    script.id  = 'paytr-taksit-script';
-    script.src = `https://www.paytr.com/odeme/taksit-tablosu/v2?token=400fc80a3b111727c665b40c8fb6e4a9b64434278a61ffb4d596dbead9a2dc9c&merchant_id=707720&amount=${tlAmount}&taksit=0&tumu=0`;
-    document.body.appendChild(script);
+
+    // Kısa bekleme: React'in modal div'ini DOM'a eklemesini garantile
+    const timer = setTimeout(() => {
+      const container = document.getElementById('paytr_taksit_tablosu');
+      if (container) container.innerHTML = '';
+      const old = document.getElementById('paytr-taksit-script');
+      if (old) old.remove();
+      const tlAmount = (currentTotal * (rates.TRY || 38)).toFixed(2);
+      const script = document.createElement('script');
+      script.id  = 'paytr-taksit-script';
+      script.src = `https://www.paytr.com/odeme/taksit-tablosu/v2?token=400fc80a3b111727c665b40c8fb6e4a9b64434278a61ffb4d596dbead9a2dc9c&merchant_id=707720&amount=${tlAmount}&taksit=0&tumu=0`;
+      document.body.appendChild(script);
+    }, 150);
+
+    return () => clearTimeout(timer);
   }, [showTaksit, orderDataState?.total, dynamicOrderData?.total, rates.TRY]);
 
   if (loadingData || (!orderDataState?.source && !dynamicOrderData)) {
