@@ -93,6 +93,8 @@ const OrderPage = () => {
   // BIN detection (kart markası/banka tespiti)
   const [binInfo, setBinInfo] = useState(null); // { brand, bank, schema, cardType, status }
   const binCacheRef = useRef({}); // bin → result cache
+  // Taksit oranları (mağazaya tanımlı max taksit + kart markasına göre oranlar)
+  const [maxInstallment, setMaxInstallment] = useState(0);
 
   const [errors, setErrors]         = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -121,6 +123,13 @@ const OrderPage = () => {
   useEffect(() => {
     API.get('/payment/rates')
       .then(({ data }) => { if (data?.rates) setRates(data.rates); })
+      .catch(() => {});
+  }, []);
+
+  // Taksit oranları — mağazaya tanımlı maksimum taksit sayısını çek
+  useEffect(() => {
+    API.get('/payment/installment-rates')
+      .then(({ data }) => { if (data?.status === 'success') setMaxInstallment(Number(data.maxInstallment) || 0); })
       .catch(() => {});
   }, []);
 
@@ -180,8 +189,11 @@ const OrderPage = () => {
     return () => clearTimeout(timer);
   }, [cardDigits]);
 
-  // Taksit yapılabilir mi? (kart markası tanımlıysa)
-  const installmentAvailable = binInfo?.status === 'success' && binInfo?.brand && binInfo.brand !== 'none';
+  // Taksit yapılabilir mi? (kart markası tanımlı VE mağazada taksit aktifse)
+  const installmentAvailable =
+    binInfo?.status === 'success' && binInfo?.brand && binInfo.brand !== 'none' && maxInstallment > 1;
+  // Mağazanın desteklediği maks. taksite göre seçenekleri sınırla
+  const installmentOptions = [2, 3, 6, 9, 12].filter(n => n <= maxInstallment);
 
   if (loadingData || (!orderDataState?.source && !dynamicOrderData)) {
     return (
@@ -484,7 +496,7 @@ const OrderPage = () => {
                         className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-white/30 rounded-xl px-4 py-3 text-white text-sm font-medium outline-none transition-all appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <option value="0" className="bg-surface text-white">Tek Çekim</option>
-                        {installmentAvailable && [2, 3, 6, 9, 12].map(n => (
+                        {installmentAvailable && installmentOptions.map(n => (
                           <option key={n} value={String(n)} className="bg-surface text-white">{n} Taksit</option>
                         ))}
                       </select>

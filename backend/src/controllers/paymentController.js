@@ -383,6 +383,59 @@ export const getExchangeRates = async (req, res) => {
   }
 };
 
+// --- PayTR Taksit Oranları Sorgulama (cache'li) ---
+// Mağazaya tanımlı taksit oranlarını kart markasına göre döner.
+// Oranlar günlük değişebilir → 6 saat cache. Frontend bunları kullanarak
+// müşteriye doğru aylık/toplam taksit tutarlarını gösterir.
+let _instCache = { data: null, ts: 0 };
+
+// @route   GET /api/payment/installment-rates
+export const getInstallmentRates = async (req, res) => {
+  try {
+    if (_instCache.data && Date.now() - _instCache.ts < 6 * 3600000) {
+      return res.json(_instCache.data);
+    }
+
+    const merchant_id   = process.env.PAYTR_MERCHANT_ID;
+    const merchant_key  = process.env.PAYTR_MERCHANT_KEY;
+    const merchant_salt = process.env.PAYTR_MERCHANT_SALT;
+    if (!merchant_id || !merchant_key || !merchant_salt) {
+      return res.status(500).json({ status: 'error', err_msg: 'PayTR credentials eksik.' });
+    }
+
+    const request_id  = Date.now().toString(); // max 32 char, benzersiz
+    const paytr_token = crypto
+      .createHmac('sha256', merchant_key)
+      .update(merchant_id + request_id + merchant_salt)
+      .digest('base64');
+
+    const form = new URLSearchParams({ merchant_id, request_id, paytr_token });
+
+    const r = await fetch('https://www.paytr.com/odeme/taksit-oranlari', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body:    form.toString(),
+    });
+    const data = await r.json();
+
+    if (data.status === 'success') {
+      const payload = {
+        status:           'success',
+        maxInstallment:   data.max_inst_non_bus || 0,
+        rates:            data.oranlar || {},   // { axess: [...], world: [...], ... }
+      };
+      _instCache = { data: payload, ts: Date.now() };
+      return res.json(payload);
+    }
+
+    console.error('[INSTALLMENT RATES ERROR]', data);
+    res.json({ status: 'error', err_msg: data.err_msg || 'Taksit oranları alınamadı.', rates: {}, maxInstallment: 0 });
+  } catch (error) {
+    console.error('[INSTALLMENT RATES EXCEPTION]', error);
+    res.json({ status: 'error', err_msg: error.message, rates: {}, maxInstallment: 0 });
+  }
+};
+
 // --- PayTR BIN Sorgulama ---
 // Kart numarasının ilk 6-8 hanesiyle kart markası/bankası/şeması öğrenilir.
 // brand (axess/bonus/world...) → taksit için card_type olarak kullanılır.

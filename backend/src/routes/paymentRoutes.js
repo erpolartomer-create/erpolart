@@ -9,6 +9,7 @@ import {
   paymentFailRedirect,
   binDetail,
   getExchangeRates,
+  getInstallmentRates,
 } from '../controllers/paymentController.js';
 import { adminProtect } from '../middleware/authMiddleware.js';
 
@@ -28,6 +29,9 @@ router.post('/payment/bin-detail', binDetail);
 
 // Döviz kurları (public — frontend fiyat gösterimi için, cache'li)
 router.get('/payment/rates', getExchangeRates);
+
+// Taksit oranları (public — kart markasına göre taksit tutarı gösterimi, cache'li)
+router.get('/payment/installment-rates', getInstallmentRates);
 
 // PayTR callback (public — PayTR server-to-server POST)
 router.post('/payment/paytr-callback', paytrCallback);
