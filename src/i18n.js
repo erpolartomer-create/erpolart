@@ -676,7 +676,15 @@ const resources = {
         changePassword: "Change Password",
         currentPassword: "Current Password",
         newPassword: "New Password",
-        updatePassword: "Update Password"
+        updatePassword: "Update Password",
+        email: "Email Address",
+        emailLockHint: "Your email address cannot be changed.",
+        googleAuthHint: "You signed in with Google, so there is no password to change.",
+        updating: "Updating...",
+        updateError: "Could not update profile. Please try again.",
+        passwordMinLength: "Password must be at least 6 characters.",
+        passwordUpdateSuccess: "Password updated successfully!",
+        passwordUpdateError: "Could not update password. Please try again."
       },
       saasPage: {
         seo: {
@@ -1969,7 +1977,15 @@ const resources = {
         changePassword: "Şifre Değiştir",
         currentPassword: "Mevcut Şifre",
         newPassword: "Yeni Şifre",
-        updatePassword: "Şifreyi Güncelle"
+        updatePassword: "Şifreyi Güncelle",
+        email: "E-posta Adresi",
+        emailLockHint: "E-posta adresiniz değiştirilemez.",
+        googleAuthHint: "Google ile giriş yaptınız, bu yüzden değiştirilecek bir şifre yok.",
+        updating: "Güncelleniyor...",
+        updateError: "Profil güncellenemedi. Lütfen tekrar deneyin.",
+        passwordMinLength: "Şifre en az 6 karakter olmalıdır.",
+        passwordUpdateSuccess: "Şifre başarıyla güncellendi!",
+        passwordUpdateError: "Şifre güncellenemedi. Lütfen tekrar deneyin."
       },
       saasPage: {
         seo: {
@@ -2578,6 +2594,52 @@ const resources = {
     translation: {
       legal: legalTranslations.de,
       checkoutAgreements: legalTranslations.de.agreements,
+      techMarquee: {
+        title: "Unser Technologie-Stack",
+        subtitle: "Entwickelt mit modernen, produktionsreifen Tools."
+      },
+      dashboard: {
+        welcome: "Willkommen",
+        memberSince: "Mitglied seit",
+        browseTemplates: "Vorlagen durchsuchen",
+        purchases: "Käufe",
+        activeSites: "Aktive Seiten",
+        accountStatus: "Kontostatus",
+        active: "Aktiv",
+        quickActions: "Schnellaktionen",
+        exploreTemplates: "Vorlagen entdecken",
+        exploreDesc: "Durchstöbern Sie unsere Premium-Vorlagensammlung",
+        myPurchases: "Meine Käufe",
+        purchasesDesc: "Gekaufte Vorlagen ansehen und herunterladen",
+        accountSettings: "Kontoeinstellungen",
+        settingsDesc: "Profil und Einstellungen aktualisieren",
+        go: "Los",
+        recommended: "Empfohlene Vorlagen",
+        viewAll: "Alle anzeigen"
+      },
+      account: {
+        title: "Kontoeinstellungen",
+        subtitle: "Verwalten Sie Ihr Profil und Ihre Sicherheitseinstellungen.",
+        updateSuccess: "Profil erfolgreich aktualisiert!",
+        profile: "Profil",
+        personalInfo: "Persönliche Informationen",
+        fullName: "Vollständiger Name",
+        saving: "Wird gespeichert...",
+        saveChanges: "Änderungen speichern",
+        security: "Sicherheit",
+        changePassword: "Passwort ändern",
+        currentPassword: "Aktuelles Passwort",
+        newPassword: "Neues Passwort",
+        updatePassword: "Passwort aktualisieren",
+        email: "E-Mail-Adresse",
+        emailLockHint: "Ihre E-Mail-Adresse kann nicht geändert werden.",
+        googleAuthHint: "Sie haben sich mit Google angemeldet, daher gibt es kein Passwort zu ändern.",
+        updating: "Wird aktualisiert...",
+        updateError: "Profil konnte nicht aktualisiert werden. Bitte versuchen Sie es erneut.",
+        passwordMinLength: "Das Passwort muss mindestens 6 Zeichen lang sein.",
+        passwordUpdateSuccess: "Passwort erfolgreich aktualisiert!",
+        passwordUpdateError: "Passwort konnte nicht aktualisiert werden. Bitte versuchen Sie es erneut."
+      },
       auth: {
         premiumPlatform: "Premium-Plattform",
         heroTitlePart1: "DEINE DIGITALE",
