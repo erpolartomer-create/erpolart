@@ -102,6 +102,7 @@ const OrderPage = () => {
   const binCacheRef = useRef({}); // bin → result cache
   // Taksit oranları (mağazaya tanımlı max taksit + kart markasına göre oranlar)
   const [maxInstallment, setMaxInstallment] = useState(0);
+  const [ratesByBrand, setRatesByBrand] = useState({}); // { axess: { 2: 3.5, ... }, ... }
 
   const [errors, setErrors]         = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -133,10 +134,15 @@ const OrderPage = () => {
       .catch(() => {});
   }, []);
 
-  // Taksit oranları — mağazaya tanımlı maksimum taksit sayısını çek
+  // Taksit oranları — max taksit + kart markasına göre vade farkı oranları
   useEffect(() => {
     API.get('/payment/installment-rates')
-      .then(({ data }) => { if (data?.status === 'success') setMaxInstallment(Number(data.maxInstallment) || 0); })
+      .then(({ data }) => {
+        if (data?.status === 'success') {
+          setMaxInstallment(Number(data.maxInstallment) || 0);
+          setRatesByBrand(data.ratesByBrand || {});
+        }
+      })
       .catch(() => {});
   }, []);
 
@@ -196,11 +202,15 @@ const OrderPage = () => {
     return () => clearTimeout(timer);
   }, [cardDigits]);
 
-  // Taksit yapılabilir mi? (kart markası tanımlı VE mağazada taksit aktifse)
-  const installmentAvailable =
-    binInfo?.status === 'success' && binInfo?.brand && binInfo.brand !== 'none' && maxInstallment > 1;
-  // Mağazanın desteklediği maks. taksite göre seçenekleri sınırla
-  const installmentOptions = [2, 3, 6, 9, 12].filter(n => n <= maxInstallment);
+  // Kart markasının oran tablosu (vade farkı %)
+  const brandRates = (binInfo?.brand && binInfo.brand !== 'none')
+    ? (ratesByBrand[binInfo.brand] || ratesByBrand[String(binInfo.brand).toLowerCase()] || null)
+    : null;
+  // Taksit seçenekleri: hem mağaza maksimumu hem de o markada oranı OLAN taksitler
+  const installmentOptions = [2, 3, 6, 9, 12].filter(
+    n => n <= maxInstallment && brandRates && Number(brandRates[n]) > 0
+  );
+  const installmentAvailable = installmentOptions.length > 0;
 
   if (loadingData || (!orderDataState?.source && !dynamicOrderData)) {
     return (
@@ -225,6 +235,15 @@ const OrderPage = () => {
     const s = CURRENCY_SYMBOLS[currency] || '$';
     return currency === 'TL' ? `${s}${Math.round(v).toLocaleString()}` : `${s}${v.toFixed(2)}`;
   };
+
+  // Taksitli toplam (vade farkı dahil) — USD cinsinden döner, fmt ile formatlanır.
+  // Formül (PayTR): toplam = tutar / ((100 - oran) / 100). Oran yoksa null.
+  const installmentTotalUsd = (n) => {
+    const oran = brandRates ? Number(brandRates[n]) : 0;
+    if (!(oran > 0 && oran < 100)) return null;
+    return Number(total) / ((100 - oran) / 100);
+  };
+  const selectedInstTotalUsd = installment !== '0' ? installmentTotalUsd(Number(installment)) : null;
 
   // ── Validation ──────────────────────────────────────────────────────────────
   const validate = () => {
@@ -505,11 +524,21 @@ const OrderPage = () => {
                         disabled={!installmentAvailable}
                         className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-white/30 rounded-xl px-4 py-3 text-white text-sm font-medium outline-none transition-all appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <option value="0" className="bg-surface text-white">Tek Çekim</option>
-                        {installmentAvailable && installmentOptions.map(n => (
-                          <option key={n} value={String(n)} className="bg-surface text-white">{n} Taksit</option>
-                        ))}
+                        <option value="0" className="bg-surface text-white">Tek Çekim — {fmt(total)}</option>
+                        {installmentAvailable && installmentOptions.map(n => {
+                          const totalN = installmentTotalUsd(n);
+                          const label = totalN ? `${n} Taksit · ${fmt(totalN / n)}/ay` : `${n} Taksit`;
+                          return <option key={n} value={String(n)} className="bg-surface text-white">{label}</option>;
+                        })}
                       </select>
+                      {/* Taksitli toplam bilgisi (vade farkı dahil) */}
+                      {selectedInstTotalUsd && (
+                        <div className="mt-2 text-[11px] text-gray-400">
+                          {installment} taksit × {fmt(selectedInstTotalUsd / Number(installment))} =
+                          <span className={`font-bold ${sc.accent}`}> {fmt(selectedInstTotalUsd)}</span>
+                          <span className="text-gray-600"> (vade farkı dahil)</span>
+                        </div>
+                      )}
                       {/* BIN tespit göstergesi */}
                       {cardDigits.length >= 6 && binInfo && (
                         <div className="mt-2 flex items-center gap-2 flex-wrap">
@@ -563,7 +592,7 @@ const OrderPage = () => {
                   {submitting ? (
                     <><Loader2 size={15} className="animate-spin" />Ödeme Hazırlanıyor...</>
                   ) : (
-                    <><Lock size={14} />{fmt(total)} Güvenli Öde</>
+                    <><Lock size={14} />{fmt(selectedInstTotalUsd ?? total)} Güvenli Öde</>
                   )}
                 </motion.button>
 

@@ -385,54 +385,100 @@ export const getExchangeRates = async (req, res) => {
 
 // --- PayTR Taksit Oranları Sorgulama (cache'li) ---
 // Mağazaya tanımlı taksit oranlarını kart markasına göre döner.
-// Oranlar günlük değişebilir → 6 saat cache. Frontend bunları kullanarak
-// müşteriye doğru aylık/toplam taksit tutarlarını gösterir.
+// Oranlar günlük değişebilir → 6 saat cache.
+// ÖNEMLİ (PayTR Direkt API): taksitli işlemde vade farkı OTOMATİK eklenmez.
+// Vade farkını müşteriye yansıtmak için taksitli tutarı biz hesaplayıp göndeririz:
+//   taksitliTutar = tutar / ((100 - oran) / 100)
 let _instCache = { data: null, ts: 0 };
+
+// PayTR 'oranlar' yapısını { brand: { taksitSayısı: oran } } biçimine normalize et.
+// Farklı olası yapıları (obje/array, farklı alan adları) savunmacı şekilde ele alır.
+const normalizeInstallmentRates = (oranlar) => {
+  const out = {};
+  for (const [brand, val] of Object.entries(oranlar || {})) {
+    const map = {};
+    if (Array.isArray(val)) {
+      // [{taksit:2, oran:3.5}, ...] veya [sayı, sayı, ...]
+      val.forEach((item, idx) => {
+        if (item && typeof item === 'object') {
+          const t = Number(item.taksit ?? item.installment ?? item.ay ?? item.count ?? item.taksit_sayisi);
+          const o = Number(item.oran ?? item.rate ?? item.ratio ?? item.yuzde ?? item.komisyon);
+          if (t > 1 && isFinite(o) && o > 0) map[t] = o;
+        } else if (item != null && !isNaN(Number(item))) {
+          const o = Number(item);
+          if (idx + 1 > 1 && o > 0) map[idx + 1] = o; // index → taksit sayısı (1 bazlı)
+        }
+      });
+    } else if (val && typeof val === 'object') {
+      // { "2": 3.5, "3": 5.0, ... }
+      for (const [k, v] of Object.entries(val)) {
+        const t = Number(k); const o = Number(v);
+        if (t > 1 && isFinite(o) && o > 0) map[t] = o;
+      }
+    }
+    out[brand] = map;
+  }
+  return out;
+};
+
+// Paylaşılan: normalize edilmiş taksit verisini (cache'li) getir.
+const fetchInstallmentData = async () => {
+  if (_instCache.data && Date.now() - _instCache.ts < 6 * 3600000) {
+    return _instCache.data;
+  }
+  const merchant_id   = process.env.PAYTR_MERCHANT_ID;
+  const merchant_key  = process.env.PAYTR_MERCHANT_KEY;
+  const merchant_salt = process.env.PAYTR_MERCHANT_SALT;
+  if (!merchant_id || !merchant_key || !merchant_salt) {
+    return { status: 'error', err_msg: 'PayTR credentials eksik.', maxInstallment: 0, ratesByBrand: {} };
+  }
+
+  const request_id  = Date.now().toString();
+  const paytr_token = crypto
+    .createHmac('sha256', merchant_key)
+    .update(merchant_id + request_id + merchant_salt)
+    .digest('base64');
+
+  const form = new URLSearchParams({ merchant_id, request_id, paytr_token });
+  const r = await fetch('https://www.paytr.com/odeme/taksit-oranlari', {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body:    form.toString(),
+  });
+  const data = await r.json();
+
+  if (data.status === 'success') {
+    // Yapıyı doğrulamak için ham veriyi bir kez logla (cache yüzünden nadiren çalışır)
+    console.log('[INSTALLMENT RATES RAW]', JSON.stringify(data.oranlar || {}).slice(0, 1500));
+    const payload = {
+      status:         'success',
+      maxInstallment: Number(data.max_inst_non_bus) || 0,
+      ratesByBrand:   normalizeInstallmentRates(data.oranlar || {}),
+    };
+    _instCache = { data: payload, ts: Date.now() };
+    return payload;
+  }
+
+  console.error('[INSTALLMENT RATES ERROR]', data);
+  return { status: 'error', err_msg: data.err_msg || 'Taksit oranları alınamadı.', maxInstallment: 0, ratesByBrand: {} };
+};
+
+// Belirli kart markası + taksit sayısı için oranı çöz (yoksa null).
+const resolveInstallmentRate = (data, brand, count) => {
+  if (!data?.ratesByBrand || !brand || !(count > 1)) return null;
+  const map = data.ratesByBrand[brand] || data.ratesByBrand[String(brand).toLowerCase()];
+  const rate = map ? Number(map[count]) : NaN;
+  return isFinite(rate) && rate > 0 && rate < 100 ? rate : null;
+};
 
 // @route   GET /api/payment/installment-rates
 export const getInstallmentRates = async (req, res) => {
   try {
-    if (_instCache.data && Date.now() - _instCache.ts < 6 * 3600000) {
-      return res.json(_instCache.data);
-    }
-
-    const merchant_id   = process.env.PAYTR_MERCHANT_ID;
-    const merchant_key  = process.env.PAYTR_MERCHANT_KEY;
-    const merchant_salt = process.env.PAYTR_MERCHANT_SALT;
-    if (!merchant_id || !merchant_key || !merchant_salt) {
-      return res.status(500).json({ status: 'error', err_msg: 'PayTR credentials eksik.' });
-    }
-
-    const request_id  = Date.now().toString(); // max 32 char, benzersiz
-    const paytr_token = crypto
-      .createHmac('sha256', merchant_key)
-      .update(merchant_id + request_id + merchant_salt)
-      .digest('base64');
-
-    const form = new URLSearchParams({ merchant_id, request_id, paytr_token });
-
-    const r = await fetch('https://www.paytr.com/odeme/taksit-oranlari', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body:    form.toString(),
-    });
-    const data = await r.json();
-
-    if (data.status === 'success') {
-      const payload = {
-        status:           'success',
-        maxInstallment:   data.max_inst_non_bus || 0,
-        rates:            data.oranlar || {},   // { axess: [...], world: [...], ... }
-      };
-      _instCache = { data: payload, ts: Date.now() };
-      return res.json(payload);
-    }
-
-    console.error('[INSTALLMENT RATES ERROR]', data);
-    res.json({ status: 'error', err_msg: data.err_msg || 'Taksit oranları alınamadı.', rates: {}, maxInstallment: 0 });
+    const data = await fetchInstallmentData();
+    res.json(data);
   } catch (error) {
     console.error('[INSTALLMENT RATES EXCEPTION]', error);
-    res.json({ status: 'error', err_msg: error.message, rates: {}, maxInstallment: 0 });
+    res.json({ status: 'error', err_msg: error.message, maxInstallment: 0, ratesByBrand: {} });
   }
 };
 
@@ -526,12 +572,6 @@ export const createPayTRDirectToken = async (req, res) => {
       return res.status(400).json({ error: 'orderId, merchantOkUrl ve merchantFailUrl zorunlu.' });
     }
 
-    // Taksitli işlemde kart markası (axess/bonus/world...) gönderilmeli.
-    // Tek çekimde boş bırakılır. 'none' gelirse boş gönder.
-    const card_type = (installment_count !== '0' && reqCardType && reqCardType !== 'none')
-      ? reqCardType
-      : '';
-
     const { data: order, error } = await supabase
       .from('orders')
       .select('*, templates:template_id(name)')
@@ -572,9 +612,29 @@ export const createPayTRDirectToken = async (req, res) => {
       }
     }
 
-    // ÖNEMLİ: Direkt API payment_amount = decimal string "100.99"
-    // iFrame API'de ×100 (kuruş) idi — bu farklı
-    const payment_amount = convertedAmount.toFixed(2);
+    // VADE FARKI (PayTR Direkt API): taksitte komisyon otomatik EKLENMEZ.
+    // Müşteriye yansıtmak için taksitli tutarı hesapla:
+    //   taksitliTutar = tutar / ((100 - oran) / 100)
+    // Oran çözülemezse GÜVENLİ geri dönüş: tek çekime düş (komisyon kaybı yaşama).
+    let finalInstallment = (installment_count && installment_count !== '0') ? String(installment_count) : '0';
+    let chargeAmount = convertedAmount;
+    if (finalInstallment !== '0') {
+      const instData = await fetchInstallmentData();
+      const brand = (reqCardType && reqCardType !== 'none') ? reqCardType : null;
+      const oran = resolveInstallmentRate(instData, brand, Number(finalInstallment));
+      if (oran != null) {
+        chargeAmount = convertedAmount / ((100 - oran) / 100); // vade farkı dahil toplam
+      } else {
+        console.warn(`[PAYTR] Taksit oranı çözülemedi (brand=${brand}, taksit=${finalInstallment}) → tek çekime düşüldü`);
+        finalInstallment = '0';
+      }
+    }
+
+    // Taksitli işlemde kart markası gönderilmeli; tek çekimde boş.
+    const card_type = (finalInstallment !== '0' && reqCardType && reqCardType !== 'none') ? reqCardType : '';
+
+    // ÖNEMLİ: Direkt API payment_amount = decimal string "100.99" (×100 değil)
+    const payment_amount = chargeAmount.toFixed(2);
 
     // merchant_oid: order UUID (32 hex char) + benzersiz suffix.
     // Aynı sipariş için ödeme tekrar denenebilsin diye her denemede farklı olmalı.
@@ -592,26 +652,19 @@ export const createPayTRDirectToken = async (req, res) => {
         ? '0' + rawPhone.slice(2)
         : rawPhone;
 
-    // Basket — Direkt API: PLAIN JSON string (iFrame'de base64'tü)
-    const monthlyFeeUsd = Number(order.monthly_fee || 0);
-    const convRate      = usdAmount > 0 ? convertedAmount / usdAmount : 1;
-    const basketItems   = [[
-      order.templates?.name || 'Digital Architecture',
-      (Number(order.amount) * convRate).toFixed(2),
-      1,
-    ]];
-    if (monthlyFeeUsd > 0) {
-      basketItems.push(['Aylık Bakım (1. Ay)', (monthlyFeeUsd * convRate).toFixed(2), 1]);
-    }
-    const user_basket = JSON.stringify(basketItems); // plain JSON — no base64
+    // Basket — Direkt API: PLAIN JSON string (base64 DEĞİL).
+    // Tek satır = toplam tutar (vade farkı dahil) → sepet toplamı payment_amount ile birebir uyumlu.
+    const productName = order.templates?.name
+      || (finalInstallment !== '0' ? 'Dijital Hizmet (Taksitli)' : 'Dijital Hizmet');
+    const user_basket = JSON.stringify([[productName, chargeAmount.toFixed(2), 1]]);
 
     const payment_type = 'card';
     const non_3d       = '0';
     const test_mode    = process.env.PAYTR_TEST_MODE || '0';
     const debug_on     = test_mode === '1' ? '1' : '0';
 
-    // Hash formülü Direkt API'ye özgü (iFrame'den farklı!)
-    const hashSTR = `${merchant_id}${user_ip}${merchant_oid}${order.email}${payment_amount}${payment_type}${installment_count}${currency}${test_mode}${non_3d}`;
+    // Hash formülü Direkt API'ye özgü (iFrame'den farklı!) — finalInstallment kullanılır
+    const hashSTR = `${merchant_id}${user_ip}${merchant_oid}${order.email}${payment_amount}${payment_type}${finalInstallment}${currency}${test_mode}${non_3d}`;
     const paytr_token = crypto
       .createHmac('sha256', merchant_key)
       .update(hashSTR + merchant_salt)
@@ -637,7 +690,7 @@ export const createPayTRDirectToken = async (req, res) => {
       debug_on,
       client_lang:       'tr',
       non3d_test_failed: '0',
-      installment_count: installment_count.toString(),
+      installment_count: finalInstallment,
       card_type,
     });
   } catch (error) {
