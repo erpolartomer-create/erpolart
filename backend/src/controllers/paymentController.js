@@ -320,11 +320,26 @@ export const paytrCallback = async (req, res) => {
     if (order.status === 'paid') return res.send('OK');
 
     if (status === 'success') {
-      await supabase
+      // Önce paid_at ile dene; kolon yoksa (PGRST204 / "column ... does not exist")
+      // SADECE status ile tekrar dene. Yoksa update tamamen reddedilir ve sipariş
+      // 'pending' kalır (müşteri ödediği halde turuncu "ÖDEME BEKLENİYOR" görür).
+      let { error: paidErr } = await supabase
         .from('orders')
         .update({ status: 'paid', paid_at: new Date().toISOString() })
         .eq('id', orderId);
-      console.log(`[PAYTR CALLBACK] sipariş 'paid' yapıldı → ${orderId}`);
+
+      if (paidErr && (paidErr.code === 'PGRST204' || /column/i.test(paidErr.message || ''))) {
+        ({ error: paidErr } = await supabase
+          .from('orders')
+          .update({ status: 'paid' })
+          .eq('id', orderId));
+      }
+
+      if (paidErr) {
+        console.error(`[PAYTR CALLBACK] sipariş 'paid' YAPILAMADI → ${orderId}`, paidErr.message);
+      } else {
+        console.log(`[PAYTR CALLBACK] sipariş 'paid' yapıldı → ${orderId}`);
+      }
 
       try {
         await sendEmail({

@@ -109,7 +109,7 @@ const PaymentTrustBadges = ({ themeAccentClass = 'text-amber-400', pagePrefix = 
             <circle cx="14.5" cy="12" r="5.5" fill="#F79E1B" fillOpacity="0.8"/>
           </svg>
           <div className="h-6 px-2 rounded bg-[#1e1f2b] border border-white/5 flex items-center justify-center text-[7px] font-black tracking-widest text-[#00c5df] select-none">
-            iyzico
+            PayTR
           </div>
         </div>
       </div>

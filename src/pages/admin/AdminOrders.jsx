@@ -153,10 +153,12 @@ const AdminOrders = () => {
 
   const requestStatusUpdate = (orderId, newStatus) => {
     const statusLabels = {
-      awaiting_transfer: 'Ödeme Bekleniyor',
-      active: 'Aktif Sistem',
+      pending: 'Ödeme Bekleniyor',
+      paid: 'Ödendi (PayTR)',
+      failed: 'Ödeme Başarısız',
+      development: 'Kurulum / Geliştirme',
       revision: 'Revizyon',
-      development: 'Geliştirme'
+      active: 'Aktif Sistem'
     };
     setConfirmDialog({
       orderId,
@@ -251,12 +253,18 @@ const AdminOrders = () => {
                         disabled={updatingId === order.id}
                         onChange={(e) => requestStatusUpdate(order.id, e.target.value)}
                         className={`w-full appearance-none bg-white/5 border border-white/10 rounded-xl px-4 py-2 pr-10 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer transition-all
-                          ${order.status === 'active' ? 'text-emerald-500 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : order.status === 'awaiting_transfer' ? 'text-amber-500 border-amber-500/20' : 'text-gray-400'}`}
+                          ${(order.status === 'active' || order.status === 'paid') ? 'text-emerald-500 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : order.status === 'pending' ? 'text-amber-500 border-amber-500/20' : order.status === 'failed' ? 'text-red-500 border-red-500/20' : order.status === 'revision' ? 'text-rose-500 border-rose-500/20' : order.status === 'development' ? 'text-indigo border-indigo/20' : 'text-gray-400'}`}
                       >
-                        <option value="awaiting_transfer">Ödeme Bekleniyor</option>
-                        <option value="active">Active System</option>
-                        <option value="revision">Revision</option>
-                        <option value="development">Development</option>
+                        <optgroup label="Ödeme">
+                          <option value="pending">Ödeme Bekleniyor</option>
+                          <option value="paid">Ödendi (PayTR)</option>
+                          <option value="failed">Ödeme Başarısız</option>
+                        </optgroup>
+                        <optgroup label="Süreç">
+                          <option value="development">Kurulum / Geliştirme</option>
+                          <option value="revision">Revizyon</option>
+                          <option value="active">Aktif Sistem</option>
+                        </optgroup>
                       </select>
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                         {updatingId === order.id ? <Loader2 size={12} className="animate-spin text-gray-400" /> : <ChevronRight size={12} className="text-gray-400" />}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -15,31 +15,53 @@ const CustomerDashboard = () => {
   const [loading, setLoading] = useState(true);
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!user?.email) return;
-      try {
-        setLoading(true);
-        const { data, error } = await supabase
-          .from('orders')
-          .select(`
-            id, template_id, amount, status, created_at,
-            templates:template_id (name, preview_image)
-          `)
-          .or(`email.eq.${user.email},user_id.eq.${user.id}`)
-          .eq('project_code', 'erpolart')
-          .order('created_at', { ascending: false });
+  const fetchData = useCallback(async () => {
+    if (!user?.email) return;
+    try {
+      const orFilter = user?.id
+        ? `email.eq.${user.email},user_id.eq.${user.id}`
+        : `email.eq.${user.email}`;
+      const { data, error } = await supabase
+        .from('orders')
+        .select(`
+          id, template_id, amount, status, created_at,
+          templates:template_id (name, preview_image)
+        `)
+        .or(orFilter)
+        .eq('project_code', 'erpolart')
+        .order('created_at', { ascending: false });
 
-        if (error) throw error;
-        setOrders(data || []);
-      } catch (err) {
-        console.error('Dashboard fetch error:', err);
-      } finally {
-        setLoading(false);
-      }
+      if (error) throw error;
+      setOrders(data || []);
+    } catch (err) {
+      console.error('Dashboard fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.email, user?.id]);
+
+  // İlk yükleme
+  useEffect(() => { fetchData(); }, [fetchData]);
+
+  // Otomatik tazeleme — admin durumu değiştirince / PayTR ödemeyi 'paid' yapınca
+  // müşteri sayfayı yenilemeden güncel durumu görür. Realtime + sekme odağı + periyodik.
+  useEffect(() => {
+    if (!user?.email) return;
+    const refresh = () => { if (document.visibilityState === 'visible') fetchData(); };
+    document.addEventListener('visibilitychange', refresh);
+    window.addEventListener('focus', refresh);
+    const interval = setInterval(refresh, 20000);
+    const channel = supabase
+      .channel(`orders-dashboard-${user.id || user.email}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, fetchData)
+      .subscribe();
+    return () => {
+      document.removeEventListener('visibilitychange', refresh);
+      window.removeEventListener('focus', refresh);
+      clearInterval(interval);
+      supabase.removeChannel(channel);
     };
-    fetchData();
-  }, [user?.email]);
+  }, [fetchData, user?.email, user?.id]);
 
   const activeSites = orders.filter(o => o.status === 'active').length;
   const displayName = user?.user_metadata?.full_name || user?.name || user?.email?.split('@')[0] || 'User';
@@ -60,9 +82,11 @@ const CustomerDashboard = () => {
         return { label: t('customerDashboard.status.revision'), color: 'text-rose-500', bg: 'bg-rose-500/10', glow: 'bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.8)]' };
       case 'development':
         return { label: t('customerDashboard.status.development'), color: 'text-indigo', bg: 'bg-indigo/10', glow: 'bg-indigo shadow-[0_0_12px_rgba(92,115,255,0.8)]' };
-      case 'awaiting_transfer':
+      case 'failed':
+        // Ödeme başarısız
+        return { label: t('customerDashboard.status.failed') || 'ÖDEME BAŞARISIZ', color: 'text-red-500', bg: 'bg-red-500/10', glow: 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.8)]' };
       case 'pending':
-        // Ödeme öncesi / bekleniyor
+        // Ödeme öncesi / bekleniyor (PayTR onayı gelene kadar)
         return { label: t('customerDashboard.status.pending') || 'ÖDEME BEKLENİYOR', color: 'text-amber-500', bg: 'bg-amber-500/10', glow: 'bg-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.8)]' };
       default:
         return { label: t('customerDashboard.status.processing'), color: 'text-gray-500', bg: 'bg-white/5', glow: 'bg-gray-500' };

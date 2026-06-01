@@ -97,9 +97,10 @@ router.post('/:table/query', async (req, res) => {
           } else {
             body.user_id = null;
           }
-          // Block anon from setting status to anything other than awaiting_transfer
-          if (!user && body.status && body.status !== 'awaiting_transfer') {
-            body.status = 'awaiting_transfer';
+          // Block anon from setting status to anything other than the initial
+          // 'pending' state — ödeme onayı (paid) yalnızca PayTR callback'inden gelir.
+          if (!user && body.status && body.status !== 'pending') {
+            body.status = 'pending';
           }
         } 
         else if (method === 'PATCH') {
