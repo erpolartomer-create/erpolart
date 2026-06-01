@@ -149,6 +149,7 @@ const OrderPage = () => {
   // Fetch order/template data if no state
   useEffect(() => {
     if (orderDataState?.source) return;
+    if (paytrData) return; // PayTR'ye gönderim sürüyor, yönlendirme yapma
     if (!id) { navigate('/projects', { replace: true }); return; }
     const load = async () => {
       setLoadingData(true);
@@ -170,12 +171,15 @@ const OrderPage = () => {
     load();
   }, [id, isProposal, orderDataState, navigate]);
 
-  useEffect(() => { if (!orderDataState?.source && !id) navigate('/projects', { replace: true }); }, [orderDataState, id, navigate]);
+  // PayTR'ye gönderim başladıysa (paytrData) asla /projects'e atma — yoksa gizli form gönderilemez
+  useEffect(() => { if (!orderDataState?.source && !id && !paytrData) navigate('/projects', { replace: true }); }, [orderDataState, id, navigate, paytrData]);
 
   // Auto-submit hidden form when paytrData is ready
   useEffect(() => {
     if (paytrData && hiddenFormRef.current) {
       hiddenFormRef.current.submit();
+      // Form gönderildi (PayTR'ye gidiliyor) → bekleyen sipariş yedeğini temizle
+      try { sessionStorage.removeItem('erpolart_pending_order'); } catch { /* yut */ }
     }
   }, [paytrData]);
 
@@ -278,9 +282,8 @@ const OrderPage = () => {
 
       const { data: orderResult } = await API.post('/orders', orderPayload);
       const orderId = orderResult.order.id;
-
-      // Sipariş oluştu → bekleyen sipariş yedeğini temizle
-      try { sessionStorage.removeItem('erpolart_pending_order'); } catch { /* yut */ }
+      // NOT: sessionStorage'ı burada SİLME — setPaytrData re-render'ında orderData
+      // null olup /projects'e bounce'a sebep oluyordu. Form gönderilince silinir.
 
       // 2. Get PayTR Direct API token
       // ÖNEMLİ: ok/fail URL'leri backend'e (Railway) işaret eder.

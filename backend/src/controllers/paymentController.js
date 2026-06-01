@@ -284,6 +284,7 @@ export const createPayTRToken = async (req, res) => {
 export const paytrCallback = async (req, res) => {
   try {
     const { merchant_oid, status, total_amount, hash } = req.body;
+    console.log(`[PAYTR CALLBACK] geldi → oid=${merchant_oid} status=${status} total=${total_amount}`);
 
     const merchant_key  = process.env.PAYTR_MERCHANT_KEY;
     const merchant_salt = process.env.PAYTR_MERCHANT_SALT;
@@ -323,6 +324,7 @@ export const paytrCallback = async (req, res) => {
         .from('orders')
         .update({ status: 'paid', paid_at: new Date().toISOString() })
         .eq('id', orderId);
+      console.log(`[PAYTR CALLBACK] sipariş 'paid' yapıldı → ${orderId}`);
 
       try {
         await sendEmail({

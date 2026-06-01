@@ -33,7 +33,7 @@ const OrderSuccessPage = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuthStore();
+  const { user, isInitialized } = useAuthStore();
 
   const [logo, setLogo] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -59,15 +59,19 @@ const OrderSuccessPage = () => {
   const location = useLocation();
 
   // ADIM 2.1: Backend'den Veri Çekme
+  // ÖNEMLİ: PayTR tam-sayfa redirect'i sonrası taze yüklemede oturum kurtarma
+  // asenkron tamamlanır. Sahiplik kontrolünü auth HAZIR olana kadar bekletmeliyiz;
+  // yoksa user henüz null iken sipariş sahipli olduğu için '/'a atıyordu.
   useEffect(() => {
+    if (!isInitialized) return; // oturum kurtarılana kadar bekle
     const fetchConfig = async () => {
       setLoading(true);
       try {
         const { data, error } = await supabase.from('orders').select('*').eq('id', id).eq('project_code', 'erpolart').single();
         if (error) throw error;
         if (data) {
-          // Ownership check: guest orders (no user_id) are always accessible;
-          // logged-in orders must match the current user.
+          // Sahiplik: guest sipariş (user_id yok) herkese açık; sahipli sipariş
+          // sadece sahibine. Auth artık hazır olduğu için user güvenilir.
           const orderBelongsToUser = !data.user_id || (user?.id && data.user_id === user.id);
           if (!orderBelongsToUser) {
             navigate('/');
@@ -102,7 +106,7 @@ const OrderSuccessPage = () => {
     fetchConfig();
     window.scrollTo(0, 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, navigate]);
+  }, [id, navigate, isInitialized, user?.id]);
 
   // Ödeme sonrası durum polling — PayTR callback siparişi 'paid' yapana kadar
   // (kullanıcı callback'ten önce sayfaya ulaşmış olabilir). Ödeme öncesi durumlarda ~60sn izle.
