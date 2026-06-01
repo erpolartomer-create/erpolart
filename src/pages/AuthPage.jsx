@@ -29,9 +29,17 @@ const AuthPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [localError, setLocalError] = useState('');
 
-  const fromPath = location.state?.from?.pathname || '/';
-  const fromSearch = location.state?.from?.search || '';
-  const from = fromPath + fromSearch;
+  // Giriş sonrası dönülecek yol: router state → sessionStorage (OAuth fallback) → '/'
+  const stateFrom = location.state?.from
+    ? (location.state.from.pathname || '/') + (location.state.from.search || '')
+    : null;
+  let storedFrom = null;
+  try { storedFrom = sessionStorage.getItem('erpolart_post_login_redirect'); } catch { /* yut */ }
+  const from = stateFrom || storedFrom || '/';
+
+  const clearStoredRedirect = () => {
+    try { sessionStorage.removeItem('erpolart_post_login_redirect'); } catch { /* yut */ }
+  };
 
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -55,9 +63,10 @@ const AuthPage = () => {
     }
   }, [searchParams]);
 
-  // Zaten giriş yapmış kullanıcıyı auth sayfasından yönlendir
+  // Zaten giriş yapmış kullanıcıyı auth sayfasından yönlendir (OAuth dönüşü dahil)
   useEffect(() => {
     if (user && !searchParams.get('verified')) {
+      clearStoredRedirect();
       navigate(from || '/', { replace: true });
     }
   }, [user, navigate, from, searchParams]);

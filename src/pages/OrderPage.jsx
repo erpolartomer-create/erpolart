@@ -82,7 +82,14 @@ const OrderPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { id } = useParams();
-  const orderDataState = location.state;
+  // Giriş (OAuth) tam-sayfa redirect'i location.state'i kaybeder → sessionStorage yedeği
+  const orderDataState = location.state?.source
+    ? location.state
+    : (() => {
+        if (id) return null; // template/proposal akışı ID ile çalışır, yedeğe gerek yok
+        try { return JSON.parse(sessionStorage.getItem('erpolart_pending_order') || 'null'); }
+        catch { return null; }
+      })();
   const { user } = useAuthStore();
 
   // Billing form
@@ -252,6 +259,9 @@ const OrderPage = () => {
 
       const { data: orderResult } = await API.post('/orders', orderPayload);
       const orderId = orderResult.order.id;
+
+      // Sipariş oluştu → bekleyen sipariş yedeğini temizle
+      try { sessionStorage.removeItem('erpolart_pending_order'); } catch { /* yut */ }
 
       // 2. Get PayTR Direct API token
       // ÖNEMLİ: ok/fail URL'leri backend'e (Railway) işaret eder.

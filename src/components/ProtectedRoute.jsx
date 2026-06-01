@@ -13,7 +13,12 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
   }
   
   if (!isInitialized) return null;
-  return user ? children : <Navigate to="/login" state={{ from: location }} replace />;
+  if (!user) {
+    // OAuth tam-sayfa redirect'i router state'ini kaybeder; hedefi sessionStorage'a yaz
+    try { sessionStorage.setItem('erpolart_post_login_redirect', location.pathname + location.search); } catch { /* yut */ }
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+  return children;
 };
 
 export default ProtectedRoute;

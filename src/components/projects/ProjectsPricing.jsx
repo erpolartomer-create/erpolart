@@ -203,19 +203,20 @@ const ProjectsPricing = () => {
   }, []);
 
   const handleProceed = () => {
-    navigate('/order', {
-      state: {
-        source: 'projects',
-        tier,
-        pages,
-        base,
-        extras: [...selected],
-        extTotal,
-        total,
-        maintenance,
-        monthly,
-      },
-    });
+    const orderState = {
+      source: 'projects',
+      tier,
+      pages,
+      base,
+      extras: [...selected],
+      extTotal,
+      total,
+      maintenance,
+      monthly,
+    };
+    // Giriş (özellikle Google OAuth tam-sayfa redirect) state'i kaybeder → sessionStorage'a yedekle
+    try { sessionStorage.setItem('erpolart_pending_order', JSON.stringify(orderState)); } catch { /* yut */ }
+    navigate('/order', { state: orderState });
   };
 
   return (

@@ -34,12 +34,14 @@ API.interceptors.request.use(async (req) => {
     }
   }
 
-  // CUSTOMER TOKEN INJECTION — always use fresh Supabase session
-  if (userInfo) {
+  // CUSTOMER TOKEN INJECTION — oturum varsa token'ı her zaman ekle.
+  // (userInfo localStorage'a bağlı kalma; Google OAuth sonrası userInfo set
+  //  olmayabilir ama Supabase oturumu mevcuttur — bu yüzden 401 alınıyordu.)
+  if (!isAuthRequest) {
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.access_token) {
       req.headers.Authorization = `Bearer ${session.access_token}`;
-    } else if (userInfo.token) {
+    } else if (userInfo?.token) {
       req.headers.Authorization = `Bearer ${userInfo.token}`;
     }
   }

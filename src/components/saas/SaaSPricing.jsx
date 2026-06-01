@@ -159,9 +159,9 @@ const SaaSPricing = () => {
   }, []);
 
   const handleProceed = () => {
-    navigate('/order', {
-      state: { source: 'saas', tier, base, extras: [...selected], extTotal, total, maintenance: withMaintenance, monthly: withMaintenance ? monthly : 0 },
-    });
+    const orderState = { source: 'saas', tier, base, extras: [...selected], extTotal, total, maintenance: withMaintenance, monthly: withMaintenance ? monthly : 0 };
+    try { sessionStorage.setItem('erpolart_pending_order', JSON.stringify(orderState)); } catch { /* yut */ }
+    navigate('/order', { state: orderState });
   };
 
   const tierFeatures = t(`saasPage.pricing.tiers.${tier}.features`, { returnObjects: true }) ?? [];

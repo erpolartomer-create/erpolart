@@ -158,9 +158,9 @@ const AutomationsPricing = () => {
   }, []);
 
   const handleProceed = () => {
-    navigate('/order', {
-      state: { source: 'automations', tier, base, extras: [...selected], extTotal, total, management: withManagement, monthly: withManagement ? 500 : 0 },
-    });
+    const orderState = { source: 'automations', tier, base, extras: [...selected], extTotal, total, management: withManagement, monthly: withManagement ? 500 : 0 };
+    try { sessionStorage.setItem('erpolart_pending_order', JSON.stringify(orderState)); } catch { /* yut */ }
+    navigate('/order', { state: orderState });
   };
 
   const tierFeatures = t(`automationsPage.pricing.tiers.${tier}.features`, { returnObjects: true }) ?? [];
