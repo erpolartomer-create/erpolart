@@ -125,7 +125,7 @@ function App() {
           <Route path="templates/:id" element={<TemplateDetailPage />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="contact" element={<ContactPage />} />
-          <Route path="order-success/:id" element={<ProtectedRoute><OrderSuccessPage /></ProtectedRoute>} />
+          <Route path="order-success/:id" element={<OrderSuccessPage />} />
           <Route path="workspace/:id" element={<ProtectedRoute><WorkspacePage /></ProtectedRoute>} />
           <Route path="order-cancel" element={<OrderCancelPage />} />
           <Route path="proposal/:id" element={<ProposalPage />} />

@@ -66,10 +66,11 @@ const OrderSuccessPage = () => {
         const { data, error } = await supabase.from('orders').select('*').eq('id', id).eq('project_code', 'erpolart').single();
         if (error) throw error;
         if (data) {
-          // Ownership check: order must belong to this user OR be a guest order with no user
+          // Ownership check: guest orders (no user_id) are always accessible;
+          // logged-in orders must match the current user.
           const orderBelongsToUser = !data.user_id || (user?.id && data.user_id === user.id);
           if (!orderBelongsToUser) {
-            navigate('/dashboard');
+            navigate('/');
             return;
           }
           setFormData({

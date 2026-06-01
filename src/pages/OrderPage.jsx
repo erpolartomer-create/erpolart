@@ -211,10 +211,11 @@ const OrderPage = () => {
         ? {
             proposalId: id,
             isProposal: true,
-            email:     form.email,
-            full_name: form.name,
-            phone:     form.phone,
-            address:   form.company || 'Digital Delivery',
+            email:      form.email,
+            full_name:  form.name,
+            phone:      form.phone,
+            company:    form.company || null,
+            notes:      form.notes  || null,
           }
         : id
           ? {
@@ -222,7 +223,8 @@ const OrderPage = () => {
               email:      form.email,
               full_name:  form.name,
               phone:      form.phone,
-              address:    form.company || 'Digital Delivery',
+              company:    form.company || null,
+              notes:      form.notes  || null,
             }
           : {
               direct_amount: total,
@@ -231,6 +233,8 @@ const OrderPage = () => {
               email:      form.email,
               full_name:  form.name,
               phone:      form.phone,
+              company:    form.company || null,
+              notes:      form.notes  || null,
             };
 
       const { data: orderResult } = await API.post('/orders', orderPayload);

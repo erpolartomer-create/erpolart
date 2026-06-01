@@ -156,20 +156,31 @@ export const createPayTRToken = async (req, res) => {
     }
 
     const merchant_oid   = order.id.replace(/-/g, ''); // 32-char UUID, no dashes
-    const payment_amount = Math.round(order.amount * 100); // USD cents
+    const payment_amount = Math.round(Number(order.amount) * 100); // USD cents
     const currency       = 'USD';
-    const user_ip        = (req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || '1.2.3.4').replace('::ffff:', '');
+
+    // Gerçek IPv4 çıkar (Railway/Cloudflare proxy arkasında)
+    const rawIp   = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || '';
+    const user_ip = rawIp.replace('::ffff:', '').replace('::1', '') || '127.0.0.1';
+
+    // PayTR telefon formatı: 05XXXXXXXXX
+    const rawPhone   = order.phone || '05000000000';
+    const user_phone = rawPhone.startsWith('+90')
+      ? '0' + rawPhone.slice(3)
+      : rawPhone.startsWith('90') && rawPhone.length === 12
+        ? '0' + rawPhone.slice(2)
+        : rawPhone;
 
     const basket = JSON.stringify([[
       order.templates?.name || 'Digital Architecture',
-      order.amount.toFixed(2),
+      Number(order.amount).toFixed(2),
       1,
     ]]);
     const user_basket = Buffer.from(basket).toString('base64');
 
     const no_installment  = '0';
     const max_installment = '0';
-    const test_mode       = '0';
+    const test_mode       = process.env.PAYTR_TEST_MODE || '0';
 
     const hashSTR = `${merchant_id}${user_ip}${merchant_oid}${order.email}${payment_amount}${user_basket}${no_installment}${max_installment}${currency}${test_mode}`;
     const paytr_token = crypto
@@ -186,7 +197,7 @@ export const createPayTRToken = async (req, res) => {
       merchant_oid,
       user_name:        order.full_name || 'Guest',
       user_address:     order.address  || 'Digital Delivery',
-      user_phone:       order.phone    || '05000000000',
+      user_phone,
       merchant_ok_url:  merchantOkUrl,
       merchant_fail_url: merchantFailUrl,
       user_basket,
