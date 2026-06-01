@@ -1,14 +1,15 @@
-import { useState, useEffect } from 'react';
-import { useLocation, useNavigate, Link, useParams } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import {
-  ArrowRight, Sparkles, Check, Loader2, CheckCircle2,
-  User, Mail, Phone, Building2, MessageSquare, ChevronRight,
+  ArrowRight, Sparkles, Check, Loader2,
+  User, Mail, Phone, Building2, MessageSquare, ShieldCheck, Lock,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import useAuthStore from '../store/authStore';
+import API from '../services/api';
 
 // Source → accent color config
 const SOURCE_CONFIG = {
@@ -65,27 +66,30 @@ const OrderPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const orderDataState = location.state;
-
   const { user } = useAuthStore();
 
   const [form, setForm] = useState({ name: '', email: '', phone: '', company: '', notes: '' });
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [loadingData, setLoadingData] = useState(false);
+  const [dynamicOrderData, setDynamicOrderData] = useState(null);
+
+  // PayTR adım yönetimi
+  const [step, setStep] = useState('billing'); // 'billing' | 'payment'
+  const [iframeToken, setIframeToken] = useState(null);
+  const iframeRef = useRef(null);
+
+  const isProposal = location.pathname.includes('/proposal/');
 
   useEffect(() => {
     if (user) {
       setForm(prev => ({
         ...prev,
-        name: prev.name || user.user_metadata?.full_name || '',
+        name:  prev.name  || user.user_metadata?.full_name || '',
         email: prev.email || user.email || '',
       }));
     }
   }, [user]);
-  const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [loadingData, setLoadingData] = useState(false);
-  const [dynamicOrderData, setDynamicOrderData] = useState(null);
-
-  const isProposal = location.pathname.includes('/proposal/');
 
   useEffect(() => {
     if (orderDataState?.source) return;
@@ -110,7 +114,7 @@ const OrderPage = () => {
             total: data.amount,
             maintenance: false,
             monthly: 0,
-            projectName: data.project_name
+            projectName: data.project_name,
           });
         } else {
           const { data, error } = await supabase.from('templates').select('*').eq('id', id).single();
@@ -129,11 +133,11 @@ const OrderPage = () => {
             total: parsedPrice,
             maintenance: false,
             monthly: 0,
-            projectName: data.name
+            projectName: data.name,
           });
         }
       } catch (err) {
-        console.error('Error loading order template or proposal:', err);
+        console.error('Error loading order details:', err);
         navigate('/projects', { replace: true });
       } finally {
         setLoadingData(false);
@@ -150,6 +154,27 @@ const OrderPage = () => {
       navigate('/projects', { replace: true });
     }
   }, [orderDataState, id, navigate]);
+
+  // PayTR iframeResizer yükle (sadece payment adımında)
+  useEffect(() => {
+    if (step !== 'payment' || !iframeToken) return;
+    const existing = document.getElementById('paytr-resizer-script');
+    if (existing) {
+      initResizer();
+      return;
+    }
+    const script = document.createElement('script');
+    script.id  = 'paytr-resizer-script';
+    script.src = 'https://www.paytr.com/js/iframeResizer.min.js';
+    script.onload = initResizer;
+    document.head.appendChild(script);
+
+    function initResizer() {
+      if (window.iFrameResize && iframeRef.current) {
+        window.iFrameResize({}, iframeRef.current);
+      }
+    }
+  }, [step, iframeToken]);
 
   if (loadingData || (!orderDataState?.source && !dynamicOrderData)) {
     return (
@@ -168,7 +193,7 @@ const OrderPage = () => {
 
   const validate = () => {
     const e = {};
-    if (!form.name.trim()) e.name = t('orderPage.form.nameRequired');
+    if (!form.name.trim())  e.name  = t('orderPage.form.nameRequired');
     if (!form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) e.email = t('orderPage.form.emailRequired');
     if (!form.phone.trim()) e.phone = t('orderPage.form.phoneRequired');
     return e;
@@ -181,48 +206,63 @@ const OrderPage = () => {
 
     setSubmitting(true);
     try {
-      // 1. Siparişi orders tablosuna kaydet (service role key ile Edge Function üzerinden)
-      const { data: orderResult, error: orderErr } = await supabase.functions.invoke('create-pricing-order', {
-        body: {
-          email: form.email,
-          full_name: form.name,
-          phone: form.phone,
-          company: form.company || null,
-          notes: form.notes || null,
-          source,
-          tier,
-          base,
-          extras,
-          extTotal,
-          total,
-          maintenance,
-          monthly,
-          user_id: user?.id || null,
-        },
+      // 1. Siparişi backend'de oluştur
+      const orderPayload = isProposal
+        ? {
+            proposalId: id,
+            isProposal: true,
+            email:     form.email,
+            full_name: form.name,
+            phone:     form.phone,
+            address:   form.company || 'Digital Delivery',
+          }
+        : id
+          ? {
+              templateId: id,
+              email:      form.email,
+              full_name:  form.name,
+              phone:      form.phone,
+              address:    form.company || 'Digital Delivery',
+            }
+          : {
+              direct_amount: total,
+              tier,
+              source,
+              email:      form.email,
+              full_name:  form.name,
+              phone:      form.phone,
+            };
+
+      const { data: orderResult } = await API.post('/orders', orderPayload);
+      const orderId = orderResult.order.id;
+
+      // 2. PayTR iFrame token al
+      const origin = window.location.origin;
+      const { data: tokenResult } = await API.post('/payment/paytr-token', {
+        orderId,
+        merchantOkUrl:   `${origin}/payment-result?status=success&orderId=${orderId}`,
+        merchantFailUrl: `${origin}/payment-result?status=fail`,
       });
 
-      if (orderErr) throw orderErr;
-      if (!orderResult?.order?.id) throw new Error('Order ID alınamadı');
+      setIframeToken(tokenResult.iframeToken);
+      setStep('payment');
 
-      // 2. Siparişi lead olarak da kaydet (arka planda, CRM için)
+      // Lead kaydı (arka planda, CRM için)
       supabase.from('leads').insert({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        company: form.company || null,
-        message: form.notes || null,
+        name:         form.name,
+        email:        form.email,
+        phone:        form.phone,
+        company:      form.company || null,
+        message:      form.notes  || null,
         service_type: source,
-        budget: String(total),
-        timeline: tier,
-        project_code: 'erpolart'
+        budget:       String(total),
+        timeline:     tier,
+        project_code: 'erpolart',
       }).then(() => {}).catch(() => {});
 
-      // 3. Sipariş detay formuna yönlendir
-      navigate(`/order-success/${orderResult.order.id}`, { replace: true });
-
-    } catch (globalErr) {
-      console.error("Order submit error:", globalErr);
-      setErrors({ _global: 'Sipariş oluşturulamadı. Lütfen tekrar deneyin veya hello@erpolart.com ile iletişime geçin.' });
+    } catch (err) {
+      console.error('Order/Token error:', err);
+      setErrors({ _global: err?.response?.data?.message || 'Sipariş oluşturulamadı. Lütfen tekrar deneyin veya hello@erpolart.com ile iletişime geçin.' });
     } finally {
       setSubmitting(false);
     }
@@ -254,214 +294,213 @@ const OrderPage = () => {
               {sourceName}
             </div>
             <h1 className="text-4xl md:text-[72px] font-display font-black italic tracking-tighter leading-[0.9] mb-4">
-              <span className="text-white">{t('orderPage.title')}{' '}</span>
+              <span className="text-white">
+                {step === 'payment' ? 'Güvenli' : t('orderPage.title')}{' '}
+              </span>
               <span className={`text-transparent bg-clip-text bg-gradient-to-r ${
-                source === 'projects' ? 'from-indigo via-violet to-cyan' :
-                source === 'saas' ? 'from-amber-300 via-amber-500 to-amber-600' :
-                'from-emerald-300 via-teal-400 to-cyan'
+                source === 'projects'     ? 'from-indigo via-violet to-cyan' :
+                source === 'saas'         ? 'from-amber-300 via-amber-500 to-amber-600' :
+                                            'from-emerald-300 via-teal-400 to-cyan'
               } pr-2`}>
-                {t('orderPage.titleAccent')}
+                {step === 'payment' ? 'Ödeme' : t('orderPage.titleAccent')}
               </span>
             </h1>
-            <p className="text-gray-500 text-base md:text-lg max-w-xl mx-auto">{t('orderPage.subtitle')}</p>
+            <p className="text-gray-500 text-base md:text-lg max-w-xl mx-auto">
+              {step === 'payment'
+                ? 'Kart bilgilerinizi PayTR güvenli ödeme formu üzerinden girin.'
+                : t('orderPage.subtitle')}
+            </p>
           </motion.div>
 
-          {/* 2-column layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8 items-start">
+          <AnimatePresence mode="wait">
+            {step === 'billing' && (
+              <motion.div
+                key="billing"
+                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.35 }}
+                className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8 items-start"
+              >
+                {/* LEFT: Billing form */}
+                <div className={`relative rounded-[2rem] border bg-surface/20 backdrop-blur-xl p-6 md:p-10 overflow-hidden ${sc.border}`}>
+                  <div className={`absolute top-0 left-0 right-0 h-px ${sc.shimmer}`} />
 
-            {/* LEFT: Billing form */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
-              className={`relative rounded-[2rem] border bg-surface/20 backdrop-blur-xl p-6 md:p-10 overflow-hidden ${sc.border}`}
-            >
-              <div className={`absolute top-0 left-0 right-0 h-px ${sc.shimmer}`} />
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <InputField
+                        label={t('orderPage.form.name')} icon={User}
+                        placeholder={t('orderPage.form.namePlaceholder')}
+                        value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
+                        error={errors.name}
+                      />
+                      <InputField
+                        label={t('orderPage.form.email')} icon={Mail}
+                        type="email" placeholder={t('orderPage.form.emailPlaceholder')}
+                        value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
+                        error={errors.email}
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <InputField
+                        label={t('orderPage.form.phone')} icon={Phone}
+                        type="tel" placeholder={t('orderPage.form.phonePlaceholder')}
+                        value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                        error={errors.phone}
+                      />
+                      <InputField
+                        label={t('orderPage.form.company')} icon={Building2}
+                        placeholder={t('orderPage.form.companyPlaceholder')}
+                        value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })}
+                      />
+                    </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <InputField
-                    label={t('orderPage.form.name')} icon={User}
-                    placeholder={t('orderPage.form.namePlaceholder')}
-                    value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    error={errors.name}
-                  />
-                  <InputField
-                    label={t('orderPage.form.email')} icon={Mail}
-                    type="email" placeholder={t('orderPage.form.emailPlaceholder')}
-                    value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    error={errors.email}
-                  />
+                    <div>
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 flex items-center gap-2 mb-2">
+                        <MessageSquare size={11} className="text-gray-600" />
+                        {t('orderPage.form.notes')}
+                      </label>
+                      <textarea
+                        rows={4}
+                        placeholder={t('orderPage.form.notesPlaceholder')}
+                        value={form.notes}
+                        onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                        className="w-full bg-surface/30 border border-white/10 hover:border-white/20 focus:border-white/30 rounded-2xl px-5 py-3.5 text-white text-sm font-medium outline-none transition-all placeholder:text-gray-700 resize-none"
+                      />
+                    </div>
+
+                    {errors._global && (
+                      <p className="text-red-400 text-sm text-center">{errors._global}</p>
+                    )}
+
+                    <motion.button
+                      type="submit"
+                      disabled={submitting}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-black text-[11px] uppercase tracking-[0.12em] transition-all duration-300 disabled:opacity-50 ${sc.cta}`}
+                    >
+                      {submitting ? (
+                        <><Loader2 size={14} className="animate-spin" />Sipariş Hazırlanıyor...</>
+                      ) : (
+                        <><Lock size={14} />Ödemeye Geç<ArrowRight size={14} /></>
+                      )}
+                    </motion.button>
+
+                    <p className="text-center text-[9px] text-gray-600">
+                      {t('orderPage.ctaNote')}
+                    </p>
+                  </form>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <InputField
-                    label={t('orderPage.form.phone')} icon={Phone}
-                    type="tel" placeholder={t('orderPage.form.phonePlaceholder')}
-                    value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                    error={errors.phone}
-                  />
-                  <InputField
-                    label={t('orderPage.form.company')} icon={Building2}
-                    placeholder={t('orderPage.form.companyPlaceholder')}
-                    value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })}
-                  />
-                </div>
 
-                <div>
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 flex items-center gap-2 mb-2">
-                    <MessageSquare size={11} className="text-gray-600" />
-                    {t('orderPage.form.notes')}
-                  </label>
-                  <textarea
-                    rows={4}
-                    placeholder={t('orderPage.form.notesPlaceholder')}
-                    value={form.notes}
-                    onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                    className="w-full bg-surface/30 border border-white/10 hover:border-white/20 focus:border-white/30 rounded-2xl px-5 py-3.5 text-white text-sm font-medium outline-none transition-all placeholder:text-gray-700 resize-none"
-                  />
-                </div>
-
-                {errors._global && (
-                  <p className="text-red-400 text-sm text-center">{errors._global}</p>
-                )}
-
-                <motion.button
-                  type="submit"
-                  disabled={submitting}
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-black text-[11px] uppercase tracking-[0.12em] transition-all duration-300 disabled:opacity-50 ${sc.cta}`}
+                {/* RIGHT: Order summary */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.15 }}
+                  className="lg:sticky lg:top-28"
                 >
-                  {submitting ? (
-                    <><Loader2 size={14} className="animate-spin" />{t('orderPage.form.submitting')}</>
-                  ) : (
-                    <>{t('orderPage.form.submit')}<ArrowRight size={14} /></>
-                  )}
-                </motion.button>
+                  <div className={`relative rounded-[2rem] border bg-surface/25 backdrop-blur-xl p-6 overflow-hidden ${sc.border}`}>
+                    <div className={`absolute top-0 left-0 right-0 h-px ${sc.shimmer}`} />
 
-                <p className="text-center text-[9px] text-gray-600">{t('orderPage.ctaNote')}</p>
-              </form>
-            </motion.div>
+                    <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-[0.25em] mb-5 ${sc.badgeBg}`}>
+                      <Sparkles size={9} />
+                      {t('orderPage.summary.title')}
+                    </div>
 
-            {/* RIGHT: Order summary (sticky) */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.15 }}
-              className="lg:sticky lg:top-28"
-            >
-              <div className={`relative rounded-[2rem] border bg-surface/25 backdrop-blur-xl p-6 overflow-hidden ${sc.border}`}>
-                <div className={`absolute top-0 left-0 right-0 h-px ${sc.shimmer}`} />
+                    <div className="mb-4">
+                      <div className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-600 mb-1">{t('orderPage.summary.tier')}</div>
+                      <div className={`text-sm font-black capitalize ${sc.accent}`}>{tier}</div>
+                      <div className="text-xs text-gray-500">{sourceName}</div>
+                    </div>
 
-                <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-[0.25em] mb-5 ${sc.badgeBg}`}>
-                  <Sparkles size={9} />
-                  {t('orderPage.summary.title')}
-                </div>
-
-                {/* Source + tier */}
-                <div className="mb-4">
-                  <div className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-600 mb-1">{t('orderPage.summary.tier')}</div>
-                  <div className={`text-sm font-black capitalize ${sc.accent}`}>{tier}</div>
-                  <div className="text-xs text-gray-500">{sourceName}</div>
-                </div>
-
-                {/* Price breakdown */}
-                <div className="space-y-2 py-4 border-t border-b border-white/6 mb-4">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-gray-500">{t('orderPage.summary.basePrice')}</span>
-                    <span className="text-gray-300 font-medium">{fmt(base)}</span>
-                  </div>
-
-                  {extras.length > 0 && (
-                    <>
+                    <div className="space-y-2 py-4 border-t border-b border-white/6 mb-4">
                       <div className="flex justify-between text-xs">
-                        <span className="text-gray-500">{t('orderPage.summary.extras')}</span>
-                        <span className="text-gray-300 font-medium">+{fmt(extTotal)}</span>
+                        <span className="text-gray-500">{t('orderPage.summary.basePrice')}</span>
+                        <span className="text-gray-300 font-medium">{fmt(base)}</span>
                       </div>
-                      {extras.map((key) => (
-                        <div key={key} className="flex justify-between text-xs pl-2">
-                          <span className="text-gray-600">· {key}</span>
+
+                      {extras.length > 0 && (
+                        <>
+                          <div className="flex justify-between text-xs">
+                            <span className="text-gray-500">{t('orderPage.summary.extras')}</span>
+                            <span className="text-gray-300 font-medium">+{fmt(extTotal)}</span>
+                          </div>
+                          {extras.map((key) => (
+                            <div key={key} className="flex justify-between text-xs pl-2">
+                              <span className="text-gray-600">· {key}</span>
+                            </div>
+                          ))}
+                        </>
+                      )}
+
+                      {maintenance && monthly > 0 && (
+                        <div className="flex justify-between text-xs">
+                          <span className="text-gray-500">{t('orderPage.summary.maintenance')}</span>
+                          <span className="text-gray-300 font-medium">+{fmt(monthly)}/mo</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mb-6">
+                      <div className="text-[9px] font-black uppercase tracking-[0.25em] text-gray-600 mb-1">{t('orderPage.summary.total')}</div>
+                      <div className={`text-4xl font-display font-black tracking-tighter ${sc.accent}`}>
+                        {fmt(total)}
+                      </div>
+                      <div className="text-[9px] text-gray-600 mt-1">{t('orderPage.summary.oneTime')}</div>
+                    </div>
+
+                    <div className="space-y-2 pt-4 border-t border-white/6">
+                      {[t('orderPage.trust.codes'), t('orderPage.trust.email'), t('orderPage.trust.support')].map((item, i) => (
+                        <div key={i} className="flex items-center gap-2">
+                          <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center ${sc.bg}`}>
+                            <Check size={8} className={sc.accent} />
+                          </div>
+                          <span className="text-[10px] text-gray-500">{item}</span>
                         </div>
                       ))}
-                    </>
-                  )}
-
-                  {maintenance && monthly > 0 && (
-                    <div className="flex justify-between text-xs">
-                      <span className="text-gray-500">{t('orderPage.summary.maintenance')}</span>
-                      <span className="text-gray-300 font-medium">+{fmt(monthly)}/mo</span>
                     </div>
-                  )}
-                </div>
-
-                {/* Total */}
-                <div className="mb-6">
-                  <div className="text-[9px] font-black uppercase tracking-[0.25em] text-gray-600 mb-1">{t('orderPage.summary.total')}</div>
-                  <div className={`text-4xl font-display font-black tracking-tighter ${sc.accent}`}>
-                    {fmt(total)}
                   </div>
-                  <div className="text-[9px] text-gray-600 mt-1">{t('orderPage.summary.oneTime')}</div>
-                </div>
-
-                {/* Trust signals */}
-                <div className="space-y-2 pt-4 border-t border-white/6">
-                  {[t('orderPage.trust.codes'), t('orderPage.trust.email'), t('orderPage.trust.support')].map((item, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center ${sc.bg}`}>
-                        <Check size={8} className={sc.accent} />
-                      </div>
-                      <span className="text-[10px] text-gray-500">{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Success overlay */}
-        <AnimatePresence>
-          {success && (
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[200] flex items-center justify-center bg-deep-black/90 backdrop-blur-xl px-6"
-            >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: 'spring', stiffness: 260, damping: 22 }}
-                className={`relative max-w-md w-full rounded-[2rem] border bg-surface/30 backdrop-blur-2xl p-10 text-center overflow-hidden ${sc.border}`}
-              >
-                <div className={`absolute top-0 left-0 right-0 h-px ${sc.shimmer}`} />
-                <div className={`absolute inset-0 ${sc.glow} blur-[120px] opacity-30`} />
-
-                <div className="relative z-10">
-                  <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[9px] font-black uppercase tracking-[0.3em] mb-6 ${sc.badgeBg}`}>
-                    <Sparkles size={9} />
-                    {t('orderPage.success.badge')}
-                  </div>
-
-                  <CheckCircle2 size={48} className={`mx-auto mb-6 ${sc.accent}`} />
-
-                  <h2 className="text-4xl font-display font-black italic tracking-tighter text-white mb-2">
-                    {t('orderPage.success.title')}{' '}
-                    <span className={sc.accent}>{t('orderPage.success.titleAccent')}</span>
-                  </h2>
-                  <p className="text-gray-400 text-sm leading-relaxed mb-8">
-                    {t('orderPage.success.subtitle')}
-                  </p>
-
-                  <p className="text-gray-600 text-xs mb-6">
-                    {t('orderPage.success.emailNote')}
-                  </p>
-
-                  <Link
-                    to="/"
-                    className={`inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-[11px] uppercase tracking-[0.1em] transition-all duration-300 ${sc.cta}`}
-                  >
-                    {t('orderPage.success.cta')}
-                    <ChevronRight size={13} />
-                  </Link>
-                </div>
+                </motion.div>
               </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            )}
+
+            {step === 'payment' && iframeToken && (
+              <motion.div
+                key="payment"
+                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.35 }}
+                className="max-w-2xl mx-auto"
+              >
+                {/* Güvenlik Rozeti */}
+                <div className="flex items-center justify-center gap-4 mb-6">
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em]">
+                    <ShieldCheck size={12} />
+                    256-bit SSL Encrypted
+                  </div>
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo/10 border border-indigo/20 text-indigo text-[10px] font-black uppercase tracking-[0.2em]">
+                    <Lock size={12} />
+                    PayTR Secure
+                  </div>
+                </div>
+
+                {/* PayTR iFrame */}
+                <div className={`relative rounded-[2rem] border overflow-hidden ${sc.border} bg-surface/10`}>
+                  <div className={`absolute top-0 left-0 right-0 h-px ${sc.shimmer}`} />
+                  <iframe
+                    ref={iframeRef}
+                    src={`https://www.paytr.com/odeme/guvenli/${iframeToken}`}
+                    id="paytriframe"
+                    frameBorder="0"
+                    scrolling="no"
+                    style={{ width: '100%', minHeight: '550px', display: 'block' }}
+                    title="PayTR Güvenli Ödeme"
+                  />
+                </div>
+
+                <p className="text-center text-[9px] text-gray-600 mt-4">
+                  Kart bilgileriniz PayTR güvenli altyapısı üzerinde işlenmektedir. ErpolArt kart verilerinizi görmez veya saklamaz.
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </>
   );

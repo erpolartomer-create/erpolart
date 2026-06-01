@@ -19,6 +19,7 @@ import CaseStudyPage from './pages/CaseStudyPage';
 import AutomationsPage from './pages/AutomationsPage';
 import ProposalPage from './pages/ProposalPage';
 import OrderPage from './pages/OrderPage';
+import PaymentResultPage from './pages/PaymentResultPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Legal Pages
@@ -131,6 +132,7 @@ function App() {
           <Route path="order" element={<OrderPage />} />
           <Route path="checkout/:id" element={<OrderPage />} />
           <Route path="checkout/proposal/:id" element={<OrderPage />} />
+          <Route path="payment-result" element={<PaymentResultPage />} />
           
           {/* Legal Pages */}
           <Route path="mesafeli-satis-sozlesmesi" element={<DistanceSellingPage />} />

@@ -73,6 +73,9 @@ export const updateContent = (siteId, contentData) => API.put(`/content/${siteId
 export const getOrderConfig = (orderId) => API.get(`/templates/order-config/${orderId}`);
 export const updateOrderConfig = (configData) => API.post('/templates/order-config', configData);
 
+// PayTR
+export const createPayTRToken = (data) => API.post('/payment/paytr-token', data);
+
 // Admin Orders
 export const getAllOrders = () => API.get('/admin/orders');
 
