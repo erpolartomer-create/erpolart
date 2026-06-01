@@ -208,13 +208,15 @@ const OrderPage = () => {
       const orderId = orderResult.order.id;
 
       // 2. Get PayTR Direct API token
-      const expiryDigits = card.expiry.replace(/\D/g, '');
-      const origin = window.location.origin;
+      // ÖNEMLİ: ok/fail URL'leri backend'e (Railway) işaret eder.
+      // PayTR bu URL'lere POST atar; Express POST'u karşılayıp 302 ile frontend'e yönlendirir.
+      // (Cloudflare statik SPA POST'a index.html döndüremez.)
+      const apiBase = import.meta.env.VITE_API_URL;
 
       const { data: tokenData } = await API.post('/payment/paytr-direct-token', {
         orderId,
-        merchantOkUrl:   `${origin}/payment-result?status=success&orderId=${orderId}`,
-        merchantFailUrl: `${origin}/payment-result?status=fail`,
+        merchantOkUrl:   `${apiBase}/api/payment/success/${orderId}`,
+        merchantFailUrl: `${apiBase}/api/payment/fail`,
         userPhone:        billing.phone,
         userName:         billing.name,
         installment_count: installment,

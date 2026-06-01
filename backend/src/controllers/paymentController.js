@@ -284,8 +284,9 @@ export const paytrCallback = async (req, res) => {
       return res.send('PAYTR notification failed: bad hash');
     }
 
-    // merchant_oid (32-char UUID, no dashes) → original UUID
-    const r = merchant_oid;
+    // merchant_oid → original UUID
+    // İlk 32 karakter UUID (dashesiz), sonrası benzersizlik suffix'i (yok sayılır)
+    const r = merchant_oid.slice(0, 32);
     const orderId = `${r.slice(0,8)}-${r.slice(8,12)}-${r.slice(12,16)}-${r.slice(16,20)}-${r.slice(20)}`;
 
     const { data: order } = await supabase
@@ -342,6 +343,25 @@ export const paytrCallback = async (req, res) => {
     console.error('[PAYTR CALLBACK EXCEPTION]', error);
     res.send('OK'); // Yine de OK dön, aksi halde PayTR tekrar dener
   }
+};
+
+// --- PayTR Sonuç Yönlendirmeleri ---
+// PayTR ödeme sonrası merchant_ok_url / merchant_fail_url'e POST atar.
+// Cloudflare Pages (statik SPA) POST'a index.html döndüremez → bu endpoint'ler
+// POST'u Express'te karşılayıp 302 ile frontend SPA rotasına (GET) yönlendirir.
+
+const FRONTEND = process.env.FRONTEND_URL || 'https://erpolart.com';
+
+// @route   GET|POST /api/payment/success/:orderId
+export const paymentSuccessRedirect = (req, res) => {
+  const { orderId } = req.params;
+  // Uyarı: bu noktada ödeme henüz onaylanmamış olabilir — kesin durum callback'ten gelir.
+  res.redirect(302, `${FRONTEND}/order-success/${orderId}`);
+};
+
+// @route   GET|POST /api/payment/fail
+export const paymentFailRedirect = (req, res) => {
+  res.redirect(302, `${FRONTEND}/order-cancel`);
 };
 
 // --- PayTR Direkt API Token ---
@@ -406,7 +426,10 @@ export const createPayTRDirectToken = async (req, res) => {
     // iFrame API'de ×100 (kuruş) idi — bu farklı
     const payment_amount = convertedAmount.toFixed(2);
 
-    const merchant_oid = order.id.replace(/-/g, '');
+    // merchant_oid: order UUID (32 hex char) + benzersiz suffix.
+    // Aynı sipariş için ödeme tekrar denenebilsin diye her denemede farklı olmalı.
+    // Callback'te ilk 32 karakter UUID'ye geri çevrilir, suffix yok sayılır.
+    const merchant_oid = order.id.replace(/-/g, '') + Date.now().toString(36);
     const user_ip      = (req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || '')
       .replace('::ffff:', '')
       .replace('::1', '') || '1.2.3.4';

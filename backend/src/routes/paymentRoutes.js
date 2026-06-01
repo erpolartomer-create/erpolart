@@ -5,6 +5,8 @@ import {
   createPayTRToken,
   createPayTRDirectToken,
   paytrCallback,
+  paymentSuccessRedirect,
+  paymentFailRedirect,
 } from '../controllers/paymentController.js';
 import { adminProtect } from '../middleware/authMiddleware.js';
 
@@ -21,6 +23,10 @@ router.post('/payment/paytr-direct-token', createPayTRDirectToken);
 
 // PayTR callback (public — PayTR server-to-server POST)
 router.post('/payment/paytr-callback', paytrCallback);
+
+// PayTR sonuç yönlendirmeleri (PayTR POST/GET ile çağırır → 302 frontend'e)
+router.all('/payment/success/:orderId', paymentSuccessRedirect);
+router.all('/payment/fail', paymentFailRedirect);
 
 // Admin
 router.get('/admin/orders', adminProtect, getAllOrders);
