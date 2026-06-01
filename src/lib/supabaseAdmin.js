@@ -98,9 +98,14 @@ const createBuilder = (table, method = 'GET', body = null) => {
   return builder;
 };
 
-export const supabaseAdmin = {
-  ...originalSupabaseAdmin,
-  from(table) {
-    return createBuilder(table);
-  }
-};
+// Proxy: orijinal client'ın TÜM metodlarını korur, sadece `from`'u override eder.
+// (object spread prototype metodlarını kaybeder — bkz. supabase.js)
+export const supabaseAdmin = new Proxy(originalSupabaseAdmin, {
+  get(target, prop, receiver) {
+    if (prop === 'from') {
+      return (table) => createBuilder(table);
+    }
+    const value = Reflect.get(target, prop, receiver);
+    return typeof value === 'function' ? value.bind(target) : value;
+  },
+});

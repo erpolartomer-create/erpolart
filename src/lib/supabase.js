@@ -99,9 +99,16 @@ const createBuilder = (table, method = 'GET', body = null) => {
   return builder;
 };
 
-export const supabase = {
-  ...originalSupabase,
-  from(table) {
-    return createBuilder(table);
-  }
-};
+// Proxy: orijinal client'ın TÜM metodlarını korur (channel, removeChannel, auth,
+// realtime...) — sadece `from`'u backend proxy builder'ına yönlendirir.
+// NOT: object spread {...originalSupabase} kullanılamaz; prototype metodları
+// (örn. channel) kopyalanmaz ve "channel is not a function" hatası verir.
+export const supabase = new Proxy(originalSupabase, {
+  get(target, prop, receiver) {
+    if (prop === 'from') {
+      return (table) => createBuilder(table);
+    }
+    const value = Reflect.get(target, prop, receiver);
+    return typeof value === 'function' ? value.bind(target) : value;
+  },
+});
