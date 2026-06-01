@@ -11,12 +11,12 @@ import {
   getExchangeRates,
   getInstallmentRates,
 } from '../controllers/paymentController.js';
-import { adminProtect } from '../middleware/authMiddleware.js';
+import { adminProtect, customerProtect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Sipariş oluşturma (public — misafir ve üye)
-router.post('/orders', createOrder);
+// Sipariş oluşturma — üyelik zorunlu (giriş yapmış müşteri). user_id req.user'dan gelir.
+router.post('/orders', customerProtect, createOrder);
 
 // PayTR iFrame token (public — order ID ile çağrılır)
 router.post('/payment/paytr-token', createPayTRToken);

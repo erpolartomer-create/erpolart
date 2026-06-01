@@ -129,9 +129,9 @@ function App() {
           <Route path="workspace/:id" element={<ProtectedRoute><WorkspacePage /></ProtectedRoute>} />
           <Route path="order-cancel" element={<OrderCancelPage />} />
           <Route path="proposal/:id" element={<ProposalPage />} />
-          <Route path="order" element={<OrderPage />} />
-          <Route path="checkout/:id" element={<OrderPage />} />
-          <Route path="checkout/proposal/:id" element={<OrderPage />} />
+          <Route path="order" element={<ProtectedRoute><OrderPage /></ProtectedRoute>} />
+          <Route path="checkout/:id" element={<ProtectedRoute><OrderPage /></ProtectedRoute>} />
+          <Route path="checkout/proposal/:id" element={<ProtectedRoute><OrderPage /></ProtectedRoute>} />
           <Route path="payment-result" element={<PaymentResultPage />} />
           
           {/* Legal Pages */}
