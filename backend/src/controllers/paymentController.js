@@ -158,7 +158,8 @@ export const createPayTRToken = async (req, res) => {
     const currency = PAYTR_CURRENCIES.includes(reqCurrency) ? reqCurrency : 'TL';
 
     // Para birimi dönüşümü (DB'deki tutar USD cinsinden)
-    const usdAmount = Number(order.amount);
+    // Aylık bakım varsa ilk ay ücretini de dahil et (Seçenek B)
+    const usdAmount = Number(order.amount) + Number(order.monthly_fee || 0);
     let convertedAmount = usdAmount;
 
     if (currency !== 'USD') {
@@ -191,11 +192,18 @@ export const createPayTRToken = async (req, res) => {
         : rawPhone;
     const user_name = userName || order.full_name || 'Guest';
 
-    const basket = JSON.stringify([[
+    const monthlyFeeUsd = Number(order.monthly_fee || 0);
+    const rate          = usdAmount > 0 ? convertedAmount / usdAmount : 1;
+
+    const basketItems = [[
       order.templates?.name || 'Digital Architecture',
-      convertedAmount.toFixed(2),
+      (Number(order.amount) * rate).toFixed(2),
       1,
-    ]]);
+    ]];
+    if (monthlyFeeUsd > 0) {
+      basketItems.push(['Aylık Bakım (1. Ay)', (monthlyFeeUsd * rate).toFixed(2), 1]);
+    }
+    const basket      = JSON.stringify(basketItems);
     const user_basket = Buffer.from(basket).toString('base64');
 
     const no_installment  = '0';
