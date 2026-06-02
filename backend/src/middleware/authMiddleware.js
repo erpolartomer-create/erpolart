@@ -48,10 +48,12 @@ export const adminProtect = async (req, res, next) => {
       }
 
       const ADMIN_EMAIL = 'hello@erpolart.com';
+      // GÜVENLİK: user_metadata KULLANICININ kendi yazabildiği alandır (auth.updateUser
+      // ile role:'admin' set edilebilir) → admin kontrolünde ASLA kullanma. Sadece
+      // email + app_metadata (yalnızca service_role yazabilir).
       const isAdmin =
         user.email === ADMIN_EMAIL ||
-        user.app_metadata?.role === 'admin' ||
-        user.user_metadata?.role === 'admin';
+        user.app_metadata?.role === 'admin';
 
       if (!isAdmin) {
         console.warn("[AUTH DEBUG] Authorization Denied for:", user.email);

@@ -22,10 +22,10 @@ const getRequestUser = async (req) => {
       const { data: { user }, error } = await supabase.auth.getUser(token);
       if (!error && user) {
         const ADMIN_EMAIL = 'hello@erpolart.com';
+        // GÜVENLİK: user_metadata kullanıcı tarafından yazılabilir → admin kontrolünde kullanma.
         const isAdmin =
           user.email === ADMIN_EMAIL ||
-          user.app_metadata?.role === 'admin' ||
-          user.user_metadata?.role === 'admin';
+          user.app_metadata?.role === 'admin';
         return { user, isAdmin };
       }
     } catch (err) {

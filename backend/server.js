@@ -85,10 +85,10 @@ io.on('connection', (socket) => {
     try {
       const { data: { user }, error } = await supabase.auth.getUser(token);
       const ADMIN_EMAIL = 'hello@erpolart.com';
+      // GÜVENLİK: user_metadata kullanıcı tarafından yazılabilir → admin kontrolünde kullanma.
       const isAdmin = !error && user && (
         user.email === ADMIN_EMAIL ||
-        user.app_metadata?.role === 'admin' ||
-        user.user_metadata?.role === 'admin'
+        user.app_metadata?.role === 'admin'
       );
       if (!isAdmin) return;
       console.log(`Admin ${socket.id} joined admin_room`);
