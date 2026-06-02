@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send, Bot, User, Loader2, AlertCircle, Shield, RotateCcw } from 'lucide-react';
+import { MessageSquare, X, Send, Bot, User, Loader2, AlertCircle, Shield, RotateCcw, Layers, ArrowUpRight } from 'lucide-react';
 import axios from 'axios';
 import { io } from 'socket.io-client';
 import useChatStore from '../store/chatStore';
@@ -25,6 +25,49 @@ const renderContent = (text) => {
     return <span key={i}>{part}</span>;
   });
 };
+
+// ── Fiyat biçimlendirme ──
+const formatPrice = (p) => {
+  const n = String(p ?? '').replace(/[^0-9.]/g, '');
+  return n ? `$${n}` : '';
+};
+
+// ── Şablon Ürün Kartı (chatbot içi zengin gösterim) ──
+const ProductCard = ({ p, best, onNavigate }) => (
+  <Link
+    to={`/templates/${p.id}`}
+    onClick={onNavigate}
+    className="group flex gap-3 p-2.5 rounded-2xl bg-white/[0.04] border border-white/10 hover:border-indigo/40 hover:bg-white/[0.07] transition-all"
+  >
+    <div className="w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0">
+      {p.image ? (
+        <img src={p.image} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center text-gray-600"><Layers size={18} /></div>
+      )}
+    </div>
+    <div className="min-w-0 flex-1">
+      <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+        <h4 className="text-[13px] font-bold text-white truncate">{p.name}</h4>
+        {best && !p.is_sold && (
+          <span className="text-[8px] font-black text-emerald-400 bg-emerald-500/15 border border-emerald-500/25 px-1.5 py-0.5 rounded-full uppercase tracking-wide whitespace-nowrap">En İyi Eşleşme</span>
+        )}
+        {p.is_sold && (
+          <span className="text-[8px] font-black text-gray-400 bg-white/5 border border-white/10 px-1.5 py-0.5 rounded-full uppercase tracking-wide whitespace-nowrap">Satıldı</span>
+        )}
+      </div>
+      {p.short_pitch && <p className="text-[11px] text-gray-400 line-clamp-1 mb-1.5">{p.short_pitch}</p>}
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[10px] text-gray-500 flex items-center gap-1 truncate min-w-0">
+          <Layers size={10} className="text-indigo shrink-0" /><span className="truncate">{p.category}</span>
+        </span>
+        <span className="text-[12px] font-black text-indigo shrink-0 flex items-center gap-0.5">
+          {formatPrice(p.price)} <ArrowUpRight size={11} className="text-gray-500 group-hover:text-indigo transition-colors" />
+        </span>
+      </div>
+    </div>
+  </Link>
+);
 
 // ── SessionId Yardımcı ──
 const getSessionId = (user) => {
@@ -257,7 +300,7 @@ const ChatBot = () => {
         const lastMsg = currentMessages[currentMessages.length - 1];
         const alreadyAdded = lastMsg?.role === 'assistant' && lastMsg?.content === response.data.text;
         if (!alreadyAdded) {
-          addMessage({ role: 'assistant', content: response.data.text });
+          addMessage({ role: 'assistant', content: response.data.text, products: response.data.products || [] });
         }
       }
     } catch (err) {
@@ -359,15 +402,26 @@ const ChatBot = () => {
               )}
 
               {messages.map((msg, i) => (
-                <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`flex gap-3 max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                    <div className={`w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center text-[10px] ${getAvatarStyle(msg.role)}`}>
-                      {getIcon(msg.role)}
-                    </div>
-                    <div className={`p-3 rounded-2xl text-sm leading-relaxed ${getBubbleStyle(msg.role)}`}>
-                      {renderContent(msg.content)}
+                <div key={i} className="space-y-2">
+                  <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`flex gap-3 max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                      <div className={`w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center text-[10px] ${getAvatarStyle(msg.role)}`}>
+                        {getIcon(msg.role)}
+                      </div>
+                      <div className={`p-3 rounded-2xl text-sm leading-relaxed ${getBubbleStyle(msg.role)}`}>
+                        {renderContent(msg.content)}
+                      </div>
                     </div>
                   </div>
+
+                  {/* Şablon kartları (villaindeks tarzı zengin gösterim) */}
+                  {msg.products?.length > 0 && (
+                    <div className="pl-11 space-y-2">
+                      {msg.products.map((p, pi) => (
+                        <ProductCard key={p.id || pi} p={p} best={pi === 0} onNavigate={() => setIsOpen(false)} />
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
 

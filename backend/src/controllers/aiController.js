@@ -50,16 +50,16 @@ export const translateText = async (req, res) => {
 const fetchTemplatesForAI = async () => {
   const { data, error } = await supabase
     .from('templates')
-    .select('id, name, category, price, tier, is_sold, features, short_pitch, demo_url')
+    .select('id, name, category, price, tier, is_sold, features, short_pitch, demo_url, preview_image, image_url')
     .eq('status', 'available')
     .order('created_at', { ascending: false });
 
   if (error) {
     console.error('[TEMPLATE FETCH ERROR]', error.message);
-    return 'Şu an şablon verisi yüklenemiyor.';
+    return { text: 'Şu an şablon verisi yüklenemiyor.', templates: [] };
   }
 
-  if (!data || data.length === 0) return 'Henüz aktif şablon bulunmuyor.';
+  if (!data || data.length === 0) return { text: 'Henüz aktif şablon bulunmuyor.', templates: [] };
 
   const tierNames = { 1: 'Corporate', 2: 'Pro', 3: 'Premium', 4: 'Platinum' };
   const monthlyFees = { Corporate: 29, Pro: 49, Premium: 150, Platinum: 250 };
@@ -91,7 +91,27 @@ Detay Sayfası: /templates/${t.id}
     `.trim();
   }).join('\n\n');
 
-  return formatted;
+  return { text: formatted, templates: data };
+};
+
+// AI cevabındaki /templates/<id> referanslarını zengin ürün kartı verisine çevir.
+const localizedPitch = (v) => (v && typeof v === 'object') ? (v.tr || v.en || '') : (v || '');
+const buildProductsFromReply = (aiText, templates) => {
+  if (!aiText || !Array.isArray(templates)) return [];
+  const ids = [...new Set([...aiText.matchAll(/\/templates\/([0-9a-fA-F-]{8,})/g)].map(m => m[1]))];
+  return ids
+    .map(id => templates.find(t => String(t.id) === id))
+    .filter(Boolean)
+    .map(t => ({
+      id: t.id,
+      name: t.name,
+      category: t.category,
+      price: t.price,
+      tier: t.tier,
+      image: t.image_url || t.preview_image || null,
+      short_pitch: localizedPitch(t.short_pitch),
+      is_sold: t.is_sold,
+    }));
 };
 
 // Lead Kayıt Yardımcısı (Supabase)
@@ -209,7 +229,7 @@ export const chatWithAI = async (req, res) => {
     const anthropic = new Anthropic({ apiKey });
 
     // 1.5 TEMPLATE BİLGİLERİNİ ÇEK VE PROMPT'A EKLE
-    const templatesContext = await fetchTemplatesForAI();
+    const { text: templatesContext, templates: allTemplates } = await fetchTemplatesForAI();
 
     // userContext'i system prompt'a ekle (mesaj gövdesine DEĞİL — AI tekrarlıyordu)
     const userAuthInfo = userContext ? `\n\nKULLANICI DURUMU: ${userContext.trim()}. Bu bilgiyi asla mesajlarında gösterme veya tekrarlama.` : '';
@@ -261,7 +281,10 @@ export const chatWithAI = async (req, res) => {
       console.error('[DB SAVE ERROR - AI]', dbErr.message);
     }
 
-    res.status(200).json({ text: aiText });
+    // Cevapta geçen şablonları zengin kart olarak da gönder (frontend chatbot render eder)
+    const products = buildProductsFromReply(aiText, allTemplates);
+
+    res.status(200).json({ text: aiText, products });
 
   } catch (error) {
     console.error("═══════════════════════════════════════");
