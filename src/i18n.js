@@ -655,14 +655,6 @@ const resources = {
         recommended: "Recommended Templates",
         viewAll: "View All"
       },
-      purchases: {
-        title: "My Purchases",
-        subtitle: "View and manage your purchased templates.",
-        emptyTitle: "No Purchases Yet",
-        emptyDesc: "You haven't purchased any templates yet. Browse our collection and find the perfect template for your project.",
-        browseCTA: "Browse Templates",
-        download: "Download"
-      },
       account: {
         title: "Account Settings",
         subtitle: "Manage your profile and security settings.",
@@ -1956,14 +1948,6 @@ const resources = {
         recommended: "Önerilen Şablonlar",
         viewAll: "Hepsini Gör"
       },
-      purchases: {
-        title: "Satın Aldıklarım",
-        subtitle: "Satın aldığınız şablonları görüntüleyin ve yönetin.",
-        emptyTitle: "Henüz Alım Yapılmadı",
-        emptyDesc: "Henüz herhangi bir şablon satın almadınız. Koleksiyonumuza göz atın ve projeniz için mükemmel şablonu bulun.",
-        browseCTA: "Şablonlara Göz At",
-        download: "İndir"
-      },
       account: {
         title: "Hesap Ayarları",
         subtitle: "Profilinizi ve güvenlik ayarlarınızı yönetin.",
@@ -2722,7 +2706,6 @@ const resources = {
           fetchError: "Fehler beim Abrufen der Daten",
           loadError: "Architekturdaten konnten nicht geladen werden. Protokoll wird aktualisiert...",
           trackStatus: "Bestellstatus verfolgen",
-          manualReview: "Status: Manuelle Architekturprüfung",
           fileLimitError: "Architektonische Berührung: Bitte laden Sie Ihr Logo in einer Größe von weniger als 5 MB hoch.",
           revisionTitle: "REVISION ANFORDERUNGEN",
           revisionPlaceholder: "Beschreiben Sie die gewünschten Änderungen: Textbearbeitungen, Farbanpassungen, Bildaustausche, Abschnittsumordnungen, neue Abschnitte usw. Je detaillierter, desto besser.",

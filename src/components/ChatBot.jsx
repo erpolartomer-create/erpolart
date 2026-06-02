@@ -55,8 +55,9 @@ const ChatBot = () => {
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const isBotMutedRef = useRef(false);
 
-  // Admin panelinde chatbot'u gizle
-  if (location.pathname.startsWith('/admin')) return null;
+  // Admin panelinde chatbot'u gizle (Rules of Hooks: erken return TÜM hook'lardan
+  // SONRA olmalı — yoksa render'lar arası hook sayısı değişir ve React çöker).
+  const hiddenOnAdmin = location.pathname.startsWith('/admin');
 
   // ── Scroll ──
   const scrollToBottom = useCallback(() => {
@@ -297,6 +298,8 @@ const ChatBot = () => {
   const isAutomations = location.pathname === '/ai-automations';
   const isOrder = location.pathname === '/order';
   const shouldLift = isTemplateDetail || isCheckout || isProjects || isSaaS || isAutomations || isOrder;
+
+  if (hiddenOnAdmin) return null;
 
   return (
     <div ref={containerRef} className={`fixed ${shouldLift ? 'bottom-32 lg:bottom-6' : 'bottom-6'} right-6 z-[9999] font-sans`}>

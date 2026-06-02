@@ -205,7 +205,6 @@ const TemplateGrid = () => {
 
                   {/* Backdrop for closing */}
                   <div
-                    fixed="true"
                     className="fixed inset-0 -z-10 bg-black/20 backdrop-blur-sm"
                     onClick={() => setIsFilterOpen(false)}
                   />

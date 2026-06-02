@@ -793,7 +793,8 @@ export const updateOrderConfig = async (req, res) => {
     }
 
     const currentUserId = req.user.uid || req.user.id;
-    if (order.user_id.toString() !== currentUserId.toString()) {
+    // Guard: guest siparişte (user_id=null) .toString() çökerdi → 403 dön.
+    if (!order.user_id || order.user_id.toString() !== currentUserId.toString()) {
       return res.status(403).json({ message: 'Access denied' });
     }
 

@@ -39,10 +39,10 @@ const Layout = () => {
   return (
     <div className="min-h-screen bg-deep-black text-white flex flex-col font-body">
       <Helmet>
-        <link rel="alternate" hreflang="tr" href={currentUrl} />
-        <link rel="alternate" hreflang="en" href={currentUrl} />
-        <link rel="alternate" hreflang="de" href={currentUrl} />
-        <link rel="alternate" hreflang="x-default" href={currentUrl} />
+        <link rel="alternate" hrefLang="tr" href={currentUrl} />
+        <link rel="alternate" hrefLang="en" href={currentUrl} />
+        <link rel="alternate" hrefLang="de" href={currentUrl} />
+        <link rel="alternate" hrefLang="x-default" href={currentUrl} />
         <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(websiteSchema)}</script>
       </Helmet>
