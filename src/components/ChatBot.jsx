@@ -354,7 +354,7 @@ const ChatBot = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 320, damping: 30 }}
-            className="absolute bottom-24 right-0 w-[calc(100vw-2.5rem)] sm:w-[420px] min-h-[380px] max-h-[min(600px,calc(100vh-7.5rem))] bg-[#0b0b12]/90 backdrop-blur-2xl border border-white/10 rounded-[28px] shadow-[0_30px_80px_-20px_rgba(92,115,255,0.45)] flex flex-col overflow-hidden"
+            className="absolute bottom-24 right-0 w-[92vw] sm:w-[420px] max-h-[calc(100vh_-_7.5rem)] bg-[#0b0b12]/90 backdrop-blur-2xl border border-white/10 rounded-[28px] shadow-[0_30px_80px_-20px_rgba(92,115,255,0.45)] flex flex-col overflow-hidden"
           >
             {/* Ambient glows + üst hairline */}
             <div className="absolute -top-24 -right-16 w-64 h-64 bg-indigo/20 rounded-full blur-[90px] pointer-events-none" />
@@ -400,7 +400,7 @@ const ChatBot = () => {
             </div>
 
             {/* Messages */}
-            <div className="relative z-10 flex-1 min-h-0 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+            <div className="relative z-10 overflow-y-auto p-4 space-y-4 custom-scrollbar max-h-[56vh]">
               {messages.length === 0 && (
                 <div className="flex flex-col items-center text-center pt-6 pb-2 px-2 animate-in fade-in slide-in-from-bottom-3 duration-500">
                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo/25 to-cyan/10 border border-white/10 flex items-center justify-center mb-4 text-indigo shadow-xl shadow-indigo/10">
