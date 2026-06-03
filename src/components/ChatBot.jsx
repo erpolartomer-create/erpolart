@@ -354,7 +354,7 @@ const ChatBot = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 320, damping: 30 }}
-            className="absolute bottom-24 right-0 w-[92vw] sm:w-[420px] h-[70vh] max-h-[600px] bg-[#0b0b12]/90 backdrop-blur-2xl border border-white/10 rounded-[28px] shadow-[0_30px_80px_-20px_rgba(92,115,255,0.45)] flex flex-col overflow-hidden"
+            className="absolute bottom-24 right-0 w-[92vw] sm:w-[420px] h-[70vh] max-h-[600px] bg-[#0b0b12]/90 backdrop-blur-2xl border border-white/10 rounded-[28px] shadow-[0_30px_80px_-20px_rgba(92,115,255,0.45)] grid grid-rows-[auto_1fr_auto] overflow-hidden"
           >
             {/* Ambient glows + üst hairline */}
             <div className="absolute -top-24 -right-16 w-64 h-64 bg-indigo/20 rounded-full blur-[90px] pointer-events-none" />
