@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send, Bot, User, Loader2, AlertCircle, Shield, RotateCcw, Layers, ArrowUpRight } from 'lucide-react';
+import { MessageSquare, X, Send, Bot, User, Loader2, AlertCircle, Shield, RotateCcw, Layers, ArrowUpRight, Sparkles } from 'lucide-react';
 import axios from 'axios';
 import { io } from 'socket.io-client';
 import useChatStore from '../store/chatStore';
@@ -250,16 +250,17 @@ const ChatBot = () => {
   };
 
   // ── Mesaj Gönder ──
-  const handleSend = async (e) => {
+  const handleSend = async (e, presetText) => {
     e?.preventDefault();
-    if (!input.trim() || isTyping) return;
+    const raw = presetText ?? input;
+    if (!raw.trim() || isTyping) return;
 
     if (!canSendMessage()) {
       setError("Günlük operasyon limitinize ulaştınız. Yarına kadar işlem yapılamaz.");
       return;
     }
 
-    const userMessage = input.trim();
+    const userMessage = raw.trim();
     setInput('');
     setError(null);
     addMessage({ role: 'user', content: userMessage });
@@ -317,9 +318,9 @@ const ChatBot = () => {
 
   // ── Mesaj Balonu Renkleri ──
   const getBubbleStyle = (role) => {
-    if (role === 'user') return 'bg-indigo text-white rounded-tr-none';
-    if (role === 'admin') return 'bg-gradient-to-br from-amber-500/20 to-orange-500/10 text-amber-100 border border-amber-500/30 rounded-tl-none';
-    return 'bg-white/5 text-gray-200 border border-white/10 rounded-tl-none';
+    if (role === 'user') return 'bg-indigo text-white rounded-tr-md shadow-lg shadow-indigo/25';
+    if (role === 'admin') return 'bg-gradient-to-br from-amber-500/20 to-orange-500/10 text-amber-100 border border-amber-500/30 rounded-tl-md';
+    return 'bg-white/[0.05] text-gray-100 border border-white/10 rounded-tl-md';
   };
 
   const getAvatarStyle = (role) => {
@@ -349,55 +350,78 @@ const ChatBot = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95, transformOrigin: 'bottom right' }}
+            initial={{ opacity: 0, y: 24, scale: 0.96, transformOrigin: 'bottom right' }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="absolute bottom-20 right-0 w-[350px] sm:w-[400px] h-[500px] bg-[#0f0f18]/95 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+            exit={{ opacity: 0, y: 24, scale: 0.96 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+            className="absolute bottom-24 right-0 w-[calc(100vw-2.5rem)] sm:w-[420px] h-[600px] max-h-[calc(100vh-7.5rem)] bg-[#0b0b12]/90 backdrop-blur-2xl border border-white/10 rounded-[28px] shadow-[0_30px_80px_-20px_rgba(92,115,255,0.45)] flex flex-col overflow-hidden"
           >
+            {/* Ambient glows + üst hairline */}
+            <div className="absolute -top-24 -right-16 w-64 h-64 bg-indigo/20 rounded-full blur-[90px] pointer-events-none" />
+            <div className="absolute -bottom-28 -left-16 w-64 h-64 bg-cyan/15 rounded-full blur-[90px] pointer-events-none" />
+            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-indigo/60 to-transparent pointer-events-none" />
+
             {/* Header */}
-            <div className="p-4 border-b border-white/[0.08] bg-white/[0.02] flex items-center justify-between">
+            <div className="relative z-10 p-4 border-b border-white/[0.06] bg-white/[0.02] flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo/20 border border-indigo/30 flex items-center justify-center text-indigo">
-                  <Bot size={20} />
+                <div className="relative w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo via-violet to-cyan p-[1.5px] shadow-lg shadow-indigo/30">
+                  <div className="w-full h-full rounded-2xl bg-[#0b0b12] flex items-center justify-center text-white">
+                    <Bot size={20} />
+                  </div>
+                  <span className="absolute -bottom-0.5 -right-0.5 flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-[#0b0b12]" />
+                  </span>
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">ErpolArt Core System</h3>
-                  <p className="text-[10px] text-gray-500 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    Aktif | Kalan İşlem: {25 - dailyCount}
+                  <h3 className="text-sm font-black text-white italic tracking-tight">ErpolArt <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo to-cyan">AI</span></h3>
+                  <p className="text-[10px] text-gray-400 flex items-center gap-1.5 font-medium">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    Çevrimiçi · {25 - dailyCount} işlem hakkı
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                {/* Yeni Sohbet Butonu */}
                 <button
                   onClick={handleNewChat}
                   aria-label="Yeni sohbet başlat"
-                  className="p-2 hover:bg-white/5 rounded-lg text-gray-500 hover:text-white transition-colors"
+                  className="p-2 hover:bg-white/5 rounded-xl text-gray-500 hover:text-white transition-colors"
                 >
                   <RotateCcw size={16} />
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
                   aria-label="Sohbeti kapat"
-                  className="p-2 hover:bg-white/5 rounded-lg text-gray-400 hover:text-white transition-colors"
+                  className="p-2 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors"
                 >
-                  <X size={20} />
+                  <X size={18} />
                 </button>
               </div>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-white/10">
+            <div className="relative z-10 flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
               {messages.length === 0 && (
-                <div className="text-center py-10 px-6">
-                  <div className="w-16 h-16 bg-indigo/10 rounded-full flex items-center justify-center mx-auto mb-4 text-indigo">
-                    <Bot size={32} />
+                <div className="flex flex-col items-center text-center pt-6 pb-2 px-2 animate-in fade-in slide-in-from-bottom-3 duration-500">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo/25 to-cyan/10 border border-white/10 flex items-center justify-center mb-4 text-indigo shadow-xl shadow-indigo/10">
+                    <Sparkles size={28} />
                   </div>
-                  <h4 className="text-white font-bold mb-2">Sistem İnşasına Hoş Geldiniz</h4>
-                  <p className="text-gray-400 text-xs leading-relaxed">
-                    Ben ErpolArt sistem asistanı. Yüksek performanslı SaaS mimarileri ve Exclusive (Tek Satış) protokolümüz hakkında bilgi almak veya projenizi başlatmak için sorunuzu iletin.
+                  <h4 className="text-white font-black italic text-lg mb-1.5">Yardıma mı ihtiyacın var? ✨</h4>
+                  <p className="text-gray-400 text-xs leading-relaxed max-w-[270px] mb-5">
+                    Sana özel şablon önerebilir, fiyatları açıklayabilir ve projeni başlatabilirim. Ne yapmak istersin?
                   </p>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {['Bana şablon öner', 'Fiyatlar nedir?', 'SaaS projesi istiyorum', 'Nasıl çalışıyor?'].map((q) => (
+                      <button
+                        key={q}
+                        type="button"
+                        onClick={() => handleSend(null, q)}
+                        className="px-3.5 py-2 rounded-full bg-white/[0.04] border border-white/10 text-gray-300 text-[11px] font-medium hover:border-indigo/40 hover:bg-indigo/10 hover:text-white transition-all active:scale-95"
+                      >
+                        {q}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -428,11 +452,15 @@ const ChatBot = () => {
               {isTyping && (
                 <div className="flex justify-start">
                   <div className="flex gap-3 max-w-[85%]">
-                    <div className="w-8 h-8 rounded-lg bg-indigo/20 text-indigo border border-indigo/30 flex items-center justify-center">
-                      <Loader2 size={14} className="animate-spin" />
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo to-cyan p-[1.5px] flex-shrink-0">
+                      <div className="w-full h-full rounded-xl bg-[#0b0b12] flex items-center justify-center text-indigo">
+                        <Bot size={14} />
+                      </div>
                     </div>
-                    <div className="bg-white/5 text-gray-400 p-3 rounded-2xl rounded-tl-none border border-white/10 italic text-xs">
-                      Sistem Yanıtı Hazırlanıyor...
+                    <div className="bg-white/[0.05] border border-white/10 rounded-2xl rounded-tl-md px-4 py-3.5 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-indigo animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <span className="w-1.5 h-1.5 rounded-full bg-indigo animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <span className="w-1.5 h-1.5 rounded-full bg-indigo animate-bounce" style={{ animationDelay: '300ms' }} />
                     </div>
                   </div>
                 </div>
@@ -448,27 +476,28 @@ const ChatBot = () => {
             </div>
 
             {/* Input */}
-            <form onSubmit={handleSend} className="p-4 border-t border-white/[0.08] bg-white/[0.01]">
-              <div className="relative flex items-center gap-2">
+            <form onSubmit={handleSend} className="relative z-10 p-3 border-t border-white/[0.06] bg-white/[0.01]">
+              <div className="relative flex items-center">
                 <input
                   ref={inputRef}
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder={dailyCount >= 25 ? "Günlük limit doldu" : "Komutunuzu girin..."}
+                  placeholder={dailyCount >= 25 ? "Günlük limit doldu" : "Mesaj yazın..."}
                   disabled={dailyCount >= 25 || isTyping}
-                  className="flex-1 bg-white/[0.03] border border-white/[0.08] focus:border-indigo/50 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-all pr-12"
+                  className="flex-1 bg-white/[0.04] border border-white/10 focus:border-indigo/50 focus:ring-2 focus:ring-indigo/20 rounded-2xl pl-4 pr-14 py-3.5 text-sm text-white placeholder-gray-500 outline-none transition-all disabled:opacity-50"
                 />
                 <button
                   type="submit"
                   disabled={!input.trim() || isTyping || dailyCount >= 25}
-                  className="absolute right-1.5 p-2 bg-indigo hover:bg-indigo-600 disabled:opacity-50 disabled:bg-white/5 text-white rounded-lg transition-all"
+                  aria-label="Gönder"
+                  className="absolute right-1.5 w-10 h-10 flex items-center justify-center bg-gradient-to-br from-indigo to-cyan text-white rounded-xl shadow-lg shadow-indigo/30 hover:scale-105 active:scale-95 disabled:from-white/10 disabled:to-white/10 disabled:shadow-none disabled:scale-100 transition-all"
                 >
-                  {isTyping ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                  {isTyping ? <Loader2 size={18} className="animate-spin" /> : <Send size={16} />}
                 </button>
               </div>
-              <p className="text-[10px] text-center text-gray-600 mt-3">
-                Powered by ErpolArt Core & Gemini 2.5
+              <p className="text-[9px] text-center text-gray-600 mt-2.5 tracking-wide">
+                ErpolArt Core AI · sohbetiniz güvenli ve gizlidir
               </p>
             </form>
           </motion.div>
@@ -477,16 +506,18 @@ const ChatBot = () => {
 
       {/* Toggle Button */}
       <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.92 }}
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl transition-all duration-300 ${isOpen ? 'bg-white text-indigo' : 'bg-indigo text-white'
-          }`}
+        aria-label={isOpen ? 'Sohbeti kapat' : 'Sohbeti aç'}
+        className={`relative w-16 h-16 rounded-2xl flex items-center justify-center shadow-[0_12px_32px_-6px_rgba(92,115,255,0.6)] transition-colors duration-300 ${isOpen ? 'bg-white text-indigo' : 'bg-gradient-to-br from-indigo via-indigo to-cyan text-white'}`}
       >
-        {isOpen ? <X size={28} /> : <MessageSquare size={28} />}
-        {!isOpen && dailyCount < 25 && (
-          <span className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 text-[10px] font-bold text-white rounded-full flex items-center justify-center border-2 border-[#0f0f18]">
-            1
+        {!isOpen && <span className="absolute inset-0 rounded-2xl bg-indigo/30 animate-ping" style={{ animationDuration: '2.5s' }} />}
+        <span className="relative z-10">{isOpen ? <X size={26} /> : <MessageSquare size={26} />}</span>
+        {!isOpen && (
+          <span className="absolute -top-1 -right-1 z-20 flex h-4 w-4">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-[#0b0b12]" />
           </span>
         )}
       </motion.button>
