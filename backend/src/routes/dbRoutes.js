@@ -1,8 +1,26 @@
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import { supabase } from '../config/supabase.js';
+import sendEmail from '../utils/sendEmail.js';
+import { statusUpdateEmail } from '../templates/notifyEmails.js';
 
 const router = express.Router();
+
+// Admin sipariş durumunu değiştirince müşteriye bilgi maili (çok dilli).
+const notifyOrderStatus = async (order, status) => {
+  let productName = 'Dijital Mimari';
+  if (order.template_id) {
+    const { data: tpl } = await supabase.from('templates').select('name').eq('id', order.template_id).single();
+    if (tpl?.name) productName = tpl.name;
+  }
+  const mail = statusUpdateEmail({
+    lang: order.lang || 'tr',
+    status,
+    orderId: String(order.id || '').slice(0, 8).toUpperCase(),
+    productName,
+  });
+  await sendEmail({ email: order.email, subject: mail.subject, html: mail.html });
+};
 
 const dbLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -219,6 +237,15 @@ router.post('/:table/query', async (req, res) => {
     if (error) {
       console.error(`[dbRoutes] Supabase error on table ${table}:`, error.message);
       return res.status(400).json({ error: 'Bad request' }); // generic error to hide schema details
+    }
+
+    // Admin bir siparişin durumunu müşteri-yönlü bir aşamaya çekince → müşteriye bilgi maili
+    // (engellemez; mail hatası API yanıtını etkilemez). paid/failed callback'ten gider.
+    if (table === 'orders' && method === 'PATCH' && isAdmin && body && ['active', 'revision', 'development'].includes(body.status)) {
+      const updated = Array.isArray(data) ? data[0] : data;
+      if (updated?.email) {
+        notifyOrderStatus(updated, body.status).catch((e) => console.error('[STATUS EMAIL ERROR]', e?.message));
+      }
     }
 
     return res.json({ data, count });

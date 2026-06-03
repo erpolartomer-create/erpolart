@@ -2,7 +2,11 @@ import crypto from 'crypto';
 import { supabase } from '../config/supabase.js';
 import sendEmail from '../utils/sendEmail.js';
 import { getOrderConfirmationTemplate, getOrderConfirmationSubject } from '../templates/orderConfirmation.js';
+import { paymentFailedEmail, adminNewOrderEmail } from '../templates/notifyEmails.js';
 import { computeServiceTotal, SERVICE_SOURCES } from '../config/pricing.js';
+
+const ADMIN_EMAIL = process.env.ADMIN_NOTIFY_EMAIL || 'hello@erpolart.com';
+const SITE_URL = 'https://erpolart.com';
 
 const isUUID = (str) => {
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -400,11 +404,44 @@ export const paytrCallback = async (req, res) => {
         console.error(`[EMAIL FAILED] orderId: ${orderId}`, emailErr);
       }
 
+      // Admin'e "yeni ödeme" bildirimi (engellemez)
+      try {
+        const a = adminNewOrderEmail({
+          orderId:       order.id.slice(0, 8).toUpperCase(),
+          productName:   order.templates?.name || 'Dijital Hizmet',
+          amount:        order.amount,
+          currency:      '$',
+          customerName:  order.full_name,
+          customerEmail: order.email,
+          customerPhone: order.customer_phone || order.phone,
+        });
+        await sendEmail({ email: ADMIN_EMAIL, subject: a.subject, html: a.html });
+      } catch (adminErr) {
+        console.error('[ADMIN NOTIFY FAILED]', adminErr?.message);
+      }
+
     } else {
       await supabase
         .from('orders')
         .update({ status: 'failed' })
         .eq('id', orderId);
+
+      // Müşteriye "ödeme başarısız" maili (engellemez)
+      try {
+        const lang = order.lang || 'tr';
+        const retryUrl = order.template_id ? `${SITE_URL}/checkout/${order.template_id}` : SITE_URL;
+        const f = paymentFailedEmail({
+          lang,
+          orderId:     order.id.slice(0, 8).toUpperCase(),
+          productName: order.templates?.name || 'Dijital Hizmet',
+          amount:      order.amount,
+          currency:    '$',
+          retryUrl,
+        });
+        await sendEmail({ email: order.email, subject: f.subject, html: f.html });
+      } catch (failErr) {
+        console.error('[PAYMENT FAILED EMAIL ERROR]', failErr?.message);
+      }
     }
 
     res.send('OK'); // PayTR mutlaka "OK" bekliyor

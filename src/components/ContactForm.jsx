@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Send, CheckCircle2, MessageCircle, Mail, User, Briefcase, ChevronDown, Sparkles, ArrowRight, Check } from 'lucide-react';
 import ScrollReveal from './ScrollReveal';
-import { supabase } from '../lib/supabase';
+import API from '../services/api';
 import { toast } from './Toast';
 
 const CustomSelect = ({ value, onChange, options, icon: Icon }) => {
@@ -66,7 +66,7 @@ const CustomSelect = ({ value, onChange, options, icon: Icon }) => {
 };
 
 const ContactForm = ({ id }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -89,10 +89,11 @@ const ContactForm = ({ id }) => {
         budget: formData.budget,
         timeline: formData.timeline,
         message: formData.description,
-        project_code: 'erpolart'
+        project_code: 'erpolart',
+        lang: (i18n.language || 'tr').slice(0, 2),
       };
-      const { error } = await supabase.from('leads').insert([payload]);
-      if (error) throw error;
+      // Dedicated uç: lead'i kaydeder + müşteriye otomatik yanıt + admin'e bildirim gönderir.
+      await API.post('/messages', payload);
       setIsSubmitted(true);
     } catch (err) {
       console.error(err);
