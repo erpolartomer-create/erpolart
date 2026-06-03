@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { supabase } from '../config/supabase.js';
 import sendEmail from '../utils/sendEmail.js';
-import { getOrderConfirmationTemplate } from '../templates/orderConfirmation.js';
+import { getOrderConfirmationTemplate, getOrderConfirmationSubject } from '../templates/orderConfirmation.js';
 import { computeServiceTotal, SERVICE_SOURCES } from '../config/pricing.js';
 
 const isUUID = (str) => {
@@ -32,6 +32,7 @@ export const createOrder = async (req, res) => {
     extras = [],
     pages,
     langCount,
+    lang,
   } = req.body;
 
   try {
@@ -121,6 +122,7 @@ export const createOrder = async (req, res) => {
       selected_addons:   selectedAddons,
       project_notes:     notes || null,
       customer_phone:    phone || null,
+      lang:              ['tr', 'en', 'de'].includes(String(lang || '').slice(0, 2)) ? String(lang).slice(0, 2) : 'tr',
     };
 
     let { data: order, error: orderError } = await supabase
@@ -129,13 +131,13 @@ export const createOrder = async (req, res) => {
       .select()
       .single();
 
-    // customer_phone kolonu henüz eklenmemişse (PGRST204) onsuz tekrar dene —
-    // SQL migration uygulanmadan da createOrder çalışmaya devam etsin.
+    // Opsiyonel kolonlar (customer_phone / lang) henüz eklenmemişse (PGRST204)
+    // onlarsız tekrar dene — SQL migration uygulanmadan da createOrder çalışsın.
     if (orderError && (orderError.code === 'PGRST204' || /column/i.test(orderError.message || ''))) {
-      const { customer_phone, ...withoutPhone } = baseInsert;
+      const { customer_phone, lang: _lang, ...withoutOptional } = baseInsert;
       ({ data: order, error: orderError } = await supabase
         .from('orders')
-        .insert([withoutPhone])
+        .insert([withoutOptional])
         .select()
         .single());
     }
@@ -373,9 +375,12 @@ export const paytrCallback = async (req, res) => {
       }
 
       try {
+        // Müşterinin dili (sipariş anında kaydedildi) → mail o dilde gider.
+        const lang = order.lang || 'tr';
+        const localeMap = { tr: 'tr-TR', en: 'en-US', de: 'de-DE' };
         await sendEmail({
           email:   order.email,
-          subject: 'Sipariş Onay Belgesi - ErpolArt Digital Atelier',
+          subject: getOrderConfirmationSubject(lang),
           html: getOrderConfirmationTemplate({
             customerName:    order.full_name,
             customerEmail:   order.email,
@@ -383,11 +388,12 @@ export const paytrCallback = async (req, res) => {
             customerAddress: order.address,
             customerTaxId:   order.tax_id,
             orderId:         order.id.slice(0, 8).toUpperCase(),
-            orderDate:       new Date(order.created_at).toLocaleDateString('tr-TR'),
+            orderDate:       new Date(order.created_at).toLocaleDateString(localeMap[lang] || 'tr-TR'),
             amount:          order.amount,
             productName:     order.templates?.name || 'Dijital Mimari Şablon',
             isSubscription:  order.subscription_plan !== 'None',
             currency:        '$',
+            lang,
           }),
         });
       } catch (emailErr) {

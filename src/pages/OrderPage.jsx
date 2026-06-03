@@ -78,7 +78,7 @@ const formatExpiry = (v) => {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 const OrderPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const { id } = useParams();
@@ -284,11 +284,12 @@ const OrderPage = () => {
 
     try {
       // 1. Create order
+      const lang = (i18n.language || 'tr').slice(0, 2);
       const orderPayload = isProposal
-        ? { proposalId: id, isProposal: true, email: billing.email, full_name: billing.name, phone: billing.phone, company: billing.company || null, notes: billing.notes || null }
+        ? { proposalId: id, isProposal: true, lang, email: billing.email, full_name: billing.name, phone: billing.phone, company: billing.company || null, notes: billing.notes || null }
         : id
-          ? { templateId: id, email: billing.email, full_name: billing.name, phone: billing.phone, company: billing.company || null, notes: billing.notes || null }
-          : { direct_amount: total, tier, source, extras, pages: orderData.pages, langCount: orderData.langCount, email: billing.email, full_name: billing.name, phone: billing.phone, company: billing.company || null, notes: billing.notes || null };
+          ? { templateId: id, lang, email: billing.email, full_name: billing.name, phone: billing.phone, company: billing.company || null, notes: billing.notes || null }
+          : { direct_amount: total, tier, source, extras, pages: orderData.pages, langCount: orderData.langCount, lang, email: billing.email, full_name: billing.name, phone: billing.phone, company: billing.company || null, notes: billing.notes || null };
 
       const { data: orderResult } = await API.post('/orders', orderPayload);
       const orderId = orderResult.order.id;
