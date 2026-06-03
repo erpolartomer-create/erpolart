@@ -321,9 +321,9 @@ const ChatBot = () => {
 
   // ── Mesaj Balonu Renkleri ──
   const getBubbleStyle = (role) => {
-    if (role === 'user') return 'bg-gradient-to-br from-indigo to-violet-600 text-white rounded-tr-sm shadow-lg shadow-indigo/30';
-    if (role === 'admin') return 'bg-gradient-to-br from-amber-500/15 to-orange-500/8 text-amber-100 border border-amber-500/25 rounded-tl-sm';
-    return 'bg-white/[0.06] text-gray-200 border border-white/[0.08] rounded-tl-sm';
+    if (role === 'user') return 'bg-gradient-to-br from-indigo to-violet-600 text-white rounded-tr-sm shadow-lg shadow-indigo/30 [&_span]:text-white [&_a]:text-indigo-200';
+    if (role === 'admin') return 'bg-gradient-to-br from-amber-500/15 to-orange-500/[0.08] text-amber-100 border border-amber-500/25 rounded-tl-sm';
+    return 'bg-white/[0.07] text-gray-100 border border-white/[0.10] rounded-tl-sm';
   };
 
   const getAvatarStyle = (role) => {
@@ -357,12 +357,12 @@ const ChatBot = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 340, damping: 32 }}
-            className="absolute bottom-[72px] right-0 w-[92vw] sm:w-[390px] bg-gradient-to-b from-[#0e0d1f]/96 via-[#0a0916]/96 to-[#08070f]/97 backdrop-blur-3xl border border-white/[0.07] rounded-[26px] shadow-[0_32px_80px_-16px_rgba(92,115,255,0.5),0_0_0_1px_rgba(255,255,255,0.03),inset_0_1px_0_rgba(255,255,255,0.06)] overflow-hidden"
+            className="absolute bottom-[72px] right-0 w-[92vw] sm:w-[390px] bg-gradient-to-b from-[#14132b]/96 via-[#100e22]/96 to-[#0c0a1a]/96 backdrop-blur-3xl border border-white/[0.09] rounded-[26px] shadow-[0_32px_80px_-16px_rgba(92,115,255,0.5),0_0_0_1px_rgba(255,255,255,0.04),inset_0_1px_0_rgba(255,255,255,0.08)] overflow-hidden"
             style={{ maxHeight: 'min(82vh, 580px)' }}
           >
             {/* Ambient glows */}
-            <div className="absolute -top-20 -right-12 w-56 h-56 bg-indigo/[0.18] rounded-full blur-[80px] pointer-events-none" />
-            <div className="absolute -bottom-24 -left-12 w-56 h-56 bg-cyan/[0.12] rounded-full blur-[80px] pointer-events-none" />
+            <div className="absolute -top-20 -right-12 w-56 h-56 bg-indigo/[0.22] rounded-full blur-[80px] pointer-events-none" />
+            <div className="absolute -bottom-24 -left-12 w-56 h-56 bg-violet-500/[0.15] rounded-full blur-[80px] pointer-events-none" />
             <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-indigo/50 to-transparent pointer-events-none" />
 
             {/* Header */}
@@ -370,19 +370,20 @@ const ChatBot = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-indigo/[0.06] via-transparent to-transparent pointer-events-none" />
               <div className="relative flex items-center gap-3">
                 <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-indigo via-violet-600 to-cyan p-[1.5px] shadow-lg shadow-indigo/40">
-                  <div className="w-full h-full rounded-xl bg-[#0e0d1f] flex items-center justify-center text-white">
+                  <div className="w-full h-full rounded-xl bg-[#14132b] flex items-center justify-center text-white">
                     <Bot size={18} />
                   </div>
                   <span className="absolute -bottom-0.5 -right-0.5 flex h-2.5 w-2.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border-[1.5px] border-[#0e0d1f]" />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border-[1.5px] border-[#14132b]" />
                   </span>
                 </div>
                 <div>
-                  <h3 className="text-[13px] font-black text-white italic leading-tight tracking-tight">
-                    ErpolArt <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo to-cyan">AI</span>
+                  <h3 className="text-[13px] font-black italic leading-tight tracking-tight">
+                    <span className="text-gray-100">ErpolArt</span>{' '}
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo to-cyan">AI</span>
                   </h3>
-                  <p className="text-[10px] text-gray-500 flex items-center gap-1.5 mt-0.5">
+                  <p className="text-[10px] text-gray-400 flex items-center gap-1.5 mt-0.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
                     Çevrimiçi · {25 - dailyCount} işlem hakkı
                   </p>
@@ -392,14 +393,14 @@ const ChatBot = () => {
                 <button
                   onClick={handleNewChat}
                   aria-label="Yeni sohbet başlat"
-                  className="p-2 hover:bg-white/[0.06] rounded-xl text-gray-600 hover:text-gray-300 transition-colors"
+                  className="p-2 hover:bg-white/[0.08] rounded-xl text-gray-400 hover:text-white transition-colors"
                 >
                   <RotateCcw size={15} />
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
                   aria-label="Sohbeti kapat"
-                  className="p-2 hover:bg-white/[0.06] rounded-xl text-gray-500 hover:text-gray-200 transition-colors"
+                  className="p-2 hover:bg-white/[0.08] rounded-xl text-gray-400 hover:text-white transition-colors"
                 >
                   <X size={17} />
                 </button>
@@ -414,8 +415,8 @@ const ChatBot = () => {
                     <Sparkles size={24} />
                     <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo/10 to-transparent" />
                   </div>
-                  <h4 className="text-white font-black italic text-base mb-1.5 leading-tight">Yardıma mı ihtiyacın var?</h4>
-                  <p className="text-gray-500 text-[11px] leading-relaxed max-w-[240px] mb-4">
+                  <h4 className="text-gray-100 font-black italic text-base mb-1.5 leading-tight">Yardıma mı ihtiyacın var?</h4>
+                  <p className="text-gray-400 text-[11px] leading-relaxed max-w-[240px] mb-4">
                     Sana özel şablon önerebilir, fiyatları açıklayabilir ve projeni başlatabilirim.
                   </p>
                   <div className="flex flex-wrap gap-1.5 justify-center">
@@ -424,7 +425,7 @@ const ChatBot = () => {
                         key={q}
                         type="button"
                         onClick={() => handleSend(null, q)}
-                        className="px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-gray-400 text-[11px] hover:border-indigo/35 hover:bg-indigo/[0.08] hover:text-gray-200 transition-all active:scale-95"
+                        className="px-3 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.12] text-gray-300 text-[11px] hover:border-indigo/50 hover:bg-indigo/[0.12] hover:text-white transition-all active:scale-95"
                       >
                         {q}
                       </button>
@@ -461,7 +462,7 @@ const ChatBot = () => {
                 <div className="flex justify-start">
                   <div className="flex gap-2.5">
                     <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo to-violet-600 p-[1.5px] flex-shrink-0">
-                      <div className="w-full h-full rounded-[6px] bg-[#0e0d1f] flex items-center justify-center text-indigo">
+                      <div className="w-full h-full rounded-[6px] bg-[#14132b] flex items-center justify-center text-indigo">
                         <Bot size={13} />
                       </div>
                     </div>
@@ -493,7 +494,8 @@ const ChatBot = () => {
                   onChange={(e) => setInput(e.target.value)}
                   placeholder={dailyCount >= 25 ? "Günlük limit doldu" : "Mesaj yazın..."}
                   disabled={dailyCount >= 25 || isTyping}
-                  className="flex-1 bg-transparent pl-3 pr-1 py-2 text-[13px] text-white placeholder-gray-600 outline-none disabled:opacity-40"
+                  className="flex-1 bg-transparent pl-3 pr-1 py-2 text-[13px] placeholder-gray-500 outline-none disabled:opacity-40"
+                  style={{ color: 'white', caretColor: '#818cf8' }}
                 />
                 <button
                   type="submit"
@@ -504,7 +506,7 @@ const ChatBot = () => {
                   {isTyping ? <Loader2 size={15} className="animate-spin" /> : <Send size={14} />}
                 </button>
               </div>
-              <p className="text-[9px] text-center text-gray-700 mt-2 tracking-wide">
+              <p className="text-[9px] text-center text-gray-500 mt-2 tracking-wide">
                 ErpolArt Core AI · sohbetiniz güvenli ve gizlidir
               </p>
             </form>
