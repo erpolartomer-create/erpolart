@@ -362,7 +362,7 @@ const ChatBot = () => {
             <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-indigo/60 to-transparent pointer-events-none" />
 
             {/* Header */}
-            <div className="relative z-10 p-4 border-b border-white/[0.06] bg-white/[0.02] flex items-center justify-between">
+            <div className="relative z-10 shrink-0 p-4 border-b border-white/[0.06] bg-white/[0.02] flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="relative w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo via-violet to-cyan p-[1.5px] shadow-lg shadow-indigo/30">
                   <div className="w-full h-full rounded-2xl bg-[#0b0b12] flex items-center justify-center text-white">
@@ -476,7 +476,7 @@ const ChatBot = () => {
             </div>
 
             {/* Input */}
-            <form onSubmit={handleSend} className="relative z-10 p-3 border-t border-white/[0.06] bg-white/[0.01]">
+            <form onSubmit={handleSend} className="relative z-10 shrink-0 p-3 border-t border-white/[0.06] bg-white/[0.01]">
               <div className="relative flex items-center">
                 <input
                   ref={inputRef}
