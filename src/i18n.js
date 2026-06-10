@@ -146,7 +146,15 @@ const resources = {
         systemStatus: "System Core Status",
         enterpriseArch: "Enterprise Architecture",
         globalScale: "Built for Global Scale",
-        badgeOptimized: "Optimized Layout"
+        badgeOptimized: "Optimized Layout",
+        path1FloatTopLabel: "Exclusivity", path1FloatTopValue: "1 of 1",
+        path1FloatBottomLabel: "Deployment", path1FloatBottomText: "Instant Access",
+        path2FloatTopLabel: "Architecture", path2FloatTopValue: "Scalable",
+        path2FloatBottomLabel: "System", path2FloatBottomText: "Core Optimized",
+        path3FloatTopLabel: "Conversion", path3FloatTopValue: "+24.8%",
+        path3FloatBottomLabel: "Nexus AI", path3FloatBottomText: "System Optimized",
+        path4FloatTopLabel: "Autonomous", path4FloatTopValue: "Active",
+        path4FloatBottomLabel: "Workflow", path4FloatBottomText: "Optimized"
       },
       latest: {
         title: "Fresh Out of the Lab",
@@ -1424,7 +1432,15 @@ const resources = {
         systemStatus: "Sistem Çekirdek Durumu",
         enterpriseArch: "Kurumsal Mimari",
         globalScale: "Küresel Ölçek İçin İnşa Edildi",
-        badgeOptimized: "Optimize Düzen"
+        badgeOptimized: "Optimize Düzen",
+        path1FloatTopLabel: "Ayrıcalık", path1FloatTopValue: "Tek Satış",
+        path1FloatBottomLabel: "Yayın", path1FloatBottomText: "Anında Erişim",
+        path2FloatTopLabel: "Mimari", path2FloatTopValue: "Ölçeklenebilir",
+        path2FloatBottomLabel: "Sistem", path2FloatBottomText: "Optimize Edildi",
+        path3FloatTopLabel: "Dönüşüm", path3FloatTopValue: "+24.8%",
+        path3FloatBottomLabel: "Nexus AI", path3FloatBottomText: "Sistem Optimize",
+        path4FloatTopLabel: "Otonom", path4FloatTopValue: "Aktif",
+        path4FloatBottomLabel: "İş Akışı", path4FloatBottomText: "Optimize Edildi"
       },
       latest: {
         title: "Laboratuvardan Yeni Çıkanlar",
@@ -2824,7 +2840,16 @@ const resources = {
 
         systemStatus: "Systemkern-Status",
         enterpriseArch: "Enterprise-Architektur",
-        globalScale: "Für globale Skalierung gebaut"
+        globalScale: "Für globale Skalierung gebaut",
+        badgeOptimized: "Optimiertes Layout",
+        path1FloatTopLabel: "Exklusivität", path1FloatTopValue: "1 von 1",
+        path1FloatBottomLabel: "Bereitstellung", path1FloatBottomText: "Sofortzugang",
+        path2FloatTopLabel: "Architektur", path2FloatTopValue: "Skalierbar",
+        path2FloatBottomLabel: "System", path2FloatBottomText: "Kern optimiert",
+        path3FloatTopLabel: "Konversion", path3FloatTopValue: "+24.8%",
+        path3FloatBottomLabel: "Nexus KI", path3FloatBottomText: "System optimiert",
+        path4FloatTopLabel: "Autonom", path4FloatTopValue: "Aktiv",
+        path4FloatBottomLabel: "Workflow", path4FloatBottomText: "Optimiert"
       },
       saasPage: {
         seo: {

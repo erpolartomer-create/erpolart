@@ -25,8 +25,8 @@ const HowItWorks = () => {
         { icon: <ShieldCheck size={14} />, text: t('howItWorks.path1Badge2'), color: 'text-blue-400' }
       ],
       floating: {
-        top: { icon: <Layers size={18} />, label: 'Exclusivity', value: '1 of 1' },
-        bottom: { icon: <Zap size={16} />, label: 'Deployment', text: 'Instant Access' }
+        top: { icon: <Layers size={18} />, label: t('howItWorks.path1FloatTopLabel'), value: t('howItWorks.path1FloatTopValue') },
+        bottom: { icon: <Zap size={16} />, label: t('howItWorks.path1FloatBottomLabel'), text: t('howItWorks.path1FloatBottomText') }
       }
     },
     {
@@ -38,15 +38,15 @@ const HowItWorks = () => {
       explore: t('howItWorks.path2Explore'),
       link: '/projects',
       image: '/saas/architecture_premium.webp',
-      color: 'white', // Diamond/Nexus (Swapped)
+      color: 'white',
       reverse: true,
       badges: [
         { icon: <Cpu size={14} />, text: t('howItWorks.path2Badge1') },
         { icon: <Workflow size={14} />, text: t('howItWorks.path2Badge2') }
       ],
       floating: {
-        top: { icon: <BarChart3 size={18} />, label: 'Architecture', value: 'Scalable' },
-        bottom: { icon: <Cpu size={16} />, label: 'System', text: 'Core Optimized' }
+        top: { icon: <BarChart3 size={18} />, label: t('howItWorks.path2FloatTopLabel'), value: t('howItWorks.path2FloatTopValue') },
+        bottom: { icon: <Cpu size={16} />, label: t('howItWorks.path2FloatBottomLabel'), text: t('howItWorks.path2FloatBottomText') }
       }
     },
     {
@@ -58,14 +58,14 @@ const HowItWorks = () => {
       explore: t('howItWorks.path3Explore'),
       link: '/saas',
       image: '/saas/SaaS-project-development.webp',
-      color: 'amber-500', // Gold (Swapped)
+      color: 'amber-500',
       badges: [
         { icon: <Bot size={14} />, text: t('howItWorks.path3Badge1') },
         { icon: <Layers size={14} />, text: t('howItWorks.path3Badge2') }
       ],
       floating: {
-        top: { icon: <BarChart3 size={18} />, label: 'Conversion', value: '+24.8%' },
-        bottom: { icon: <Bot size={16} />, label: 'Nexus AI', text: 'System Optimized' }
+        top: { icon: <BarChart3 size={18} />, label: t('howItWorks.path3FloatTopLabel'), value: t('howItWorks.path3FloatTopValue') },
+        bottom: { icon: <Bot size={16} />, label: t('howItWorks.path3FloatBottomLabel'), text: t('howItWorks.path3FloatBottomText') }
       }
     },
     {
@@ -77,15 +77,15 @@ const HowItWorks = () => {
       explore: t('howItWorks.path4Explore'),
       link: '/ai-automations',
       image: '/saas/ai_automations_premium.webp',
-      color: 'emerald-400', // AI Automation
+      color: 'emerald-400',
       reverse: true,
       badges: [
         { icon: <Cpu size={14} />, text: t('howItWorks.path4Badge1') },
         { icon: <Bot size={14} />, text: t('howItWorks.path4Badge2') }
       ],
       floating: {
-        top: { icon: <Cpu size={18} />, label: 'Autonomous', value: 'Active' },
-        bottom: { icon: <Workflow size={16} />, label: 'Workflow', text: 'Optimized' }
+        top: { icon: <Cpu size={18} />, label: t('howItWorks.path4FloatTopLabel'), value: t('howItWorks.path4FloatTopValue') },
+        bottom: { icon: <Workflow size={16} />, label: t('howItWorks.path4FloatBottomLabel'), text: t('howItWorks.path4FloatBottomText') }
       }
     }
   ];
