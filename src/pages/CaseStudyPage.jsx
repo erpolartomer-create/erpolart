@@ -60,7 +60,17 @@ const CaseStudyPage = () => {
           headline: csTitle,
           description: csDesc,
           author: { '@type': 'Organization', name: 'ErpolArt', url: 'https://erpolart.com' },
+          publisher: { '@type': 'Organization', name: 'ErpolArt', logo: { '@type': 'ImageObject', url: 'https://erpolart.com/logo.png' } },
           url: `https://erpolart.com/saas/case-study/${id}`,
+        })}</script>
+        <script type="application/ld+json">{JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: 'https://erpolart.com/' },
+            { '@type': 'ListItem', position: 2, name: 'SaaS', item: 'https://erpolart.com/saas' },
+            { '@type': 'ListItem', position: 3, name: csTitle, item: `https://erpolart.com/saas/case-study/${id}` },
+          ],
         })}</script>
       </Helmet>
       {/* Background System */}
@@ -113,7 +123,7 @@ const CaseStudyPage = () => {
                     id === 'contractoros' ? '/SaaS-desktop.webp' :
                     `/saas/${id}_premium.webp`
                   }
-                  alt={id}
+                  alt={`${title} — ErpolArt SaaS Vaka Çalışması`}
                   className="w-full aspect-video object-cover object-top"
                   onError={(e) => { e.target.src = '/saas/nexus_premium.webp' }}
                 />

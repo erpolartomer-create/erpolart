@@ -31,7 +31,7 @@ const CustomServicesOverview = () => {
                 {t('projectsPage.customServices.badge')}
               </div>
 
-              <h2 className="text-5xl md:text-[88px] font-display font-black text-white leading-[0.85] mb-10 tracking-tighter italic">
+              <h1 className="text-5xl md:text-[88px] font-display font-black text-white leading-[0.85] mb-10 tracking-tighter italic">
                 {t('projectsPage.customServices.title')} <br />
                 <span className={`text-transparent bg-clip-text bg-gradient-to-r py-4 inline-block ${theme === 'dark'
                     ? 'from-slate-200 via-white to-slate-400'
@@ -39,7 +39,7 @@ const CustomServicesOverview = () => {
                   }`}>
                   {t('projectsPage.customServices.titleAccent')}
                 </span>
-              </h2>
+              </h1>
 
               <div className="space-y-8 text-lg md:text-xl text-gray-400 font-medium leading-relaxed max-w-xl opacity-90">
                 <p>

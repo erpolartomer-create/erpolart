@@ -17,17 +17,17 @@ const ProjectsPage = () => {
   return (
     <div className="pt-24 pb-24 min-h-screen bg-deep-black relative transition-colors duration-500" style={{ overflowX: 'clip' }}>
       <Helmet>
-        <title>Projelerimiz - ErpolArt</title>
+        <title>Projelerimiz | Özel Web & Yazılım Projeleri - ErpolArt</title>
         <meta name="description" content="ErpolArt tarafından hayata geçirilen yaratıcı projeler ve dijital başarı hikayeleri." />
         <link rel="canonical" href="https://erpolart.com/projects" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="ErpolArt" />
-        <meta property="og:title" content="Projelerimiz - ErpolArt" />
+        <meta property="og:title" content="Projelerimiz | Özel Web & Yazılım Projeleri - ErpolArt" />
         <meta property="og:description" content="ErpolArt tarafından hayata geçirilen yaratıcı projeler ve dijital başarı hikayeleri." />
         <meta property="og:url" content="https://erpolart.com/projects" />
         <meta property="og:image" content="https://erpolart.com/og-image.webp" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Projelerimiz - ErpolArt" />
+        <meta name="twitter:title" content="Projelerimiz | Özel Web & Yazılım Projeleri - ErpolArt" />
         <meta name="twitter:description" content="ErpolArt tarafından hayata geçirilen yaratıcı projeler ve dijital başarı hikayeleri." />
         <meta name="twitter:image" content="https://erpolart.com/og-image.webp" />
         <script type="application/ld+json">{JSON.stringify({

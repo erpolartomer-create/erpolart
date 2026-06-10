@@ -1,0 +1,34 @@
+# ErpolArt
+
+> ErpolArt, tek sahibe özel SaaS web şablonları, özel yazılım geliştirme ve yapay zeka (AI) otomasyon sistemleri sunan bir dijital mimari atölyesidir. Türkiye merkezli olup TR, EN ve DE dillerinde, dünya genelinde hizmet verir.
+
+ErpolArt (yasal ad: FİDAN ÜNAL ERPOLAT - ERPOLART MİMARLIK) kurucusu Ömer Erpolat tarafından yönetilir. Merkez: Antalya, Türkiye. İletişim: hello@erpolart.com · +90 530 944 07 01 · https://erpolart.com
+
+## Hizmetler
+
+- [İmza Şablonlar](https://erpolart.com/templates): Önceden tasarlanmış, premium web şablonları. Her şablon yalnızca BİR kez satılır — alıcı benzersiz dijital kimliğe sahip olur. 24 saatte teslim/yayın.
+- [Özel Yazılım & Web](https://erpolart.com/projects): Markaya özel, sıfırdan tasarlanan web uygulamaları ve dijital deneyimler. Kaynak kodun %100 mülkiyeti müşteriye aittir.
+- [SaaS Projeleri](https://erpolart.com/saas): Ölçeklenebilir SaaS platformları, AI destekli paneller ve gerçek zamanlı analitik sistemleri. MVP 1-2 hafta, büyüme aşaması 2-4 hafta, kurumsal 1-2 ay.
+- [AI Otomasyonları](https://erpolart.com/ai-automations): Otonom yapay zeka ajanları ve akıllı iş akışı otomasyonları. CRM, WhatsApp, Slack, e-posta, Stripe, ERP ve özel veritabanlarıyla entegrasyon. İşletmeyi 7/24 çalıştıran arka plan sistemleri.
+
+## Sık Sorulan Sorular
+
+- Fiyatlandırma nasıl işler? Her proje kapsama göre özeldir; sabit fiyat yayınlanmaz. Kapsam, zaman ve teknik gereksinim değerlendirilip sabit fiyatlı teklif gönderilir — sürpriz yok.
+- Kaynak kodun sahibi kim? Teslimden sonra tüm kaynak kod, veritabanı ve altyapı %100 müşteriye aittir. Hiçbir kilitlenme (lock-in) yoktur.
+- Bir SaaS projesi ne kadar sürer? MVP 1-2 hafta, büyüme aşaması platformlar 2-4 hafta, karmaşık kurumsal sistemler 1-2 ay.
+- Lansman sonrası destek var mı? Lansman desteği her zaman dahildir. Sürekli bakım için öncelikli yanıt süreli aylık retainer planları sunulur.
+- Şablonlar gerçekten tek mi satılıyor? Evet. Her imza şablon yalnızca bir kez satılır ve satıldıktan sonra tekrar listelenmez.
+
+## Diller
+
+- Türkçe (varsayılan), İngilizce, Almanca. Arayüz çok dillidir; işlem e-postaları müşterinin diline göre gönderilir.
+
+## Önemli Bağlantılar
+
+- [Ana Sayfa](https://erpolart.com/)
+- [Hakkımızda](https://erpolart.com/about)
+- [İletişim](https://erpolart.com/contact)
+- [Şablonlar](https://erpolart.com/templates)
+- [SaaS Çözümleri](https://erpolart.com/saas)
+- [AI Otomasyonları](https://erpolart.com/ai-automations)
+- [Projeler](https://erpolart.com/projects)

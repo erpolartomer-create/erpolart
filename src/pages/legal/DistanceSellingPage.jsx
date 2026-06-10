@@ -18,7 +18,7 @@ const DistanceSellingPage = () => {
         <title>Mesafeli Satış Sözleşmesi - ErpolArt</title>
         <meta name="description" content="ErpolArt mesafeli satış sözleşmesi — hizmet satın alımlarına ilişkin yasal koşullar ve şartlar." />
         <link rel="canonical" href="https://erpolart.com/mesafeli-satis-sozlesmesi" />
-        <meta name="robots" content="noindex, follow" />
+        <meta name="robots" content="index, follow" />
       </Helmet>
       {/* Background System */}
       <div className="absolute inset-0 bg-[linear-gradient(var(--grid-color)_1px,transparent_1px),linear-gradient(90deg,var(--grid-color)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none opacity-20" />

@@ -227,6 +227,15 @@ const TemplateDetailPage = () => {
             seller: { '@type': 'Organization', name: 'ErpolArt' },
           },
         })}</script>
+        <script type="application/ld+json">{JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: 'https://erpolart.com/' },
+            { '@type': 'ListItem', position: 2, name: 'Şablonlar', item: 'https://erpolart.com/templates' },
+            { '@type': 'ListItem', position: 3, name: template.name, item: seoUrl },
+          ],
+        })}</script>
       </Helmet>
       {/* SaaS-Style Background System */}
       <div className="absolute inset-0 bg-[linear-gradient(var(--grid-color)_1px,transparent_1px),linear-gradient(90deg,var(--grid-color)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none opacity-50" />

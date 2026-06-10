@@ -17,9 +17,40 @@ export default defineConfig({
         '/contact',
         '/saas',
         '/ai-automations',
+        // SaaS vaka çalışmaları
+        '/saas/case-study/project1',
+        '/saas/case-study/project2',
+        '/saas/case-study/project3',
+        '/saas/case-study/contractoros',
+        '/saas/case-study/brandpulse',
+        // Yasal sayfalar (indexlenebilir — e-ticaret güven sinyali)
+        '/gizlilik-politikasi',
+        '/kvkk-metni',
+        '/mesafeli-satis-sozlesmesi',
+        '/iptal-ve-iade-kosullari',
+        // Statik portföy projeleri
         ...Array.from({ length: 15 }, (_, i) => `/projects/${i + 1}`),
+        // Şablon detayları (DB'den; satılınca /templates'e yönlenir)
         ...Array.from({ length: 8 }, (_, i) => `/templates/${i + 1}`),
-      ]
+      ],
+      // Özel/auth gerektiren sayfalar sitemap dışı
+      exclude: [
+        '/admin', '/dashboard', '/workspace', '/order', '/order-success',
+        '/order-cancel', '/update-password', '/forgot-password', '/auth', '/proposal',
+      ],
+      // robots.txt politikası — AI/GEO crawler'larına açık izin
+      robots: [
+        { userAgent: '*', allow: '/', disallow: ['/admin', '/dashboard', '/workspace', '/order', '/update-password', '/forgot-password', '/auth'] },
+        { userAgent: 'GPTBot', allow: '/' },
+        { userAgent: 'OAI-SearchBot', allow: '/' },
+        { userAgent: 'ChatGPT-User', allow: '/' },
+        { userAgent: 'ClaudeBot', allow: '/' },
+        { userAgent: 'Claude-Web', allow: '/' },
+        { userAgent: 'anthropic-ai', allow: '/' },
+        { userAgent: 'PerplexityBot', allow: '/' },
+        { userAgent: 'Google-Extended', allow: '/' },
+        { userAgent: 'CCBot', allow: '/' },
+      ],
     })
   ],
   optimizeDeps: {

@@ -11,17 +11,17 @@ const ContactPage = () => {
    return (
       <div className="min-h-screen bg-deep-black pt-32 pb-24 relative overflow-hidden transition-colors duration-500">
          <Helmet>
-            <title>İletişim - ErpolArt</title>
+            <title>İletişim | Proje Teklifi & Destek - ErpolArt</title>
             <meta name="description" content="Projeleriniz için bizimle iletişime geçin. ErpolArt ekibi size yardımcı olmaktan mutluluk duyar." />
             <link rel="canonical" href="https://erpolart.com/contact" />
             <meta property="og:type" content="website" />
             <meta property="og:site_name" content="ErpolArt" />
-            <meta property="og:title" content="İletişim - ErpolArt" />
+            <meta property="og:title" content="İletişim | Proje Teklifi & Destek - ErpolArt" />
             <meta property="og:description" content="Projeleriniz için bizimle iletişime geçin. ErpolArt ekibi size yardımcı olmaktan mutluluk duyar." />
             <meta property="og:url" content="https://erpolart.com/contact" />
             <meta property="og:image" content="https://erpolart.com/og-image.webp" />
             <meta name="twitter:card" content="summary_large_image" />
-            <meta name="twitter:title" content="İletişim - ErpolArt" />
+            <meta name="twitter:title" content="İletişim | Proje Teklifi & Destek - ErpolArt" />
             <meta name="twitter:description" content="Projeleriniz için bizimle iletişime geçin. ErpolArt ekibi size yardımcı olmaktan mutluluk duyar." />
             <meta name="twitter:image" content="https://erpolart.com/og-image.webp" />
          </Helmet>

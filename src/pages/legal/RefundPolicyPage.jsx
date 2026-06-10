@@ -18,7 +18,7 @@ const RefundPolicyPage = () => {
         <title>İptal ve İade Koşulları - ErpolArt</title>
         <meta name="description" content="ErpolArt iptal ve iade koşulları — hizmet iptali ve geri ödeme süreçleri hakkında detaylı bilgi." />
         <link rel="canonical" href="https://erpolart.com/iptal-ve-iade-kosullari" />
-        <meta name="robots" content="noindex, follow" />
+        <meta name="robots" content="index, follow" />
       </Helmet>
       <div className="absolute inset-0 bg-[linear-gradient(var(--grid-color)_1px,transparent_1px),linear-gradient(90deg,var(--grid-color)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none opacity-20" />
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo/5 blur-[150px] rounded-full pointer-events-none" />

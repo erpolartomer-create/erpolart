@@ -18,7 +18,7 @@ const PrivacyPolicyPage = () => {
         <title>Gizlilik Politikası - ErpolArt</title>
         <meta name="description" content="ErpolArt gizlilik politikası — kişisel verilerinizin nasıl toplandığı, kullanıldığı ve korunduğu hakkında bilgi." />
         <link rel="canonical" href="https://erpolart.com/gizlilik-politikasi" />
-        <meta name="robots" content="noindex, follow" />
+        <meta name="robots" content="index, follow" />
       </Helmet>
       <div className="absolute inset-0 bg-[linear-gradient(var(--grid-color)_1px,transparent_1px),linear-gradient(90deg,var(--grid-color)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none opacity-20" />
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet/5 blur-[150px] rounded-full pointer-events-none" />

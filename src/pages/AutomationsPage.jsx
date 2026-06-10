@@ -9,17 +9,17 @@ const AutomationsPage = () => {
   return (
     <div className="pt-24 pb-24 min-h-screen bg-deep-black relative" style={{ overflowX: 'clip' }}>
       <Helmet>
-        <title>AI Otomasyonları - ErpolArt</title>
+        <title>AI Otomasyonları | Yapay Zeka İş Akışı Sistemleri - ErpolArt</title>
         <meta name="description" content="Otonom AI ajanları ve akıllı iş akışı otomasyonları ile işletmenizi 7/24 güçlendirin." />
         <link rel="canonical" href="https://erpolart.com/ai-automations" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="ErpolArt" />
-        <meta property="og:title" content="AI Otomasyonları - ErpolArt" />
+        <meta property="og:title" content="AI Otomasyonları | Yapay Zeka İş Akışı Sistemleri - ErpolArt" />
         <meta property="og:description" content="Otonom AI ajanları ve akıllı iş akışı otomasyonları ile işletmenizi 7/24 güçlendirin." />
         <meta property="og:url" content="https://erpolart.com/ai-automations" />
         <meta property="og:image" content="https://erpolart.com/og-image.webp" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="AI Otomasyonları - ErpolArt" />
+        <meta name="twitter:title" content="AI Otomasyonları | Yapay Zeka İş Akışı Sistemleri - ErpolArt" />
         <meta name="twitter:description" content="Otonom AI ajanları ve akıllı iş akışı otomasyonları ile işletmenizi 7/24 güçlendirin." />
         <meta name="twitter:image" content="https://erpolart.com/og-image.webp" />
         <script type="application/ld+json">{JSON.stringify({
