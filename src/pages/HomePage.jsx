@@ -9,18 +9,18 @@ const HomePage = () => {
   return (
     <div className="w-full flex flex-col">
       <Helmet>
-        <title>ErpolArt - Modern işler için Modern Yazılım</title>
-        <meta name="description" content="ErpolArt ile yenilikçi dijital çözümler, modern web tasarımları ve özel SaaS şablonlarına ulaşın." />
+        <title>ErpolArt | Özel Web Tasarım, SaaS Şablonları & AI Otomasyonu</title>
+        <meta name="description" content="Tek sahibe özel SaaS web şablonları, özel yazılım geliştirme ve AI otomasyon sistemleri. Markanıza özel yüksek performanslı dijital çözümler için ErpolArt." />
         <link rel="canonical" href="https://erpolart.com/" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="ErpolArt" />
-        <meta property="og:title" content="ErpolArt - Modern işler için Modern Yazılım" />
-        <meta property="og:description" content="ErpolArt ile yenilikçi dijital çözümler, modern web tasarımları ve özel SaaS şablonlarına ulaşın." />
+        <meta property="og:title" content="ErpolArt | Özel Web Tasarım, SaaS Şablonları & AI Otomasyonu" />
+        <meta property="og:description" content="Tek sahibe özel SaaS web şablonları, özel yazılım geliştirme ve AI otomasyon sistemleri. Markanıza özel yüksek performanslı dijital çözümler için ErpolArt." />
         <meta property="og:url" content="https://erpolart.com/" />
         <meta property="og:image" content="https://erpolart.com/og-image.webp" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="ErpolArt - Modern işler için Modern Yazılım" />
-        <meta name="twitter:description" content="ErpolArt ile yenilikçi dijital çözümler, modern web tasarımları ve özel SaaS şablonlarına ulaşın." />
+        <meta name="twitter:title" content="ErpolArt | Özel Web Tasarım, SaaS Şablonları & AI Otomasyonu" />
+        <meta name="twitter:description" content="Tek sahibe özel SaaS web şablonları, özel yazılım geliştirme ve AI otomasyon sistemleri. Markanıza özel yüksek performanslı dijital çözümler için ErpolArt." />
         <meta name="twitter:image" content="https://erpolart.com/og-image.webp" />
       </Helmet>
       <HeroSection />
