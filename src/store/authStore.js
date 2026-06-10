@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import i18n from '../i18n';
 import { supabase } from '../lib/supabase';
 
 const translateAuthError = (message) => {
@@ -46,8 +47,8 @@ const useAuthStore = create((set) => ({
       email,
       password,
       options: {
-        data: { full_name: name },
-        emailRedirectTo: `${window.location.origin}/auth?verified=true`,
+        data: { full_name: name, lang: i18n.language },
+        emailRedirectTo: `${window.location.origin}/auth?verified=true&lang=${i18n.language}`,
       }
     });
     if (error) {

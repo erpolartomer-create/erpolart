@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, ArrowRight, AlertCircle, CheckCircle2, ShieldCheck, Sparkles } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
+import i18n from '../i18n';
 import { supabase } from '../lib/supabase';
 
 const ForgotPasswordPage = () => {
@@ -18,7 +19,7 @@ const ForgotPasswordPage = () => {
 
     try {
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/update-password`,
+        redirectTo: `${window.location.origin}/update-password?lang=${i18n.language}`,
       });
 
       if (resetError) throw resetError;

@@ -16,7 +16,7 @@ supabase secrets set IYZICO_API_KEY=gerçek_api_key_buraya
 supabase secrets set IYZICO_SECRET_KEY=gerçek_secret_key_buraya
 supabase secrets set IYZICO_BASE_URL=https://api.iyzipay.com
 supabase secrets set FRONTEND_URL=https://erpolart.com
-supabase secrets set RESEND_API_KEY=re_Qmxiewj5_67xeeecMeKHijnYszf4p15oT
+supabase secrets set RESEND_API_KEY=resend_api_key_buraya   # ASLA gerçek anahtarı bu dosyaya yazma — Resend panelinden al, sadece secret olarak set et
 ```
 
 > Sandbox test için:  IYZICO_BASE_URL=https://sandbox-api.iyzipay.com
