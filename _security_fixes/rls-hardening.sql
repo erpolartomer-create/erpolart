@@ -39,7 +39,8 @@ create policy "templates_public_read" on public.templates
 drop policy if exists "orders_owner_read" on public.orders;
 create policy "orders_owner_read" on public.orders
   for select to authenticated
-  using (user_id = auth.uid() or lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')));
+  -- orders.user_id kolonu text tipinde → auth.uid() (uuid) metne çevrilir
+  using (user_id = auth.uid()::text or lower(email) = lower(coalesce(auth.jwt() ->> 'email', '')));
 
 -- leads / proposals / chat_messages: anon ve authenticated için HİÇBİR politika yok → tam kapalı.
 -- (Yazma/okuma yalnızca backend service_role ile.)

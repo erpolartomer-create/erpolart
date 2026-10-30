@@ -107,10 +107,12 @@ app.get('/api/health', (req, res) => {
 
 // Error Handler Middleware
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
-  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  // body-parser gibi ara katmanların kendi durum kodu (ör. bozuk JSON → 400) korunur
+  const errStatus = Number(err?.status || err?.statusCode);
+  const statusCode = errStatus >= 400 && errStatus < 600 ? errStatus : (res.statusCode === 200 ? 500 : res.statusCode);
   console.error('[UNHANDLED]', err?.message, process.env.NODE_ENV === 'production' ? '' : err?.stack);
   // Hata detayı/stack istemciye sızdırılmaz
-  res.status(statusCode).json({ message: statusCode === 500 ? 'Internal server error' : (err?.message || 'Request failed') });
+  res.status(statusCode).json({ message: statusCode >= 500 ? 'Internal server error' : 'Bad request' });
 });
 
 const PORT = process.env.PORT || 5001;
