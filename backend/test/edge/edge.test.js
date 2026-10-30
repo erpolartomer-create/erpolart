@@ -148,3 +148,22 @@ for (const [name, record] of [
     });
   });
 }
+
+// ── send-lead-notification (canlıda kimliksiz bulundu; sertleştirildi) ──
+describe('send-lead-notification', () => {
+  let handler;
+  const record = { full_name: '<a href="https://phish.example">Acil: hesabınızı doğrulayın</a>', email: 'x@x.com"><script>', selected_plan: '<img src=x>' };
+  before(async () => { handler = await load(process.env.LEAD_FN || 'send-lead-notification', { SUPABASE_SERVICE_ROLE_KEY: SERVICE_KEY, RESEND_API_KEY: 're_test' }); });
+  test('public anahtar / kimliksiz çağrı mail gönderemez', async () => {
+    assert.equal((await handler(req({ record }))).status, 401);
+    assert.equal((await handler(req({ record }, { authorization: 'Bearer sb_publishable_xxx' }))).status, 401);
+    assert.equal(sent.length, 0);
+  });
+  test('webhook (service role) çağrısında alanlar HTML-kaçışlı', async () => {
+    const r = await handler(req({ record }, { authorization: `Bearer ${SERVICE_KEY}` }));
+    assert.equal(r.status, 200);
+    assert.equal(sent.length, 1);
+    assert.ok(!sent[0].html.includes('<a href="https://phish.example">'));
+    assert.ok(!sent[0].html.includes('<script>') && !sent[0].html.includes('<img src=x>'));
+  });
+});

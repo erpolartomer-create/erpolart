@@ -4,6 +4,7 @@ const STUBS = {
   'https://deno.land/std@0.168.0/http/server.ts': './stubs/serve.mjs',
   'https://esm.sh/@supabase/supabase-js@2': './stubs/supabase.mjs',
   'https://esm.sh/standardwebhooks@1.0.0': './stubs/standardwebhooks.mjs',
+  'https://esm.sh/resend@2.0.0': './stubs/resend.mjs',
 };
 
 export async function resolve(specifier, context, next) {
