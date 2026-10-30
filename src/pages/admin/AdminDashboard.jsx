@@ -46,7 +46,8 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     // Socket.io Bağlantısı
-    const newSocket = io('http://localhost:5002'); // Backend URL (.env PORT=5002)
+    const socketUrl = window.location.hostname === 'localhost' ? 'http://localhost:5002' : import.meta.env.VITE_API_URL;
+    const newSocket = io(socketUrl);
     setSocket(newSocket);
 
     newSocket.on('new_lead_alert', (lead) => {

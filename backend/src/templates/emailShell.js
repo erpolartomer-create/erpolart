@@ -12,6 +12,14 @@ const FONT = "'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 const MONO = "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace";
 const SITE = 'https://erpolart.com';
 
+// Kullanıcıdan gelen her metin e-postaya gömülmeden önce buradan geçer (HTML enjeksiyonu önlemi).
+export const escapeHtml = (v) => String(v ?? '')
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#39;');
+
 export const PALETTE = C;
 export const EMAIL_FONT = FONT;
 export const EMAIL_MONO = MONO;

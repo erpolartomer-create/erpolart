@@ -49,10 +49,7 @@ API.interceptors.request.use(async (req) => {
   return req;
 });
 
-// Auth Endpoints
-export const login = (formData) => API.post('/auth/login', formData);
-export const adminLogin = (formData) => API.post('/auth/admin-login', formData); // NEW: Admin Login
-export const register = (formData) => API.post('/auth/register', formData);
+// Auth Endpoints (giriş/kayıt doğrudan Supabase Auth ile yapılır)
 export const getMe = () => API.get('/auth/me');
 export const getAdminMe = () => API.get('/auth/admin-me');
 
@@ -63,13 +60,7 @@ export const toggleFavorite = (templateId) => API.post(`/auth/favorites/${templa
 // Template & Site Endpoints
 export const getTemplates = () => API.get('/templates');
 export const getTemplateById = (templateId) => API.get(`/templates/${templateId}`);
-export const getMySites = () => API.get('/sites');
-export const createSite = (siteData) => API.post('/sites', siteData);
 export const createOrder = (orderData) => API.post('/orders', orderData);
-
-// Content Management
-export const getContent = (siteId) => API.get(`/content/${siteId}`);
-export const updateContent = (siteId, contentData) => API.put(`/content/${siteId}`, contentData);
 
 // Order Configuration
 export const getOrderConfig = (orderId) => API.get(`/templates/order-config/${orderId}`);

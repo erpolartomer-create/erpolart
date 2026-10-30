@@ -493,7 +493,7 @@ const OrderSuccessPage = () => {
                         onClick={() => document.getElementById('logo-upload').click()}
                         className={`w-full bg-deep-black/50 border-2 border-dashed rounded-2xl p-4 flex items-center gap-4 cursor-pointer transition-all hover:bg-white/5 ${isLocked ? 'opacity-20 cursor-not-allowed border-white/5 grayscale' : 'border-white/10 hover:border-indigo'}`}
                       >
-                        <input id="logo-upload" type="file" hidden onChange={handleFileSelect} disabled={isLocked} accept=".png,.svg" />
+                        <input id="logo-upload" type="file" hidden onChange={handleFileSelect} disabled={isLocked} accept=".png,.jpg,.jpeg,.webp" />
                         <div className="w-12 h-12 rounded-xl bg-surface border border-white/5 flex items-center justify-center shrink-0 overflow-hidden relative group/logo">
                           {logo ? (
                             <>

@@ -1,11 +1,34 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0';
 
 // Only allow redirects to erpolart.com — prevents phishing via direct function calls
 const ALLOWED_REDIRECT_ORIGIN = 'https://erpolart.com';
 
+// GÜVENLİK: Bu fonksiyon Supabase Auth "Send Email" hook'udur. verify_jwt=false olduğu için
+// imza doğrulaması ŞART — aksi halde herkes hello@erpolart.com adına mail gönderebilir.
+// Secret: Dashboard → Authentication → Hooks → Send Email → "Secret" (v1,whsec_...)
+//   supabase secrets set SEND_EMAIL_HOOK_SECRET='v1,whsec_...'
+const HOOK_SECRET = (Deno.env.get('SEND_EMAIL_HOOK_SECRET') || '').replace(/^v1,whsec_/, '');
+
 serve(async (req) => {
   try {
-    const { user, email_data } = await req.json();
+    if (!HOOK_SECRET) {
+      console.error('SEND_EMAIL_HOOK_SECRET tanımlı değil — istek reddedildi');
+      return new Response(JSON.stringify({ error: 'Hook secret not configured' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+    const payload = await req.text();
+    const headers = Object.fromEntries(req.headers);
+    let verified: { user: any; email_data: any };
+    try {
+      verified = new Webhook(HOOK_SECRET).verify(payload, headers) as { user: any; email_data: any };
+    } catch (e) {
+      console.error('Webhook signature invalid:', (e as Error).message);
+      return new Response(JSON.stringify({ error: 'Invalid signature' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+    }
+    const { user, email_data } = verified;
+    if (!user?.email || !email_data?.token_hash) {
+      return new Response(JSON.stringify({ error: 'Bad payload' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    }
     const { token_hash, email_action_type } = email_data;
     let redirect_to: string = email_data.redirect_to || ALLOWED_REDIRECT_ORIGIN;
 

@@ -36,11 +36,12 @@ const binLimiter = rateLimit({
 // Sipariş oluşturma — üyelik zorunlu (giriş yapmış müşteri). user_id req.user'dan gelir.
 router.post('/orders', payLimiter, customerProtect, createOrder);
 
-// PayTR iFrame token (public — order ID ile çağrılır)
-router.post('/payment/paytr-token', payLimiter, createPayTRToken);
+// PayTR iFrame token — giriş zorunlu; sipariş sahipliği controller'da doğrulanır
+// (sipariş ID bilen herkesin müşteri e-postasını/token'ı almasını engeller)
+router.post('/payment/paytr-token', payLimiter, customerProtect, createPayTRToken);
 
-// PayTR Direkt API token (public — form doğrudan paytr.com/odeme'ye POST atar)
-router.post('/payment/paytr-direct-token', payLimiter, createPayTRDirectToken);
+// PayTR Direkt API token — giriş zorunlu; form doğrudan paytr.com/odeme'ye POST atar
+router.post('/payment/paytr-direct-token', payLimiter, customerProtect, createPayTRDirectToken);
 
 // PayTR BIN sorgulama (public — kart markası/banka tespiti, taksit için)
 router.post('/payment/bin-detail', binLimiter, binDetail);

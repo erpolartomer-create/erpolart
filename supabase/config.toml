@@ -19,22 +19,6 @@ enabled = true
 verify_jwt = false
 entrypoint = "./functions/send-proposal-email/index.ts"
 
-[functions.create-order]
-enabled = true
-verify_jwt = false
-entrypoint = "./functions/create-order/index.ts"
 
-[functions.payment-create]
-enabled = true
-verify_jwt = false
-entrypoint = "./functions/payment-create/index.ts"
 
-[functions.payment-callback]
-enabled = true
-verify_jwt = false
-entrypoint = "./functions/payment-callback/index.ts"
 
-[functions.create-pricing-order]
-enabled = true
-verify_jwt = false
-entrypoint = "./functions/create-pricing-order/index.ts"

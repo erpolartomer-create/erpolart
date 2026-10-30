@@ -1,3 +1,4 @@
+import { escapeHtml as esc } from './emailShell.js';
 // ── Çok dilli metinler (TR / EN / DE) ──
 const STRINGS = {
   tr: {
@@ -164,7 +165,7 @@ export const getOrderConfirmationTemplate = (data) => {
                 <tr>
                   <td style="padding:20px 22px;">
                     ${label(T.productEyebrow, C.cyan)}
-                    <div style="font:italic 700 18px ${FONT};color:${C.text};margin:0 0 16px;">${productName}</div>
+                    <div style="font:italic 700 18px ${FONT};color:${C.text};margin:0 0 16px;">${esc(productName)}</div>
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                       <tr>
                         <td style="vertical-align:bottom;">
@@ -221,11 +222,11 @@ export const getOrderConfirmationTemplate = (data) => {
             <td style="padding:22px 32px 4px;">
               ${label(T.buyerTitle)}
               ${grid(
-                row(T.bName, customerName || '-') +
-                row(T.bEmail, customerEmail || '-') +
-                row(T.bPhone, customerPhone || '-') +
-                row(T.bAddress, customerAddress || '-') +
-                row(T.bTax, customerTaxId || '-')
+                row(T.bName, esc(customerName || '-')) +
+                row(T.bEmail, esc(customerEmail || '-')) +
+                row(T.bPhone, esc(customerPhone || '-')) +
+                row(T.bAddress, esc(customerAddress || '-')) +
+                row(T.bTax, esc(customerTaxId || '-'))
               )}
             </td>
           </tr>

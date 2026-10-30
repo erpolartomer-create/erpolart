@@ -23,10 +23,10 @@ serve(async (req) => {
     const token = authHeader.split(' ')[1]
     const sc = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
     const { data: { user }, error: authErr } = await sc.auth.getUser(token)
+    // GÜVENLİK: user_metadata kullanıcı tarafından yazılabilir → admin kontrolünde kullanılmaz.
     const isAdmin = !authErr && user && (
       user.email === ADMIN_EMAIL ||
-      user.app_metadata?.role === 'admin' ||
-      user.user_metadata?.role === 'admin'
+      user.app_metadata?.role === 'admin'
     )
     if (!isAdmin) {
       return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: corsHeaders })
@@ -38,17 +38,24 @@ serve(async (req) => {
   try {
     const { toEmail, toName, proposalUrl, projectName, projectType } = await req.json()
 
-    if (!toEmail || !proposalUrl) {
+    const esc = (v: unknown) => String(v ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+    const EMAIL_RX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+    // Teklif bağlantısı yalnızca kendi sitemizin /proposal/<uuid> yolu olabilir
+    const PROPOSAL_URL_RX = /^https:\/\/erpolart\.com\/proposal\/[0-9a-f-]{36}$/i
+
+    if (!toEmail || !proposalUrl || !EMAIL_RX.test(String(toEmail)) || !PROPOSAL_URL_RX.test(String(proposalUrl))) {
       return new Response(
-        JSON.stringify({ error: 'toEmail and proposalUrl are required' }),
+        JSON.stringify({ error: 'Valid toEmail and an erpolart.com proposalUrl are required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
     const accentColor = projectType === 'automation' ? '#34d399' : '#5c73ff'
     const typeLabel = projectType === 'automation' ? 'AI OTOMASYon' : 'SaaS'
-    const displayName = toName || 'Değerli Müşterimiz'
-    const displayProject = projectName || `${typeLabel} Projesi`
+    const displayName = esc(String(toName || 'Değerli Müşterimiz').slice(0, 120))
+    const displayProject = esc(String(projectName || `${typeLabel} Projesi`).slice(0, 160))
 
     const html = `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #000; color: #fff; padding: 60px 40px; border-radius: 30px; max-width: 600px; margin: auto; border: 1px solid #222;">

@@ -6,9 +6,16 @@ import { supabase } from '../lib/supabase';
  * @param {string} path - The path inside the bucket (e.g., 'order-123/logo.png')
  * @param {File|Blob|string} file - The file body (can be a base64 string or File object)
  */
+const ALLOWED_MIME = ['image/png', 'image/jpeg', 'image/webp'];
+const MAX_BYTES = 2 * 1024 * 1024; // 2MB
+
 export const uploadToStorage = async (bucket, path, fileBody) => {
   try {
     let body = fileBody;
+    // Yol yalnızca güvenli karakterler (../ gibi gezinme yok)
+    if (!/^[a-zA-Z0-9_./-]+$/.test(path) || path.includes('..')) {
+      throw new Error('Invalid storage path');
+    }
 
     // Handle Base64 strings (data:image/png;base64,...)
     if (typeof fileBody === 'string' && fileBody.includes('base64,')) {
@@ -22,10 +29,16 @@ export const uploadToStorage = async (bucket, path, fileBody) => {
       body = new Blob([byteArray], { type: fileBody.split(';')[0].split(':')[1] });
     }
 
+    const mime = body instanceof Blob ? body.type : '';
+    if (!ALLOWED_MIME.includes(mime)) throw new Error('Unsupported file type');
+    if (body instanceof Blob && body.size > MAX_BYTES) throw new Error('File too large');
+
     const { data, error } = await supabase.storage
       .from(bucket)
       .upload(path, body, {
-        upsert: true,
+        // upsert kapalı: üzerine yazma Storage'da SELECT/UPDATE politikası gerektirir;
+        // dosya adı zaman damgalı olduğu için çakışma olmaz.
+        upsert: false,
         contentType: body instanceof Blob ? body.type : undefined
       });
 

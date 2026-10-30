@@ -5,13 +5,13 @@ import dotenv from 'dotenv';
 
 import authRoutes from './src/routes/authRoutes.js';
 import templateRoutes from './src/routes/templateRoutes.js';
-import siteRoutes from './src/routes/siteRoutes.js';
-import contentRoutes from './src/routes/contentRoutes.js';
 import messageRoutes from './src/routes/messageRoutes.js';
 import paymentRoutes from './src/routes/paymentRoutes.js';
 import aiRoutes from './src/routes/aiRoutes.js';
 import dbRoutes from './src/routes/dbRoutes.js';
 import { supabase } from './src/config/supabase.js';
+import { isAdminUser } from './src/middleware/authMiddleware.js';
+import { registerSocketHandlers } from './src/socket/registerSocketHandlers.js';
 
 import { Server } from 'socket.io';
 import { createServer } from 'http';
@@ -70,79 +70,15 @@ const io = new Server(httpServer, {
 // Socket.io instance'ını app'e bağla (controller'lardan erişim için)
 app.set('io', io);
 
-io.on('connection', (socket) => {
-  console.log('New connection:', socket.id);
-
-  // Client or Admin joins a specific session room
-  socket.on('join_session', (sessionId) => {
-    console.log(`Socket ${socket.id} joining session: ${sessionId}`);
-    socket.join(sessionId);
-  });
-
-  // Admin joins the global admin room (requires valid admin token)
-  socket.on('admin_join', async (token) => {
-    if (!token) return;
-    try {
-      const { data: { user }, error } = await supabase.auth.getUser(token);
-      const ADMIN_EMAIL = 'hello@erpolart.com';
-      // GÜVENLİK: user_metadata kullanıcı tarafından yazılabilir → admin kontrolünde kullanma.
-      const isAdmin = !error && user && (
-        user.email === ADMIN_EMAIL ||
-        user.app_metadata?.role === 'admin'
-      );
-      if (!isAdmin) return;
-      console.log(`Admin ${socket.id} joined admin_room`);
-      socket.join('admin_room');
-    } catch {
-      // ignore invalid token
-    }
-  });
-
-  // Admin sends a message to a client
-  socket.on('admin_send_message', ({ sessionId, content }) => {
-    if (!socket.rooms.has('admin_room')) return;
-    io.to(sessionId).emit('message', {
-      role: 'admin',
-      content,
-      timestamp: new Date().toISOString()
-    });
-    io.to('admin_room').emit('admin_message_sent', { sessionId, content });
-  });
-
-  // Admin mutes the bot for a session
-  socket.on('mute_bot', (sessionId) => {
-    if (!socket.rooms.has('admin_room')) return;
-    mutedSessions.add(sessionId);
-    io.to(sessionId).emit('bot_status_update', { sessionId, isMuted: true });
-    io.to('admin_room').emit('bot_status_update', { sessionId, isMuted: true });
-  });
-
-  // Admin unmutes the bot for a session
-  socket.on('unmute_bot', (sessionId) => {
-    if (!socket.rooms.has('admin_room')) return;
-    mutedSessions.delete(sessionId);
-    io.to(sessionId).emit('bot_status_update', { sessionId, isMuted: false });
-    io.to('admin_room').emit('bot_status_update', { sessionId, isMuted: false });
-  });
-
-  // Admin checks mute status of a session
-  socket.on('check_mute_status', (sessionId) => {
-    const muted = mutedSessions.has(sessionId);
-    socket.emit('bot_status_update', { sessionId, isMuted: muted });
-  });
-
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
-  });
-});
+registerSocketHandlers(io, { supabase, mutedSessions, isAdminUser });
 
 // Middleware
 app.use(cors({
   origin: ALLOWED_ORIGINS,
   credentials: true,
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '200kb' }));
+app.use(express.urlencoded({ extended: false, limit: '50kb' }));
 
 // Global Logger
 app.use((req, res, next) => {
@@ -155,8 +91,6 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/templates', templateRoutes);
-app.use('/api/sites', siteRoutes);
-app.use('/api/content', contentRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api', paymentRoutes);
 app.use('/api/ai', aiRoutes);
@@ -172,12 +106,11 @@ app.get('/api/health', (req, res) => {
 });
 
 // Error Handler Middleware
-app.use((err, req, res, next) => {
+app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-  res.status(statusCode).json({
-    message: err.message,
-    stack: process.env.NODE_ENV === 'production' ? null : err.stack,
-  });
+  console.error('[UNHANDLED]', err?.message, process.env.NODE_ENV === 'production' ? '' : err?.stack);
+  // Hata detayı/stack istemciye sızdırılmaz
+  res.status(statusCode).json({ message: statusCode === 500 ? 'Internal server error' : (err?.message || 'Request failed') });
 });
 
 const PORT = process.env.PORT || 5001;

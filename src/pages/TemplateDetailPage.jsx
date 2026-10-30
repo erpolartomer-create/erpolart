@@ -187,6 +187,8 @@ const TemplateDetailPage = () => {
   if (!template) return <div className="min-h-screen bg-deep-black flex items-center justify-center text-white font-black uppercase tracking-widest">{t('templateDetail.structureNotFound')}</div>;
 
   const isSold = template.is_sold || template.status === 'sold';
+  // Yalnızca http(s) demo bağlantıları render edilir (javascript:/data: engeli)
+  const safeDemoUrl = /^https?:\/\//i.test(String(template.demo_url || '')) ? template.demo_url : undefined;
   const seoDescription = getLocalizedValue(template.short_pitch, 'description');
   const seoImage = template.image_url || template.preview_image || 'https://erpolart.com/og-image.webp';
   const seoTitle = `${template.name} - Premium Template | ErpolArt`;
@@ -448,7 +450,7 @@ const TemplateDetailPage = () => {
 
                   {template.demo_url && (
                     <motion.a
-                      href={template.demo_url}
+                      href={safeDemoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       animate={{
@@ -527,7 +529,7 @@ const TemplateDetailPage = () => {
             {template.demo_url && (
               <motion.a
                 whileTap={{ scale: 0.95 }}
-                href={template.demo_url}
+                href={safeDemoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 animate={{

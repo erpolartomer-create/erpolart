@@ -1,4 +1,4 @@
-import { renderBrandEmail, detailCard, kvRow, PALETTE as C, EMAIL_FONT as FONT, EMAIL_MONO as MONO } from './emailShell.js';
+import { renderBrandEmail, detailCard, kvRow, escapeHtml as esc, PALETTE as C, EMAIL_FONT as FONT, EMAIL_MONO as MONO } from './emailShell.js';
 
 const SITE = 'https://erpolart.com';
 const pick = (map, lang) => map[String(lang || 'tr').toLowerCase().slice(0, 2)] || map.tr;
@@ -6,6 +6,7 @@ const mono = (v) => `<span style="font-family:${MONO};color:${C.text};">${v}</sp
 
 /* ───────────────── Ödeme Başarısız (müşteri) ───────────────── */
 export const paymentFailedEmail = ({ lang, orderId, productName, amount, currency = '$', retryUrl }) => {
+  productName = esc(productName);
   const T = pick({
     tr: { subject: 'Ödemen tamamlanamadı — ErpolArt', eyebrow: 'Ödeme Başarısız', title: 'Ödemen Tamamlanamadı.',
       subtitle: 'Merak etme — karttan tahsilat yapılmadı.', cta: 'Tekrar Dene',
@@ -34,6 +35,7 @@ export const paymentFailedEmail = ({ lang, orderId, productName, amount, currenc
 
 /* ───────────────── Durum Güncelleme (müşteri) ───────────────── */
 export const statusUpdateEmail = ({ lang, status, orderId, productName }) => {
+  productName = esc(productName);
   const byStatus = {
     development: {
       tr: { eyebrow: 'Kurulum Aşamasında', title: 'Geliştirme Başladı.', subtitle: 'Projen artık ekibimizin elinde.',
@@ -82,7 +84,8 @@ export const statusUpdateEmail = ({ lang, status, orderId, productName }) => {
 };
 
 /* ───────────────── İletişim Otomatik Yanıt (müşteri) ───────────────── */
-export const contactReplyEmail = ({ lang, name }) => {
+export const contactReplyEmail = ({ lang, name: rawName }) => {
+  const name = esc(String(rawName || '').slice(0, 80));
   const T = pick({
     tr: { subject: 'Mesajını aldık — ErpolArt', eyebrow: 'Teşekkürler', title: 'Mesajını Aldık.', subtitle: 'En kısa sürede dönüş yapacağız.', cta: 'Şablonları Keşfet',
       body: `Merhaba <strong style="color:${C.text};">${name || ''}</strong>, talebin bize ulaştı. Ekibimiz genellikle <strong style="color:${C.text};">24 saat</strong> içinde sana dönüş yapar. Bu süreçte premium şablonlarımıza göz atabilirsin.` },
@@ -109,12 +112,12 @@ export const adminNewOrderEmail = ({ orderId, productName, amount, currency = '$
     lang: 'tr', accent: C.green, accent2: C.cyan, eyebrow: 'Yeni Ödeme', title: 'Yeni Sipariş Ödendi.',
     subtitle: 'Kasaya yeni bir ödeme düştü.', preheader: `Yeni ödeme: ${amount} ${currency}`,
     bodyHtml: detailCard(
-      kvRow('Ürün / Hizmet', productName || '-') +
-      kvRow('Tutar', `${amount} ${currency}`) +
-      kvRow('Sipariş No', mono(orderId || '-')) +
-      kvRow('Müşteri', customerName || '-') +
-      kvRow('E-posta', customerEmail || '-') +
-      kvRow('Telefon', customerPhone || '-'),
+      kvRow('Ürün / Hizmet', esc(productName || '-')) +
+      kvRow('Tutar', esc(`${amount} ${currency}`)) +
+      kvRow('Sipariş No', mono(esc(orderId || '-'))) +
+      kvRow('Müşteri', esc(customerName || '-')) +
+      kvRow('E-posta', esc(customerEmail || '-')) +
+      kvRow('Telefon', esc(customerPhone || '-')),
       C.green
     ),
     ctaText: 'Admin Panel', ctaUrl: `${SITE}/admin/orders`,
@@ -123,16 +126,16 @@ export const adminNewOrderEmail = ({ orderId, productName, amount, currency = '$
 
 /* ───────────────── Admin: Yeni İletişim Talebi (sana, TR) ───────────────── */
 export const adminNewLeadEmail = ({ name, email, phone, service, message }) => ({
-  subject: `📬 Yeni İletişim Talebi — ${name || 'Ziyaretçi'}`,
+  subject: `📬 Yeni İletişim Talebi — ${String(name || 'Ziyaretçi').slice(0, 80)}`,
   html: renderBrandEmail({
     lang: 'tr', accent: C.indigo, eyebrow: 'Yeni Talep', title: 'Yeni İletişim Talebi.',
-    subtitle: 'Bir ziyaretçi form gönderdi.', preheader: `Yeni talep: ${name || ''}`,
+    subtitle: 'Bir ziyaretçi form gönderdi.', preheader: esc(`Yeni talep: ${name || ''}`),
     bodyHtml: detailCard(
-      kvRow('Ad', name || '-') +
-      kvRow('E-posta', email || '-') +
-      kvRow('Telefon', phone || '-') +
-      kvRow('Hizmet', service || '-') +
-      kvRow('Mesaj', (message || '-').replace(/</g, '&lt;'))
+      kvRow('Ad', esc(name || '-')) +
+      kvRow('E-posta', esc(email || '-')) +
+      kvRow('Telefon', esc(phone || '-')) +
+      kvRow('Hizmet', esc(service || '-')) +
+      kvRow('Mesaj', esc(String(message || '-').slice(0, 4000)).replace(/\n/g, '<br>'))
     ),
     ctaText: 'Talepleri Gör', ctaUrl: `${SITE}/admin`,
   }),

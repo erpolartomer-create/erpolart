@@ -16,7 +16,7 @@ const UserDropdown = ({ user, isUserMenuOpen, setIsUserMenuOpen, userMenuRef, ha
     >
       <div className="w-10 h-10 rounded-full bg-indigo/20 border border-indigo/30 flex items-center justify-center text-indigo font-black text-[11px] shadow-sm relative overflow-hidden transition-transform group-hover:scale-105">
         <img
-          src={user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}&backgroundColor=b6e3f4,c0aede,d1d4f9`}
+          src={user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}&backgroundColor=b6e3f4,c0aede,d1d4f9`}
           alt="User Avatar"
           className="w-full h-full object-cover relative z-10"
           onError={(e) => {

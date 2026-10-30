@@ -7,6 +7,14 @@ import { computeServiceTotal, SERVICE_SOURCES } from '../config/pricing.js';
 
 const ADMIN_EMAIL = process.env.ADMIN_NOTIFY_EMAIL || 'hello@erpolart.com';
 const SITE_URL = 'https://erpolart.com';
+// PayTR dönüş adresleri SUNUCUDA sabittir — istemciden alınan merchantOkUrl/merchantFailUrl
+// yok sayılır (PayTR üzerinden açık yönlendirme engeli).
+const BACKEND_URL = (process.env.BACKEND_URL || 'https://erpolart-production.up.railway.app').replace(/\/$/, '');
+const okUrlFor = (orderId) => `${BACKEND_URL}/api/payment/success/${orderId}`;
+const FAIL_URL = `${BACKEND_URL}/api/payment/fail`;
+
+// Siparişin istek sahibine ait olduğunu doğrula (guest sipariş = user_id null → yalnızca ID bilen).
+const ownsOrder = (order, user) => !order.user_id || (user && order.user_id === user.id);
 
 const isUUID = (str) => {
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -167,10 +175,10 @@ export const createOrder = async (req, res) => {
 // @route   POST /api/payment/paytr-token
 export const createPayTRToken = async (req, res) => {
   try {
-    const { orderId, merchantOkUrl, merchantFailUrl, userPhone, userName, currency: reqCurrency } = req.body;
+    const { orderId, userPhone, userName, currency: reqCurrency } = req.body;
 
-    if (!orderId || !merchantOkUrl || !merchantFailUrl) {
-      return res.status(400).json({ error: 'orderId, merchantOkUrl ve merchantFailUrl zorunlu.' });
+    if (!orderId || !isUUID(String(orderId))) {
+      return res.status(400).json({ error: 'Geçersiz sipariş.' });
     }
 
     const { data: order, error } = await supabase
@@ -182,6 +190,14 @@ export const createPayTRToken = async (req, res) => {
     if (error || !order) {
       return res.status(404).json({ error: 'Sipariş bulunamadı.' });
     }
+    if (!ownsOrder(order, req.user)) {
+      return res.status(403).json({ error: 'Bu sipariş size ait değil.' });
+    }
+    if (order.status === 'paid') {
+      return res.status(400).json({ error: 'Bu sipariş zaten ödenmiş.' });
+    }
+    const merchantOkUrl = okUrlFor(order.id);
+    const merchantFailUrl = FAIL_URL;
 
     const merchant_id   = process.env.PAYTR_MERCHANT_ID;
     const merchant_key  = process.env.PAYTR_MERCHANT_KEY;
@@ -218,8 +234,9 @@ export const createPayTRToken = async (req, res) => {
     const merchant_oid   = order.id.replace(/-/g, ''); // 32-char UUID, no dashes
     const payment_amount = Math.round(convertedAmount * 100);
 
-    // Gerçek IPv4 çıkar (Railway/Cloudflare proxy arkasında)
-    const rawIp   = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || '';
+    // Gerçek istemci IP'si: `trust proxy` ayarlı olduğu için req.ip güvenilir;
+    // x-forwarded-for'u doğrudan okumak istemcinin IP sahtelemesine izin verir.
+    const rawIp   = req.ip || '';
     const user_ip = rawIp.replace('::ffff:', '').replace('::1', '') || '127.0.0.1';
 
     // PayTR telefon formatı: 05XXXXXXXXX (form'dan direkt alınır — orders tablosunda depolanmıyor)
@@ -297,7 +314,7 @@ export const createPayTRToken = async (req, res) => {
 
   } catch (error) {
     console.error('[PAYTR TOKEN EXCEPTION]', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Ödeme başlatılamadı.' });
   }
 };
 
@@ -313,13 +330,20 @@ export const paytrCallback = async (req, res) => {
     const merchant_key  = process.env.PAYTR_MERCHANT_KEY;
     const merchant_salt = process.env.PAYTR_MERCHANT_SALT;
 
-    // Hash doğrulama
+    if (!merchant_key || !merchant_salt || typeof merchant_oid !== 'string' || typeof hash !== 'string' ||
+        !/^[0-9a-f]{32}[0-9a-z]*$/i.test(merchant_oid)) {
+      console.error('[PAYTR CALLBACK] Eksik/bozuk parametre');
+      return res.send('PAYTR notification failed: bad request');
+    }
+
+    // Hash doğrulama (sabit zamanlı karşılaştırma)
     const expected = crypto
       .createHmac('sha256', merchant_key)
       .update(merchant_oid + merchant_salt + status + total_amount)
       .digest('base64');
+    const a = Buffer.from(expected), b = Buffer.from(hash);
 
-    if (expected !== hash) {
+    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
       console.error('[PAYTR CALLBACK] Bad hash — possible spoofing attempt');
       return res.send('PAYTR notification failed: bad hash');
     }
@@ -569,7 +593,7 @@ export const getInstallmentRates = async (req, res) => {
     res.json(data);
   } catch (error) {
     console.error('[INSTALLMENT RATES EXCEPTION]', error);
-    res.json({ status: 'error', err_msg: error.message, maxInstallment: 0, ratesByBrand: {} });
+    res.json({ status: 'error', err_msg: 'Taksit oranları alınamadı.', maxInstallment: 0, ratesByBrand: {} });
   }
 };
 
@@ -619,7 +643,7 @@ export const binDetail = async (req, res) => {
     });
   } catch (error) {
     console.error('[BIN DETAIL ERROR]', error);
-    res.status(500).json({ status: 'error', err_msg: error.message });
+    res.status(500).json({ status: 'error', err_msg: 'BIN sorgusu başarısız.' });
   }
 };
 
@@ -633,6 +657,7 @@ const FRONTEND = process.env.FRONTEND_URL || 'https://erpolart.com';
 // @route   GET|POST /api/payment/success/:orderId
 export const paymentSuccessRedirect = (req, res) => {
   const { orderId } = req.params;
+  if (!isUUID(String(orderId || ''))) return res.redirect(302, `${FRONTEND}/order-cancel`);
   // Uyarı: bu noktada ödeme henüz onaylanmamış olabilir — kesin durum callback'ten gelir.
   res.redirect(302, `${FRONTEND}/order-success/${orderId}`);
 };
@@ -650,8 +675,6 @@ export const createPayTRDirectToken = async (req, res) => {
   try {
     const {
       orderId,
-      merchantOkUrl,
-      merchantFailUrl,
       userPhone,
       userName,
       installment_count = '0',
@@ -659,8 +682,8 @@ export const createPayTRDirectToken = async (req, res) => {
       cardType: reqCardType,
     } = req.body;
 
-    if (!orderId || !merchantOkUrl || !merchantFailUrl) {
-      return res.status(400).json({ error: 'orderId, merchantOkUrl ve merchantFailUrl zorunlu.' });
+    if (!orderId || !isUUID(String(orderId))) {
+      return res.status(400).json({ error: 'Geçersiz sipariş.' });
     }
 
     const { data: order, error } = await supabase
@@ -672,6 +695,14 @@ export const createPayTRDirectToken = async (req, res) => {
     if (error || !order) {
       return res.status(404).json({ error: 'Sipariş bulunamadı.' });
     }
+    if (!ownsOrder(order, req.user)) {
+      return res.status(403).json({ error: 'Bu sipariş size ait değil.' });
+    }
+    if (order.status === 'paid') {
+      return res.status(400).json({ error: 'Bu sipariş zaten ödenmiş.' });
+    }
+    const merchantOkUrl = okUrlFor(order.id);
+    const merchantFailUrl = FAIL_URL;
 
     const merchant_id   = process.env.PAYTR_MERCHANT_ID;
     const merchant_key  = process.env.PAYTR_MERCHANT_KEY;
@@ -731,9 +762,7 @@ export const createPayTRDirectToken = async (req, res) => {
     // Aynı sipariş için ödeme tekrar denenebilsin diye her denemede farklı olmalı.
     // Callback'te ilk 32 karakter UUID'ye geri çevrilir, suffix yok sayılır.
     const merchant_oid = order.id.replace(/-/g, '') + Date.now().toString(36);
-    const user_ip      = (req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || '')
-      .replace('::ffff:', '')
-      .replace('::1', '') || '1.2.3.4';
+    const user_ip      = (req.ip || '').replace('::ffff:', '').replace('::1', '') || '1.2.3.4';
 
     // PayTR telefon formatı: 05XXXXXXXXX
     const rawPhone   = userPhone || '05000000000';
@@ -786,7 +815,7 @@ export const createPayTRDirectToken = async (req, res) => {
     });
   } catch (error) {
     console.error('[PAYTR DIRECT TOKEN ERROR]', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Ödeme başlatılamadı.' });
   }
 };
 
@@ -810,9 +839,10 @@ export const getOrderConfig = async (req, res) => {
       return res.status(403).json({ message: 'Access denied' });
     }
 
-    res.json({ configuration: order.configuration, editCount: order.editCount });
+    res.json({ configuration: order.configuration, editCount: order.edit_count || 0 });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('[GET ORDER CONFIG ERROR]', error?.message);
+    res.status(500).json({ message: 'Yapılandırma alınamadı.' });
   }
 };
 
@@ -847,22 +877,25 @@ export const updateOrderConfig = async (req, res) => {
 
     const configSource = configuration || req.body.siteData || {};
 
+    const str = (v, max) => (typeof v === 'string' ? v.slice(0, max) : '');
+    const color = (v, def) => (/^#[0-9a-fA-F]{3,8}$/.test(String(v || '')) ? v : def);
     const cleanConfig = {
-      brandName:        configSource.brandName       || '',
-      primaryColor:     configSource.primaryColor    || '#5c73ff',
-      secondaryColor:   configSource.secondaryColor  || '#00d1ff',
-      notes:            configSource.notes           || '',
-      logo:             configSource.logo            || null,
-      headline:         configSource.headline        || '',
-      description:      configSource.description     || '',
+      brandName:        str(configSource.brandName, 120),
+      primaryColor:     color(configSource.primaryColor, '#5c73ff'),
+      secondaryColor:   color(configSource.secondaryColor, '#00d1ff'),
+      notes:            str(configSource.notes, 4000),
+      logo:             typeof configSource.logo === 'string' && /^https:\/\//.test(configSource.logo) ? configSource.logo.slice(0, 1000) : null,
+      headline:         str(configSource.headline, 200),
+      description:      str(configSource.description, 2000),
     };
 
+    // GÜVENLİK: sipariş durumu (status) istemciden ASLA alınmaz — 'paid' yalnızca
+    // PayTR callback'inden, diğer aşamalar yalnızca admin'den gelir.
     const { data: updatedOrder, error: updateError } = await supabase
       .from('orders')
       .update({
         configuration: cleanConfig,
-        edit_count:    order.edit_count + 1,
-        status:        req.body.status || order.status,
+        edit_count:    (order.edit_count || 0) + 1,
       })
       .eq('id', orderId)
       .select()
@@ -873,7 +906,7 @@ export const updateOrderConfig = async (req, res) => {
     res.json(updatedOrder);
   } catch (error) {
     console.error('[CONFIG UPDATE FAILED]', error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Yapılandırma kaydedilemedi.' });
   }
 };
 
@@ -915,6 +948,7 @@ export const getAllOrders = async (req, res) => {
 
     res.json(formattedData);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('[GET ALL ORDERS ERROR]', error?.message);
+    res.status(500).json({ message: 'Siparişler alınamadı.' });
   }
 };

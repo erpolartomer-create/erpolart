@@ -20,6 +20,10 @@ const renderContent = (text) => {
       if (href.startsWith('/') || href.startsWith('#')) {
         return <Link key={i} to={href} className="text-indigo underline hover:text-white transition-colors">{label}</Link>;
       }
+      // Yalnızca http(s) dış bağlantılar; javascript:/data: gibi şemalar düz metin olarak kalır
+      if (!/^https?:\/\//i.test(href)) {
+        return <span key={i}>{label}</span>;
+      }
       return <a key={i} href={href} target="_blank" rel="noopener noreferrer" className="text-indigo underline hover:text-white transition-colors">{label}</a>;
     }
     return <span key={i}>{part}</span>;
@@ -76,7 +80,7 @@ const getSessionId = (user) => {
   }
   let guestId = localStorage.getItem('erpolart_guest_session');
   if (!guestId) {
-    guestId = 'guest_' + Math.random().toString(36).substring(2, 12) + Date.now();
+    guestId = 'guest_' + crypto.randomUUID();
     localStorage.setItem('erpolart_guest_session', guestId);
   }
   return guestId;
@@ -148,7 +152,10 @@ const ChatBot = () => {
     if (window.location.hostname === 'localhost') return;
 
     socketRef.current = io(import.meta.env.VITE_API_URL, { reconnectionAttempts: 1, timeout: 3000 });
-    socketRef.current.emit('join_session', sessionId);
+    // user_<uuid> odaları sunucuda token ile doğrulanır; token'ı oturumdan al ve gönder
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      socketRef.current?.emit('join_session', sessionId, session?.access_token || null);
+    });
 
     socketRef.current.on('connect_error', () => {
       socketRef.current.disconnect();
@@ -244,7 +251,7 @@ const ChatBot = () => {
     clearHistory();
     // Misafir kullanıcı için yeni session
     if (!user) {
-      const newGuestId = 'guest_' + Math.random().toString(36).substring(2, 12) + Date.now();
+      const newGuestId = 'guest_' + crypto.randomUUID();
       localStorage.setItem('erpolart_guest_session', newGuestId);
       setSessionId(newGuestId);
       setHistoryLoaded(false);
@@ -287,12 +294,15 @@ const ChatBot = () => {
 
       const statusLabel = user ? "Giriş yapmış müşteri" : "Misafir kullanıcı";
 
+      // Kimlik gövdede değil Authorization başlığında gider; sunucu token'dan doğrular.
+      const { data: { session } } = await supabase.auth.getSession();
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/ai/chat`, {
         message: userMessage,
         userContext: statusLabel,
         history: history,
         sessionId: sessionId,
-        userId: user?.id || null
+      }, {
+        headers: session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {},
       });
 
       // Muted durumda AI cevap vermez — sessizce geç

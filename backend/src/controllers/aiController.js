@@ -22,6 +22,10 @@ export const translateText = async (req, res) => {
     if (!targetLanguages || !Array.isArray(targetLanguages)) {
       return res.status(400).json({ message: 'targetLanguages must be an array (e.g., ["en", "de"])' });
     }
+    if (typeof text !== 'string' || text.length > 5000 || targetLanguages.length > 5 ||
+        !targetLanguages.every((l) => typeof l === 'string' && /^[a-z]{2}(-[A-Z]{2})?$/.test(l))) {
+      return res.status(400).json({ message: 'Invalid translation request' });
+    }
 
     const results = {};
 
@@ -154,13 +158,35 @@ const saveLead = async (leadData) => {
  */
 export const chatWithAI = async (req, res) => {
   try {
-    const { message, userContext, history, sessionId, userId } = req.body;
+    const { message, userContext, history, sessionId } = req.body;
     const io = req.app.get('io');
     const mutedSessions = req.app.get('mutedSessions');
 
-    if (!sessionId) {
+    if (!sessionId || typeof sessionId !== 'string' || sessionId.length > 120) {
       return res.status(400).json({ error: "sessionId is required" });
     }
+
+    // GÜVENLİK: userId gövdeden değil, doğrulanmış token'dan alınır. `user_<uuid>` oturumuna
+    // yalnızca o kullanıcı yazabilir; aksi halde başkasının sohbetine mesaj enjekte edilebilirdi.
+    let userId = null;
+    const authHeader = req.headers.authorization || '';
+    if (authHeader.startsWith('Bearer ')) {
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser(authHeader.slice(7));
+        if (!error && user) userId = user.id;
+      } catch { /* geçersiz token → anonim */ }
+    }
+    if (sessionId.startsWith('user_') && sessionId !== `user_${userId}`) {
+      return res.status(403).json({ error: "Session does not belong to you" });
+    }
+    // Maliyet sınırı: son 20 mesaj ve toplam ~16k karakter (Anthropic token maliyeti kötüye kullanımı)
+    let budget = 16000;
+    const safeHistory = (Array.isArray(history) ? history.slice(-20) : []).reverse().filter((h) => {
+      const len = String(h?.content || h?.text || (Array.isArray(h?.parts) ? h.parts.map((p) => p?.text || '').join('') : '')).length;
+      budget -= len;
+      return budget >= 0;
+    }).reverse();
+    const safeUserContext = typeof userContext === 'string' ? userContext.slice(0, 200) : '';
 
     if (!message || typeof message !== 'string' || message.trim().length === 0) {
       return res.status(400).json({ error: "Message is required" });
@@ -232,18 +258,18 @@ export const chatWithAI = async (req, res) => {
     const { text: templatesContext, templates: allTemplates } = await fetchTemplatesForAI();
 
     // userContext'i system prompt'a ekle (mesaj gövdesine DEĞİL — AI tekrarlıyordu)
-    const userAuthInfo = userContext ? `\n\nKULLANICI DURUMU: ${userContext.trim()}. Bu bilgiyi asla mesajlarında gösterme veya tekrarlama.` : '';
+    const userAuthInfo = safeUserContext ? `\n\nKULLANICI DURUMU: ${safeUserContext.trim()}. Bu bilgiyi asla mesajlarında gösterme veya tekrarlama.` : '';
     const enrichedSystemPrompt = SYSTEM_PROMPT +
       "\n\nMEVCUT DİJİTAL MİMARİLER (TEMPLATE KATALOĞU):\n" + templatesContext +
       "\n\nÖNEMLİ: Müşteri bir şablon hakkında soru sorarsa, yukarıdaki teknik detayları ve fiyatları baz alarak net bilgi ver." +
       userAuthInfo;
 
     // Gemini format (model/parts) → Claude format (assistant/content)
-    const formattedMessages = (history || []).map(item => ({
-      role: item.role === 'assistant' || item.role === 'model' ? 'assistant' : 'user',
-      content: Array.isArray(item.parts)
-        ? item.parts.map(p => p.text || '').join('')
-        : String(item.content || item.text || ' '),
+    const formattedMessages = safeHistory.map(item => ({
+      role: item?.role === 'assistant' || item?.role === 'model' ? 'assistant' : 'user',
+      content: (Array.isArray(item?.parts)
+        ? item.parts.map(p => p?.text || '').join('')
+        : String(item?.content || item?.text || ' ')).slice(0, 4000),
     }));
 
     formattedMessages.push({

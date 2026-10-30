@@ -33,3 +33,7 @@ yarn-error.log*
 
 # Project specific
 leads.json
+
+# Claude/Supabase yerel durum dosyaları (repoya girmez)
+.claude/settings.local.json
+supabase/.temp/

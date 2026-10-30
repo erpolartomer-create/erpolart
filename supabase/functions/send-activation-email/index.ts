@@ -3,6 +3,11 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 
+// Kullanıcı kaynaklı alanlar HTML'e kaçışlı gömülür
+const esc = (v: unknown) => String(v ?? '')
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': 'https://erpolart.com',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -13,7 +18,7 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
-  if (req.headers.get('Authorization') !== `Bearer ${SERVICE_ROLE_KEY}`) {
+  if (!SERVICE_ROLE_KEY || req.headers.get('Authorization') !== `Bearer ${SERVICE_ROLE_KEY}`) {
     return new Response('Unauthorized', { status: 401, headers: corsHeaders })
   }
 
@@ -40,7 +45,7 @@ serve(async (req) => {
             <h1 style="font-style: italic; letter-spacing: -2px; font-size: 32px; margin-bottom: 10px;">ERPOLART</h1>
             <p style="color: #5c73ff; font-size: 12px; text-transform: uppercase; letter-spacing: 3px; font-weight: bold;">SİSTEMİNİZ AKTİF EDİLDİ</p>
             <hr style="border: 0; border-top: 1px solid #222; margin: 30px 0;" />
-            <p style="font-size: 16px; line-height: 1.6; color: #ccc;">Sayın <strong>${record.full_name || 'Müşterimiz'}</strong>,</p>
+            <p style="font-size: 16px; line-height: 1.6; color: #ccc;">Sayın <strong>${esc(record.full_name || 'Müşterimiz')}</strong>,</p>
             <p style="font-size: 16px; line-height: 1.6; color: #ccc;">Ödemeniz başarıyla doğrulandı. Dijital mimari kurulum süreciniz başlatılmıştır.</p>
             <a href="https://erpolart.com/order-success/${record.id}" style="display: inline-block; background: #5c73ff; color: #fff; padding: 18px 35px; text-decoration: none; border-radius: 15px; font-weight: 900; margin-top: 30px; text-transform: uppercase; font-size: 13px;">Kişiselleştirmeyi Başlat</a>
             <div style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #111;">
