@@ -85,6 +85,8 @@ function App() {
 
       // 2. Admin Oturumu Kurtar
       const { data: { session: adminSession } } = await supabaseAdmin.auth.getSession();
+      // İki aşamalı doğrulama yarım kaldıysa panel açılmasın (setAdmin'den ÖNCE hesaplanır)
+      if (adminSession) await useAdminAuthStore.getState().refreshMfa().catch(() => {});
       useAdminAuthStore.getState().setAdmin(adminSession?.user ?? null);
     };
     recoverSession();

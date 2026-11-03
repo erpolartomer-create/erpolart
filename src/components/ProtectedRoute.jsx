@@ -5,11 +5,11 @@ import useAdminAuthStore from '../store/adminAuthStore';
 const ProtectedRoute = ({ children, adminOnly = false }) => {
   const location = useLocation();
   const { user, isInitialized } = useAuthStore();
-  const { adminUser, isAdminInitialized } = useAdminAuthStore();
+  const { adminUser, isAdminInitialized, mfaPending } = useAdminAuthStore();
 
   if (adminOnly) {
     if (!isAdminInitialized) return null; // F5 sorununu çözer
-    return adminUser?.email === 'hello@erpolart.com' ? children : <Navigate to="/admin/login" replace />;
+    return adminUser?.email === 'hello@erpolart.com' && !mfaPending ? children : <Navigate to="/admin/login" replace />;
   }
   
   if (!isInitialized) return null;

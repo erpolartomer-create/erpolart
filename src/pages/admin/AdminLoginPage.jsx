@@ -11,8 +11,14 @@ const AdminLoginPage = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [step, setStep] = useState('password'); // password | challenge | enroll
+  const [factorId, setFactorId] = useState(null);
+  const [code, setCode] = useState('');
+  const [enroll, setEnroll] = useState(null); // { qr, secret }
   const navigate = useNavigate();
   const adminLogin = useAdminAuthStore((state) => state.adminLogin);
+  const verifyMfa = useAdminAuthStore((state) => state.verifyMfa);
+  const startEnroll = useAdminAuthStore((state) => state.startEnroll);
   const theme = useUIStore((state) => state.theme);
 
   const handleSubmit = async (e) => {
@@ -27,15 +33,43 @@ const AdminLoginPage = () => {
     }
 
     try {
-      await adminLogin(email, password);
-      // Başarılı giriş sonrası doğrudan dashboard'a uçur
-      navigate('/admin/dashboard');
+      const mfa = await adminLogin(email, password);
+      if (mfa.step === 'challenge') {
+        setFactorId(mfa.factorId);
+        setStep('challenge');
+      } else if (mfa.step === 'enroll') {
+        // Kurulum başlatılamazsa (ör. projede TOTP kapalı) girişi engelleme
+        const e2 = await startEnroll().catch(() => null);
+        if (!e2) return navigate('/admin/dashboard');
+        setFactorId(e2.factorId);
+        setEnroll({ qr: e2.qr, secret: e2.secret });
+        setStep('enroll');
+      } else {
+        navigate('/admin/dashboard');
+      }
     } catch (err) {
       setError(err.message || 'Giriş yetkisi doğrulanamadı.');
     } finally {
       setLoading(false);
     }
   };
+
+  const handleCode = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      if (!/^\d{6}$/.test(code.trim())) throw new Error('6 haneli kodu girin.');
+      await verifyMfa(factorId, code);
+      navigate('/admin/dashboard');
+    } catch (err) {
+      setError(err.message || 'Kod doğrulanamadı.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const inputCls = "w-full bg-deep-black/50 border border-white/5 rounded-2xl px-6 py-5 text-white placeholder:text-gray-600 focus:border-indigo/50 focus:outline-none transition-all";
 
   return (
     <section className="min-h-screen bg-deep-black flex items-center justify-center relative overflow-hidden px-6 transition-colors duration-500 font-sans">
@@ -77,6 +111,52 @@ const AdminLoginPage = () => {
             </p>
           </div>
 
+          {step !== 'password' ? (
+            <form onSubmit={handleCode} className="space-y-6">
+              {step === 'enroll' && enroll && (
+                <div className="space-y-4 text-center">
+                  <p className="text-muted-text text-sm font-medium">
+                    İki aşamalı doğrulamayı kurun: Google Authenticator, 1Password veya benzeri bir uygulamayla bu QR kodu okutun.
+                  </p>
+                  <img src={enroll.qr} alt="İki aşamalı doğrulama QR kodu" className="mx-auto w-48 h-48 bg-white rounded-2xl p-2" />
+                  <p className="text-[10px] text-muted-text break-all">Elle giriş anahtarı: <span className="text-white font-mono">{enroll.secret}</span></p>
+                </div>
+              )}
+              {step === 'challenge' && (
+                <p className="text-muted-text text-sm font-medium text-center">Doğrulama uygulamanızdaki 6 haneli kodu girin.</p>
+              )}
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-muted-text uppercase tracking-widest ml-1">Doğrulama Kodu</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+                  className={`${inputCls} text-center tracking-[0.5em] font-mono text-2xl`}
+                  placeholder="000000"
+                  autoFocus
+                  required
+                />
+              </div>
+              {error && (
+                <div className="p-5 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-medium">{error}</div>
+              )}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-4 bg-white dark:bg-pearl text-deep-black font-black uppercase tracking-widest py-6 rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
+              >
+                {loading ? 'Doğrulanıyor...' : (step === 'enroll' ? 'Kurulumu Tamamla' : 'Doğrula')}
+              </button>
+              {step === 'enroll' && (
+                <button type="button" onClick={() => navigate('/admin/dashboard')} className="w-full text-[10px] font-black text-muted-text uppercase tracking-widest hover:text-white transition-all">
+                  Şimdilik atla
+                </button>
+              )}
+            </form>
+          ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <label className="text-[10px] font-black text-muted-text uppercase tracking-widest ml-1">Admin E-Posta</label>
@@ -132,6 +212,7 @@ const AdminLoginPage = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-indigo to-cyan opacity-0 group-hover:opacity-10 transition-opacity" />
             </button>
           </form>
+          )}
 
           <div className="mt-12 pt-10 border-t border-white/5 flex items-center justify-between text-muted-text text-[10px] font-black uppercase tracking-wider transition-colors">
             <div className="flex items-center gap-2">
