@@ -65,6 +65,7 @@ for b in gallery atacelik; do check "storage: $b bucket anonim listelenemez" "0"
 check "anon leads INSERT yetkisi kaldırıldı (REVOKE)" "40[13]" "$(code -X POST "$SB/rest/v1/leads" -H "apikey: $AK" -H "Authorization: Bearer $AK" -H 'Content-Type: application/json' -d '[]')"
 for t in atacelik_editors atacelik_content; do check "anon $t INSERT yetkisi kaldırıldı" "40[13]" "$(code -X POST "$SB/rest/v1/$t" -H "apikey: $AK" -H "Authorization: Bearer $AK" -H 'Content-Type: application/json' -d '[]')"; done
 check "is_atacelik_editor() anonim için false" "false" "$(curl -sS --max-time 20 -X POST "$SB/rest/v1/rpc/is_atacelik_editor" -H "apikey: $AK" -H "Authorization: Bearer $AK" -H 'Content-Type: application/json' -d '{}')"
+check "RLS+REVOKE: anon dm1_leads okuyamaz (lunina-dental)" "denied:40[13]" "$(cnt dm1_leads)"
 check "e-posta doğrulaması zorunlu" "False" "$(curl -sS --max-time 20 "$SB/auth/v1/settings" -H "apikey: $AK" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("mailer_autoconfirm"))')"
 
 echo "── Edge Functions ──"
