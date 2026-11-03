@@ -63,6 +63,8 @@ for t in leads proposals chat_messages; do check "RLS+REVOKE: anon $t okuyamaz" 
 check "M3 logos bucket anonim listelenemez" "0" "$(curl -sS --max-time 20 -X POST "$SB/storage/v1/object/list/logos" -H "apikey: $AK" -H "Authorization: Bearer $AK" -H 'Content-Type: application/json' -d '{"prefix":"orders/","limit":100}' | python3 -c 'import json,sys; d=json.load(sys.stdin); print(len(d) if isinstance(d,list) else 0)')"
 for b in gallery atacelik; do check "storage: $b bucket anonim listelenemez" "0" "$(curl -sS --max-time 20 -X POST "$SB/storage/v1/object/list/$b" -H "apikey: $AK" -H "Authorization: Bearer $AK" -H 'Content-Type: application/json' -d '{"prefix":"","limit":100}' | python3 -c 'import json,sys; d=json.load(sys.stdin); print(len(d) if isinstance(d,list) else 0)')"; done
 check "anon leads INSERT yetkisi kaldırıldı (REVOKE)" "40[13]" "$(code -X POST "$SB/rest/v1/leads" -H "apikey: $AK" -H "Authorization: Bearer $AK" -H 'Content-Type: application/json' -d '[]')"
+for t in atacelik_editors atacelik_content; do check "anon $t INSERT yetkisi kaldırıldı" "40[13]" "$(code -X POST "$SB/rest/v1/$t" -H "apikey: $AK" -H "Authorization: Bearer $AK" -H 'Content-Type: application/json' -d '[]')"; done
+check "is_atacelik_editor() anonim için false" "false" "$(curl -sS --max-time 20 -X POST "$SB/rest/v1/rpc/is_atacelik_editor" -H "apikey: $AK" -H "Authorization: Bearer $AK" -H 'Content-Type: application/json' -d '{}')"
 check "e-posta doğrulaması zorunlu" "False" "$(curl -sS --max-time 20 "$SB/auth/v1/settings" -H "apikey: $AK" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("mailer_autoconfirm"))')"
 
 echo "── Edge Functions ──"
