@@ -74,6 +74,7 @@ serve(async (req) => {
     const data = await res.json()
     return new Response(JSON.stringify(data), { status: 200, headers: corsHeaders })
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: corsHeaders })
+    console.error('send-order-confirmation error:', error)
+    return new Response(JSON.stringify({ error: 'Internal error' }), { status: 500, headers: corsHeaders })
   }
 })

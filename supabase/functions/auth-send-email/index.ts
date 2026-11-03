@@ -98,7 +98,7 @@ serve(async (req) => {
     });
   } catch (err: unknown) {
     console.error('auth-send-email error:', err);
-    return new Response(JSON.stringify({ error: (err as Error).message }), {
+    return new Response(JSON.stringify({ error: 'Internal error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

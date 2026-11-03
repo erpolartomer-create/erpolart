@@ -37,3 +37,4 @@ leads.json
 # Claude/Supabase yerel durum dosyaları (repoya girmez)
 .claude/settings.local.json
 supabase/.temp/
+supabase/functions/_tests/.tmp_*
