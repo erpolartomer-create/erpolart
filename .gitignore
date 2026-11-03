@@ -38,3 +38,4 @@ leads.json
 .claude/settings.local.json
 supabase/.temp/
 supabase/functions/_tests/.tmp_*
+deno.lock
