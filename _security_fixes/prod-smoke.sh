@@ -66,6 +66,12 @@ check "anon leads INSERT yetkisi kaldırıldı (REVOKE)" "40[13]" "$(code -X POS
 for t in atacelik_editors atacelik_content; do check "anon $t INSERT yetkisi kaldırıldı" "40[13]" "$(code -X POST "$SB/rest/v1/$t" -H "apikey: $AK" -H "Authorization: Bearer $AK" -H 'Content-Type: application/json' -d '[]')"; done
 check "is_atacelik_editor() anonim için false" "false" "$(curl -sS --max-time 20 -X POST "$SB/rest/v1/rpc/is_atacelik_editor" -H "apikey: $AK" -H "Authorization: Bearer $AK" -H 'Content-Type: application/json' -d '{}')"
 check "RLS+REVOKE: anon dm1_leads okuyamaz (lunina-dental)" "denied:40[13]" "$(cnt dm1_leads)"
+# Aynı projedeki diğer siteler (lunina-dental dm1_*, mavera mv_*, vero_*, atacelik)
+for t in dm1_gallery dm1_settings dm1_doctors dm1_services dm1_clinics dm1_content erpolart_orders mv_site_data atacelik_backups vero_bookings vero_seasonal_prices vero_settings vero_users vero_villas; do
+  check "anon $t yazamaz" "40[13]" "$(code -X POST "$SB/rest/v1/$t" -H "apikey: $AK" -H "Authorization: Bearer $AK" -H 'Content-Type: application/json' -d '[]')"
+done
+for t in erpolart_orders mv_site_data atacelik_backups vero_bookings vero_seasonal_prices vero_settings vero_users vero_villas; do check "anon $t okuyamaz" "denied:40[13]" "$(cnt $t)"; done
+check "dm1_gallery herkese okunur (site çalışıyor)" "0-*" "$(cnt dm1_gallery)"
 check "e-posta doğrulaması zorunlu" "False" "$(curl -sS --max-time 20 "$SB/auth/v1/settings" -H "apikey: $AK" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("mailer_autoconfirm"))')"
 
 echo "── Edge Functions ──"
